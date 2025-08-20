@@ -5,6 +5,77 @@ const NaverMap = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [permissionStatus, setPermissionStatus] = useState('unknown');
+
+  // 위치 권한 상태 확인
+  const checkLocationPermission = async () => {
+    if ('permissions' in navigator) {
+      try {
+        const permission = await navigator.permissions.query({ name: 'geolocation' });
+        setPermissionStatus(permission.state);
+        
+        permission.onchange = () => {
+          setPermissionStatus(permission.state);
+        };
+      } catch (error) {
+        console.log('권한 상태 확인 불가:', error);
+      }
+    }
+  };
+
+  // 위치 권한 요청
+  const requestLocationPermission = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude, accuracy } = position.coords;
+          console.log('위치 정보:', { latitude, longitude, accuracy });
+          
+          setCurrentLocation({ 
+            lat: latitude, 
+            lng: longitude,
+            accuracy: accuracy 
+          });
+          setLocationError(null);
+          setPermissionStatus('granted');
+          setIsLoading(false);
+        },
+        (error) => {
+          console.error('위치 정보 오류:', error);
+          let errorMessage = '';
+          
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = '위치 정보 접근이 거부되었습니다.';
+              setPermissionStatus('denied');
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = '위치 정보를 사용할 수 없습니다.';
+              break;
+            case error.TIMEOUT:
+              errorMessage = '위치 정보 요청 시간이 초과되었습니다.';
+              break;
+            default:
+              errorMessage = '위치 정보를 가져올 수 없습니다.';
+          }
+          
+          setLocationError(errorMessage);
+          // 기본 위치로 설정 (서울시청)
+          setCurrentLocation({ lat: 37.5665, lng: 126.9780, accuracy: null });
+          setIsLoading(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+    } else {
+      setLocationError('이 브라우저는 위치 정보를 지원하지 않습니다.');
+      setCurrentLocation({ lat: 37.5665, lng: 126.9780, accuracy: null });
+      setIsLoading(false);
+    }
+  };
 
   // 현재 위치 가져오기 (고정밀)
   const getCurrentLocation = () => {
@@ -30,6 +101,7 @@ const NaverMap = () => {
             accuracy: accuracy 
           });
           setLocationError(null);
+          setPermissionStatus('granted');
           setIsLoading(false);
         },
         (error) => {
@@ -38,7 +110,8 @@ const NaverMap = () => {
           
           switch(error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = '위치 정보 접근이 거부되었습니다. 브라우저 설정을 확인해주세요.';
+              errorMessage = '위치 정보 접근이 거부되었습니다.';
+              setPermissionStatus('denied');
               break;
             case error.POSITION_UNAVAILABLE:
               errorMessage = '위치 정보를 사용할 수 없습니다.';
@@ -92,9 +165,14 @@ const NaverMap = () => {
   };
 
   useEffect(() => {
-    // 컴포넌트 마운트 시 현재 위치 가져오기
-    getCurrentLocation();
-  }, []);
+    // 컴포넌트 마운트 시 권한 상태 확인
+    checkLocationPermission();
+    
+    // 위치 정보 가져오기 시도
+    if (permissionStatus === 'granted' || permissionStatus === 'unknown') {
+      getCurrentLocation();
+    }
+  }, [permissionStatus]);
 
   useEffect(() => {
     if (!currentLocation) return;
@@ -225,24 +303,72 @@ const NaverMap = () => {
         네이버지도
       </h3>
       
-      {/* 현재 위치 버튼 */}
+      {/* 권한 상태에 따른 버튼 */}
       <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-        <button
-          onClick={getCurrentLocation}
-          disabled={isLoading}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: isLoading ? '#6c757d' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            fontSize: '14px',
-            fontWeight: 'bold'
-          }}
-        >
-          {isLoading ? '🔄 위치 확인 중...' : '📍 현재 위치 새로고침'}
-        </button>
+        {permissionStatus === 'denied' ? (
+          <div style={{ marginBottom: '15px' }}>
+            <div style={{ 
+              padding: '12px', 
+              backgroundColor: '#fff3cd', 
+              color: '#856404',
+              borderRadius: '6px',
+              marginBottom: '10px',
+              fontSize: '13px',
+              border: '1px solid #ffeaa7'
+            }}>
+              <strong>🔒 위치 정보 접근이 거부되었습니다</strong><br/>
+              브라우저 설정에서 위치 정보 접근을 허용해주세요.
+            </div>
+            <button
+              onClick={requestLocationPermission}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                marginRight: '10px'
+              }}
+            >
+              🔓 위치 권한 다시 요청
+            </button>
+            <button
+              onClick={() => window.open('chrome://settings/content/location', '_blank')}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#6c757d',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 'bold'
+              }}
+            >
+              ⚙️ 브라우저 설정 열기
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={getCurrentLocation}
+            disabled={isLoading}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: isLoading ? '#6c757d' : '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold'
+            }}
+          >
+            {isLoading ? '🔄 위치 확인 중...' : '📍 현재 위치 새로고침'}
+          </button>
+        )}
       </div>
 
       {/* 위치 정보 표시 */}
