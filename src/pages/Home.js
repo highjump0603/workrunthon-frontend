@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import './Home.css';
 import ArrowRightIcon from '../assets/arrow.svg';
+import BottomNavigation from '../components/BottomNavigation';
 
 const Home = () => {
   const [currentBalance] = useState(150000);
@@ -231,6 +232,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+      <BottomNavigation />
     </div>
   );
 };

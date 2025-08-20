@@ -1,0 +1,97 @@
+/* Bottom Navigation Styles */
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-top: 1px solid #e9ecef;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 0 20px 0;
+  z-index: 1000;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 8px 4px;
+  min-height: 60px;
+}
+
+.nav-item:hover {
+  transform: translateY(-2px);
+}
+
+.nav-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  color: #7D7D7D;
+  transition: color 0.2s ease;
+}
+
+/* Active state */
+.nav-item.active .nav-icon {
+  color: #26CA1D;
+}
+
+.nav-item.active .nav-label {
+  color: #26CA1D;
+  font-weight: 600;
+}
+
+/* Hover effects */
+.nav-item:hover .nav-icon {
+  transform: scale(1.1);
+}
+
+.nav-item:hover .nav-label {
+  color: #26CA1D;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .bottom-navigation {
+    border-radius: 16px 16px 0 0;
+    padding: 10px 0 18px 0;
+  }
+  
+  .nav-item {
+    min-height: 56px;
+    padding: 6px 2px;
+  }
+  
+  .nav-icon {
+    font-size: 22px;
+    margin-bottom: 3px;
+  }
+  
+  .nav-label {
+    font-size: 10px;
+  }
+}
+
+/* Safe area for devices with home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-navigation {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+}
