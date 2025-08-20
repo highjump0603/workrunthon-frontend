@@ -125,10 +125,10 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      {/* Top Header Bar */}
-      <div className="header-bar">
+      {/* Top Info Bar */}
+      <div className="info-bar">
         <div className="location">반포동</div>
-        <div className="balance-info">현재 약 ₩{currentBalance.toLocaleString()} 남음</div>
+        <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩{currentBalance.toLocaleString()}</span> 남음</div>
       </div>
 
       {/* Promotional Banner */}
@@ -176,7 +176,7 @@ const Home = () => {
                       {index === 0 ? '🍣' : index === 1 ? '🍕' : '🥗'}
                     </div>
                   </div>
-                  <button className="recommend-btn">
+                  <button className="recommend-btn font-regular">
                     {page.buttonText}
                   </button>
                 </div>
@@ -188,8 +188,8 @@ const Home = () => {
 
       {/* Today Section */}
       <div className="section">
-        <h2 className="section-title">Today</h2>
-        <p className="section-subtitle">
+        <h2 className="home-section-title font-bold">Today</h2>
+        <p className="home-section-subtitle font-regular">
           이번주는 지난주보다 약 ₩34,728 덜 썼어요.
         </p>
         <div className="card">
@@ -212,10 +212,9 @@ const Home = () => {
           <div className="card-arrow">→</div>
         </div>
       </div>
-
-      {/* My Wallet Section */}
+          
       <div className="section">
-        <h2 className="section-title">my wallet</h2>
+        <h2 className="home-section-title font-bold">my wallet</h2>
         <div className="card">
           <div className="wallet-amounts">
             <div className="current-amount">₩{currentBalance.toLocaleString()}</div>
