@@ -200,12 +200,7 @@ const NaverMap = () => {
     };
 
     // 네이버지도 API 스크립트 로드 (새로운 형식 사용)
-    const naverClientId = process.env.REACT_APP_NAVER_CLIENT_ID;
-    
-    if (!naverClientId) {
-      console.warn('네이버지도 API 키가 설정되지 않았습니다. .env 파일에 REACT_APP_NAVER_CLIENT_ID를 추가해주세요.');
-      return;
-    }
+    const naverClientId = "qjeimluyjg";
 
     const script = document.createElement('script');
     script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}`;
