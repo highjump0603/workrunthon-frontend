@@ -233,10 +233,10 @@
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  margin-right: 12px;
+  margin-right: 5px;
   flex-shrink: 0;
 }
 
@@ -247,7 +247,7 @@
 
 
 .spending-text {
-  font-size: 14px;
+  font-size: 12px;
   color: #000;
   flex: 1;
   text-align: left;
