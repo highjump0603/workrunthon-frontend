@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 const NaverMap = () => {
   const mapRef = useRef(null);
@@ -7,8 +7,16 @@ const NaverMap = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState('unknown');
 
+  // HTTPS 환경 체크
+  const isSecureContext = () => {
+    return window.isSecureContext || 
+           window.location.protocol === 'https:' || 
+           window.location.hostname === 'localhost' ||
+           window.location.hostname === '127.0.0.1';
+  };
+
   // 위치 권한 상태 확인
-  const checkLocationPermission = async () => {
+  const checkLocationPermission = useCallback(async () => {
     if ('permissions' in navigator) {
       try {
         const permission = await navigator.permissions.query({ name: 'geolocation' });
@@ -21,10 +29,16 @@ const NaverMap = () => {
         console.log('권한 상태 확인 불가:', error);
       }
     }
-  };
+  }, []);
 
   // 위치 권한 요청
-  const requestLocationPermission = () => {
+  const requestLocationPermission = useCallback(() => {
+    if (!isSecureContext()) {
+      setLocationError('위치 정보는 HTTPS 환경에서만 사용할 수 있습니다.');
+      setPermissionStatus('denied');
+      return;
+    }
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -46,7 +60,11 @@ const NaverMap = () => {
           
           switch(error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = '위치 정보 접근이 거부되었습니다.';
+              if (!isSecureContext()) {
+                errorMessage = '위치 정보는 HTTPS 환경에서만 사용할 수 있습니다.';
+              } else {
+                errorMessage = '위치 정보 접근이 거부되었습니다.';
+              }
               setPermissionStatus('denied');
               break;
             case error.POSITION_UNAVAILABLE:
@@ -75,12 +93,19 @@ const NaverMap = () => {
       setCurrentLocation({ lat: 37.5665, lng: 126.9780, accuracy: null });
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // 현재 위치 가져오기 (고정밀)
-  const getCurrentLocation = () => {
+  const getCurrentLocation = useCallback(() => {
     setIsLoading(true);
     setLocationError(null);
+
+    if (!isSecureContext()) {
+      setLocationError('위치 정보는 HTTPS 환경에서만 사용할 수 있습니다.');
+      setPermissionStatus('denied');
+      setIsLoading(false);
+      return;
+    }
 
     if (navigator.geolocation) {
       // 고정밀 위치 정보 요청
@@ -110,7 +135,11 @@ const NaverMap = () => {
           
           switch(error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = '위치 정보 접근이 거부되었습니다.';
+              if (!isSecureContext()) {
+                errorMessage = '위치 정보는 HTTPS 환경에서만 사용할 수 있습니다.';
+              } else {
+                errorMessage = '위치 정보 접근이 거부되었습니다.';
+              }
               setPermissionStatus('denied');
               break;
             case error.POSITION_UNAVAILABLE:
@@ -162,7 +191,7 @@ const NaverMap = () => {
       setCurrentLocation({ lat: 37.5665, lng: 126.9780, accuracy: null });
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // 컴포넌트 마운트 시 권한 상태 확인
@@ -172,7 +201,7 @@ const NaverMap = () => {
     if (permissionStatus === 'granted' || permissionStatus === 'unknown') {
       getCurrentLocation();
     }
-  }, [permissionStatus]);
+  }, [permissionStatus, checkLocationPermission, getCurrentLocation]);
 
   useEffect(() => {
     if (!currentLocation) return;
@@ -303,6 +332,23 @@ const NaverMap = () => {
         네이버지도
       </h3>
       
+      {/* HTTPS 환경 체크 메시지 */}
+      {!isSecureContext() && (
+        <div style={{ 
+          textAlign: 'center', 
+          marginBottom: '15px', 
+          padding: '12px',
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          borderRadius: '6px',
+          fontSize: '13px',
+          border: '1px solid #f5c6cb'
+        }}>
+          🔒 <strong>HTTPS 환경이 필요합니다</strong><br/>
+          위치 정보는 보안상의 이유로 HTTPS 환경에서만 사용할 수 있습니다.
+        </div>
+      )}
+      
       {/* 권한 상태에 따른 버튼 */}
       <div style={{ textAlign: 'center', marginBottom: '15px' }}>
         {permissionStatus === 'denied' ? (
@@ -317,51 +363,58 @@ const NaverMap = () => {
               border: '1px solid #ffeaa7'
             }}>
               <strong>🔒 위치 정보 접근이 거부되었습니다</strong><br/>
-              브라우저 설정에서 위치 정보 접근을 허용해주세요.
+              {!isSecureContext() 
+                ? 'HTTPS 환경에서 접속해주세요.' 
+                : '브라우저 설정에서 위치 정보 접근을 허용해주세요.'
+              }
             </div>
-            <button
-              onClick={requestLocationPermission}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                marginRight: '10px'
-              }}
-            >
-              🔓 위치 권한 다시 요청
-            </button>
-            <button
-              onClick={() => window.open('chrome://settings/content/location', '_blank')}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#6c757d',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold'
-              }}
-            >
-              ⚙️ 브라우저 설정 열기
-            </button>
+            {isSecureContext() && (
+              <>
+                <button
+                  onClick={requestLocationPermission}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    marginRight: '10px'
+                  }}
+                >
+                  🔓 위치 권한 다시 요청
+                </button>
+                <button
+                  onClick={() => window.open('chrome://settings/content/location', '_blank')}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  ⚙️ 브라우저 설정 열기
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <button
             onClick={getCurrentLocation}
-            disabled={isLoading}
+            disabled={isLoading || !isSecureContext()}
             style={{
               padding: '10px 20px',
-              backgroundColor: isLoading ? '#6c757d' : '#007bff',
+              backgroundColor: isLoading || !isSecureContext() ? '#6c757d' : '#007bff',
               color: 'white',
               border: 'none',
               borderRadius: '6px',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
+              cursor: isLoading || !isSecureContext() ? 'not-allowed' : 'pointer',
               fontSize: '14px',
               fontWeight: 'bold'
             }}
