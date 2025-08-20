@@ -1,40 +1,277 @@
+/* Home Page Styles */
 .home-container {
-  text-align: center;
-  padding: 50px;
-  font-family: Arial, sans-serif;
-}
-
-.home-title {
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-.home-subtitle {
-  font-size: 1.2rem;
-  color: #666;
-  line-height: 1.6;
-  margin-bottom: 40px;
-}
-
-.maps-container {
-  max-width: 800px;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
+/* Top Header Bar */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 15px 20px;
+  background-color: white;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.location {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.balance-info {
+  font-size: 14px;
+  color: #6c757d;
+}
+
+/* Promotional Banner */
+.promo-banner {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  margin: 15px 20px;
+  border-radius: 16px;
+  padding: 25px 20px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-indicator {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 12px;
+  color: #6c757d;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.promo-content {
+  text-align: center;
+}
+
+.promo-content h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 8px 0;
+}
+
+.promo-content p {
+  font-size: 14px;
+  color: #000;
+  margin: 0 0 15px 0;
+}
+
+.highlight {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.promo-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 20px 0;
+}
+
+.sushi-image {
+  font-size: 60px;
+  margin: 20px 0;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.recommend-btn {
+  background-color: #000;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.recommend-btn:hover {
+  background-color: #333;
+}
+
+/* Section Styles */
+.section {
+  margin: 20px;
+  background-color: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 10px 0;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  color: #6c757d;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+/* Card Styles */
+.card {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.date-info {
+  font-size: 14px;
+  color: #000;
+}
+
+.today-label {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.d-day {
+  font-size: 12px;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.spending-list {
+  margin-bottom: 15px;
+}
+
+.spending-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.dot.green {
+  background-color: #28a745;
+}
+
+.spending-text {
+  font-size: 14px;
+  color: #000;
+}
+
+.card-arrow {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #6c757d;
+}
+
+/* Wallet Styles */
+.wallet-amounts {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.current-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
+}
+
+.total-budget {
+  font-size: 16px;
+  color: #6c757d;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #000 0%, #28a745 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Maps Container */
+.maps-container {
+  margin-top: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
   .home-container {
-    padding: 30px 20px;
+    padding: 0;
   }
   
-  .home-title {
-    font-size: 2rem;
+  .header-bar {
+    padding: 15px 15px 10px 15px;
   }
   
-  .home-subtitle {
-    font-size: 1rem;
+  .promo-banner {
+    margin: 10px 15px;
+    padding: 20px 15px;
   }
+  
+  .section {
+    margin: 15px;
+    padding: 15px;
+  }
+  
+  .card {
+    padding: 15px;
+  }
+}
+
+/* Animation */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.recommend-btn {
+  transition: all 0.2s ease;
+}
+
+.recommend-btn:active {
+  transform: scale(0.98);
 }
