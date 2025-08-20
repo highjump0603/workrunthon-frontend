@@ -232,6 +232,9 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      <div style={{height: '100px'}}></div>
+
       <BottomNavigation />
     </div>
   );

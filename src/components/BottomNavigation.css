@@ -11,8 +11,8 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 12px 0 20px 0;
   z-index: 1000;
+  padding: 10px 0 18px 0;
   max-width: 480px;
   margin: 0 auto;
 }
@@ -86,12 +86,5 @@
   
   .nav-label {
     font-size: 10px;
-  }
-}
-
-/* Safe area for devices with home indicator */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .bottom-navigation {
-    padding-bottom: calc(20px + env(safe-area-inset-bottom));
   }
 }
