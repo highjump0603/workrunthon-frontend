@@ -37,7 +37,7 @@ const NaverMap = () => {
       }
     };
 
-    // 네이버지도 API 스크립트 로드
+    // 네이버지도 API 스크립트 로드 (새로운 형식 사용)
     const naverClientId = process.env.REACT_APP_NAVER_CLIENT_ID;
     
     if (!naverClientId) {
@@ -46,9 +46,14 @@ const NaverMap = () => {
     }
 
     const script = document.createElement('script');
-    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${naverClientId}`;
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}`;
     script.onload = initMap;
     document.head.appendChild(script);
+
+    // 인증 실패 시 처리
+    window.navermap_authFailure = function () {
+      console.error('네이버지도 API 인증에 실패했습니다. API 키를 확인해주세요.');
+    };
 
     return () => {
       if (document.head.contains(script)) {

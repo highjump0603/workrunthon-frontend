@@ -1,6 +1,5 @@
 import React from 'react';
 import NaverMap from '../components/NaverMap';
-import KakaoMap from '../components/KakaoMap';
 import './Home.css';
 
 const Home = () => {
@@ -11,7 +10,6 @@ const Home = () => {
       
       <div className="maps-container">
         <NaverMap />
-        <KakaoMap />
       </div>
     </div>
   );
