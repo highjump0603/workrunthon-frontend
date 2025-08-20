@@ -15,4 +15,35 @@
   font-size: 1.2rem;
   color: #666;
   line-height: 1.6;
+  margin-bottom: 40px;
+}
+
+.maps-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  padding: 0 20px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .maps-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 10px;
+  }
+  
+  .home-container {
+    padding: 30px 20px;
+  }
+  
+  .home-title {
+    font-size: 2rem;
+  }
+  
+  .home-subtitle {
+    font-size: 1rem;
+  }
 }

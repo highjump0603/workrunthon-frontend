@@ -1,70 +1,61 @@
-# Getting Started with Create React App
+# WorkRunThon Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React 기반의 웹 애플리케이션입니다.
 
-## Available Scripts
+## 설치 및 실행
 
-In the project directory, you can run:
+```bash
+npm install
+npm start
+```
 
-### `npm start`
+## 환경변수 설정
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+지도 API를 사용하기 위해 다음 환경변수를 설정해야 합니다.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1. .env 파일 생성
 
-### `npm test`
+프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 다음 내용을 추가하세요:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```env
+REACT_APP_NAVER_CLIENT_ID=your_naver_client_id_here
+REACT_APP_KAKAO_APP_KEY=your_kakao_app_key_here
+```
 
-### `npm run build`
+### 2. API 키 발급
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### 네이버지도 API
+1. [네이버 클라우드 플랫폼](https://www.ncloud.com/)에 가입
+2. Maps 서비스 신청
+3. 애플리케이션 등록 후 클라이언트 ID 발급
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### 카카오지도 API
+1. [카카오 개발자](https://developers.kakao.com/)에 가입
+2. 애플리케이션 생성
+3. JavaScript 키 발급
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. 보안 주의사항
 
-### `npm run eject`
+- `.env` 파일은 절대 깃허브에 커밋하지 마세요
+- `.gitignore`에 `.env`가 포함되어 있는지 확인하세요
+- 프로덕션 환경에서는 환경변수를 서버 설정에서 관리하세요
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 프로젝트 구조
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+src/
+├── components/          # 재사용 가능한 컴포넌트
+│   ├── NaverMap.js     # 네이버지도 컴포넌트
+│   └── KakaoMap.js     # 카카오지도 컴포넌트
+├── pages/              # 페이지 컴포넌트
+│   ├── Home.js         # 홈 페이지
+│   └── Home.css        # 홈 페이지 스타일
+└── App.js              # 메인 앱 컴포넌트
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 사용된 기술
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- React 18
+- React Router DOM
+- 네이버지도 API
+- 카카오지도 API
