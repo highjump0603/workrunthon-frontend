@@ -1,14 +1,11 @@
 import React from 'react';
+import './Home.css';
 
 const Home = () => {
   return (
-    <div style={{ 
-      textAlign: 'center', 
-      padding: '50px',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      <h1>이글루</h1>
-      <p>Welcome to WorkRunThon</p>
+    <div className="home-container">
+      <h1 className="home-title">이글루</h1>
+      <p className="home-subtitle">Welcome to WorkRunThon</p>
     </div>
   );
 };
