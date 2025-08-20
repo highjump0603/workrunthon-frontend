@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import './Home.css';
 
 const Home = () => {
@@ -11,6 +11,13 @@ const Home = () => {
 
   // 페이지뷰 관련 state
   const [currentPage, setCurrentPage] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [currentX, setCurrentX] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  
+  // refs
+  const pageWrapperRef = useRef(null);
   
   // 페이지 데이터
   const pages = [
@@ -42,18 +49,78 @@ const Home = () => {
 
   const spendingProgress = (currentBalance / totalBudget) * 100;
 
-  // 자동 페이지 전환 효과
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPage((prev) => (prev + 1) % pages.length);
-    }, 5000);
+  // 터치/마우스 이벤트 핸들러
+  const handleStart = (clientX) => {
+    setIsDragging(true);
+    setStartX(clientX);
+    setCurrentX(clientX);
+    setDragOffset(0);
+  };
 
-    return () => clearInterval(interval);
-  }, [pages.length]);
+  const handleMove = (clientX) => {
+    if (!isDragging) return;
+    
+    const deltaX = clientX - startX;
+    
+    // 드래그 제한
+    if (currentPage === 0 && deltaX > 0) return; // 첫 페이지에서 오른쪽으로 드래그 불가
+    if (currentPage === pages.length - 1 && deltaX < 0) return; // 마지막 페이지에서 왼쪽으로 드래그 불가
+    
+    setDragOffset(deltaX);
+    setCurrentX(clientX);
+  };
 
-  // 수동 페이지 변경
-  const goToPage = (index) => {
-    setCurrentPage(index);
+  const handleEnd = () => {
+    if (!isDragging) return;
+    
+    setIsDragging(false);
+    const deltaX = currentX - startX;
+    const threshold = 50; // 50px 이상 드래그해야 페이지 전환
+    
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX > 0 && currentPage > 0) {
+        // 오른쪽으로 드래그 - 이전 페이지
+        setCurrentPage(prev => prev - 1);
+      } else if (deltaX < 0 && currentPage < pages.length - 1) {
+        // 왼쪽으로 드래그 - 다음 페이지
+        setCurrentPage(prev => prev + 1);
+      }
+    }
+    
+    setDragOffset(0);
+  };
+
+  // 마우스 이벤트
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    handleStart(e.clientX);
+  };
+
+  const handleMouseMove = (e) => {
+    handleMove(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  const handleMouseLeave = () => {
+    handleEnd();
+  };
+
+  // 터치 이벤트
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    handleStart(touch.clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0];
+    handleMove(touch.clientX);
+  };
+
+  const handleTouchEnd = () => {
+    handleEnd();
   };
 
   return (
@@ -69,12 +136,22 @@ const Home = () => {
         <div className="page-indicator">{currentPage + 1}/{pages.length}</div>
         
         {/* 페이지뷰 컨테이너 */}
-        <div className="page-container">
+        <div 
+          className="page-container"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <div 
+            ref={pageWrapperRef}
             className="page-wrapper"
             style={{
-              transform: `translateX(-${currentPage * (100 / pages.length)}%)`,
-              transition: 'transform 0.5s ease-in-out'
+              transform: `translateX(calc(-${currentPage * (100 / pages.length)}% + ${dragOffset}px))`,
+              transition: isDragging ? 'none' : 'transform 0.3s ease-out'
             }}
           >
             {pages.map((page, index) => (
@@ -106,17 +183,6 @@ const Home = () => {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* 페이지 인디케이터 */}
-        <div className="page-indicators">
-          {pages.map((_, index) => (
-            <button
-              key={index}
-              className={`indicator ${index === currentPage ? 'active' : ''}`}
-              onClick={() => goToPage(index)}
-            />
-          ))}
         </div>
       </div>
 
