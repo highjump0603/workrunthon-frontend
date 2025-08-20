@@ -5,7 +5,6 @@
   padding: 0;
   background-color: #f8f9fa;
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Top Header Bar */
@@ -34,9 +33,10 @@
   background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
   margin: 15px 20px;
   border-radius: 16px;
-  padding: 25px 20px;
+  padding: 25px 20px 60px 20px;
   position: relative;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .page-indicator {
@@ -48,23 +48,56 @@
   background-color: rgba(255, 255, 255, 0.8);
   padding: 4px 8px;
   border-radius: 12px;
+  z-index: 10;
 }
 
-.promo-content {
+/* 페이지뷰 컨테이너 */
+.page-container {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+}
+
+.page-wrapper {
+  display: flex;
+  width: 300%; /* 3개 페이지의 총 너비 */
+  height: 100%;
+}
+
+.page {
+  flex: 0 0 33.333%; /* 각 페이지가 1/3 너비 차지 */
+  width: 33.333%;
+  height: 100%;
+  min-width: 0; /* flex 아이템이 부모를 넘지 않도록 */
+}
+
+.page-content {
   text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 10px;
+  box-sizing: border-box;
+  overflow: hidden; /* 내용이 넘치지 않도록 */
 }
 
-.promo-content h2 {
-  font-size: 20px;
+.page-content h2 {
+  font-size: 18px;
   font-weight: 700;
   color: #000;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
+  line-height: 1.2;
+  word-wrap: break-word;
 }
 
-.promo-content p {
-  font-size: 14px;
+.page-content p {
+  font-size: 13px;
   color: #000;
-  margin: 0 0 15px 0;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+  word-wrap: break-word;
 }
 
 .highlight {
@@ -72,34 +105,90 @@
   font-weight: 600;
 }
 
-.promo-content h3 {
-  font-size: 16px;
+.page-content h3 {
+  font-size: 15px;
   font-weight: 600;
   color: #000;
-  margin: 0 0 20px 0;
+  margin: 0 0 15px 0;
+  line-height: 1.2;
+  word-wrap: break-word;
 }
 
-.sushi-image {
-  font-size: 60px;
-  margin: 20px 0;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+/* 음식 이미지 스타일 */
+.food-image {
+  position: relative;
+  margin: 15px 0;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.food-image img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.fallback-emoji {
+  font-size: 50px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
 }
 
 .recommend-btn {
   background-color: #000;
   color: white;
   border: none;
-  padding: 15px 30px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   width: 100%;
+  max-width: 200px;
   transition: background-color 0.2s;
+  flex-shrink: 0;
+  margin: 0 auto;
 }
 
 .recommend-btn:hover {
   background-color: #333;
+}
+
+/* 페이지 인디케이터 */
+.page-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background-color: #000;
+  transform: scale(1.2);
+}
+
+.indicator:hover {
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 /* Section Styles */
@@ -245,7 +334,7 @@
   
   .promo-banner {
     margin: 10px 15px;
-    padding: 20px 15px;
+    padding: 20px 15px 60px 15px;
   }
   
   .section {
@@ -255,6 +344,10 @@
   
   .card {
     padding: 15px;
+  }
+  
+  .page-container {
+    height: 260px;
   }
 }
 
@@ -274,4 +367,27 @@
 
 .recommend-btn:active {
   transform: scale(0.98);
+}
+
+/* 페이지 전환 애니메이션 */
+@keyframes pageInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pageOutToLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
 }

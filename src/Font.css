@@ -1,0 +1,84 @@
+/* Font.css - 폰트 관리 파일 */
+
+/* 프리텐다드 폰트 import */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+/* 프리텐다드 폰트 패밀리 정의 */
+:root {
+  --font-pretendard: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* 기본 폰트 설정 */
+body {
+  font-family: var(--font-pretendard);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 프리텐다드 폰트 가중치별 클래스 */
+.font-thin {
+  font-weight: 100;
+}
+
+.font-extra-light {
+  font-weight: 200;
+}
+
+.font-light {
+  font-weight: 300;
+}
+
+.font-regular {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semi-bold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-extra-bold {
+  font-weight: 800;
+}
+
+.font-black {
+  font-weight: 900;
+}
+
+/* 제목용 폰트 */
+.font-heading {
+  font-family: var(--font-pretendard);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* 본문용 폰트 */
+.font-body {
+  font-family: var(--font-pretendard);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* 버튼용 폰트 */
+.font-button {
+  font-family: var(--font-pretendard);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* 캡션용 폰트 */
+.font-caption {
+  font-family: var(--font-pretendard);
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
