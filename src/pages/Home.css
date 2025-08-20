@@ -107,7 +107,7 @@
 }
 
 .highlight {
-  color: #28a745;
+  color: #26CA1D;
   font-weight: 600;
 }
 
@@ -165,10 +165,8 @@
 
 /* Section Styles */
 .section {
-  margin: 20px;
+  margin: 10px;
   background-color: white;
-  border-radius: 16px;
-  padding: 20px;
 }
 
 .home-section-title{
@@ -176,23 +174,23 @@
   width: '100%';
   text-align: left;
   font-size: 24px;
-  padding-left: 20px;
+  padding-left: 10px;
 }
 
 .home-section-subtitle {
-  color: #6c757d;
+  color: #000000;
   color: '#000';
   width: '100%';
   text-align: left;
   font-size: 14px;
-  padding-left: 20px;
+  padding-left: 10px;
 }
 
 /* Card Styles */
 .card {
   margin-top: 10px;
   background-color: white;
-  border: 1px solid #e9ecef;
+  border: 1px solid #00000025;
   border-radius: 12px;
   padding: 20px;
   position: relative;
@@ -212,7 +210,7 @@
 
 .today-label {
   color: #dc3545;
-  font-weight: 600;
+  margin-right: 5px;
 }
 
 .d-day {
@@ -225,34 +223,45 @@
 
 .spending-list {
   margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
 }
 
 .spending-item {
+  flex: 1;
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   margin-right: 12px;
+  flex-shrink: 0;
 }
 
 .dot.green {
-  background-color: #28a745;
+  background-color: #26CA1D;
 }
+
+
 
 .spending-text {
   font-size: 14px;
   color: #000;
+  flex: 1;
+  text-align: left;
+}
+
+.spending-text-green{
+  color: #26CA1D;
 }
 
 .card-arrow {
   position: absolute;
   right: 20px;
-  top: 50%;
+  top: 65%;
   transform: translateY(-50%);
   font-size: 18px;
   color: #6c757d;
@@ -267,14 +276,13 @@
 }
 
 .current-amount {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 20px;
   color: #000;
 }
 
 .total-budget {
-  font-size: 16px;
-  color: #6c757d;
+  font-size: 20px;
+  color: #C4C4C4;
 }
 
 .progress-bar {
@@ -282,12 +290,13 @@
   height: 8px;
   background-color: #e9ecef;
   border-radius: 4px;
+  margin-bottom: 20px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #000 0%, #28a745 100%);
+  background: linear-gradient(90deg, #000 0%, #26CA1D 100%);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -309,7 +318,6 @@
   
   .section {
     margin: 15px;
-    padding: 15px;
   }
   
   .card {
@@ -319,16 +327,6 @@
   .page-container {
     height: 260px;
   }
-}
-
-/* Animation */
-.card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .recommend-btn {

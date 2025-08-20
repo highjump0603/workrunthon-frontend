@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import './Home.css';
+import ArrowRightIcon from '../assets/arrow.svg';
 
 const Home = () => {
   const [currentBalance] = useState(150000);
@@ -194,22 +195,24 @@ const Home = () => {
         </p>
         <div className="card">
           <div className="card-header">
-            <div className="date-info">
-              <span className="today-label">오늘</span> 8월 20일(수)
+            <div className="date-info font-bold">
+              <span className="today-label font-bold">오늘</span> 8월 20일(수)
             </div>
-            <div className="d-day">
-              D-DAY 📅
+            <div className="d-day font-bold">
+              D-DAY 💵
             </div>
           </div>
           <div className="spending-list">
             {todaySpending.map((item, index) => (
               <div key={index} className="spending-item">
                 <span className="dot green"></span>
-                <span className="spending-text">{item.time} - {item.amount.toLocaleString()}원</span>
+                <span className="spending-text font-bold">{item.time} - <span className="font-bold spending-text-green">{item.amount.toLocaleString()}원</span></span>
               </div>
             ))}
           </div>
-          <div className="card-arrow">→</div>
+          <div className="card-arrow">
+            <img src={ArrowRightIcon} alt="arrow" />
+          </div>
         </div>
       </div>
           
@@ -217,8 +220,8 @@ const Home = () => {
         <h2 className="home-section-title font-bold">my wallet</h2>
         <div className="card">
           <div className="wallet-amounts">
-            <div className="current-amount">₩{currentBalance.toLocaleString()}</div>
-            <div className="total-budget">₩ {totalBudget.toLocaleString()}</div>
+            <div className="current-amount font-bold">₩{currentBalance.toLocaleString()}</div>
+            <div className="total-budget font-bold">₩ {totalBudget.toLocaleString()}</div>
           </div>
           <div className="progress-bar">
             <div 
