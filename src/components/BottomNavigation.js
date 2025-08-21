@@ -1,40 +1,65 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './BottomNavigation.css';
+import homeIcon from '../assets/home.svg';
+import pinIcon from '../assets/pin.svg';
+import planIcon from '../assets/plan.svg';
+import ledgerIcon from '../assets/ledger.svg';
+import myIcon from '../assets/my.svg';
 
-const BottomNavigation = () => {
-  const [activeTab, setActiveTab] = useState('home');
 
+const BottomNavigation = ({ activeTab = 'home' }) => {
+  const navigate = useNavigate();
+
+  // 각 탭에 사용할 SVG 아이콘 매핑
   const navItems = [
     {
       id: 'home',
       label: '홈',
-      icon: '👤',
-      isActive: true
+      icon: homeIcon
     },
     {
       id: 'explore',
       label: '탐색 탭',
-      icon: '🔬'
+      icon: pinIcon
     },
     {
       id: 'plan',
       label: '플랜',
-      icon: null // 아이콘 없음
+      icon: planIcon
     },
     {
       id: 'ledger',
       label: '가계부',
-      icon: '☰'
+      icon: ledgerIcon
     },
     {
       id: 'mypage',
       label: '마이페이지',
-      icon: '⚙️'
+      icon: myIcon
     }
   ];
 
   const handleTabClick = (tabId) => {
-    setActiveTab(tabId);
+    switch (tabId) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'explore':
+        navigate('/explore');
+        break;
+      case 'plan':
+        navigate('/plan');
+        break;
+      case 'ledger':
+        navigate('/ledger');
+        break;
+      case 'mypage':
+        navigate('/mypage');
+        break;
+      default:
+        navigate('/');
+    }
   };
 
   return (
@@ -45,12 +70,13 @@ const BottomNavigation = () => {
           className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
           onClick={() => handleTabClick(item.id)}
         >
-          {item.icon && (
-            <div className="nav-icon">
-              {item.icon}
-            </div>
-          )}
-          <span className="nav-label">{item.label}</span>
+          <div className="nav-icon">
+            <img 
+              src={item.icon} 
+              alt={item.label}
+            />
+          </div>
+          <span className="nav-label font-regular">{item.label}</span>
         </div>
       ))}
     </div>

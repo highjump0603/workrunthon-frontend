@@ -32,3 +32,13 @@ body {
   margin: 0 auto;
   padding: 0 20px;
 }
+
+/* 스크롤바 숨김 */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

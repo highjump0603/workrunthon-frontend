@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import ArrowRightIcon from '../assets/arrow.svg';
 import BottomNavigation from '../components/BottomNavigation';
 
 const Home = () => {
+  const navigate = useNavigate();
   const [currentBalance] = useState(150000);
   const [totalBudget] = useState(500000);
   const [todaySpending] = useState([
@@ -211,7 +213,7 @@ const Home = () => {
               </div>
             ))}
           </div>
-          <div className="card-arrow">
+          <div className="card-arrow" onClick={() => navigate('/plan')}>
             <img src={ArrowRightIcon} alt="arrow" />
           </div>
         </div>
@@ -235,7 +237,7 @@ const Home = () => {
 
       <div style={{height: '100px'}}></div>
 
-      <BottomNavigation />
+      <BottomNavigation activeTab="home" />
     </div>
   );
 };

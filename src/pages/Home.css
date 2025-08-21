@@ -189,7 +189,7 @@
 .card {
   margin-top: 10px;
   background-color: white;
-  border: 1px solid #00000025;
+  border: 2px solid #00000040;
   border-radius: 12px;
   padding: 20px;
   position: relative;
@@ -208,7 +208,7 @@
 }
 
 .today-label {
-  color: #dc3545;
+  color: #FF0303;
   margin-right: 5px;
 }
 
@@ -262,8 +262,7 @@
   right: 20px;
   top: 65%;
   transform: translateY(-50%);
-  font-size: 18px;
-  color: #6c757d;
+  cursor: pointer;
 }
 
 /* Wallet Styles */
@@ -357,4 +356,14 @@
     opacity: 0;
     transform: translateX(-100%);
   }
+}
+
+/* 스크롤바 숨김 */
+.home-container::-webkit-scrollbar {
+  display: none;
+}
+
+.home-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
