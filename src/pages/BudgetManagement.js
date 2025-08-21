@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './BudgetManagement.css';
-import BottomNavigation from '../components/BottomNavigation';
 
 const BudgetManagement = () => {
   const navigate = useNavigate();
@@ -95,9 +94,6 @@ const BudgetManagement = () => {
           저장
         </button>
       </div>
-
-      <div style={{height: '100px'}}></div>
-      <BottomNavigation activeTab="mypage" />
     </div>
   );
 };

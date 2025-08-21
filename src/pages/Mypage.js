@@ -18,6 +18,14 @@ const Mypage = () => {
     navigate('/budget-management');
   };
 
+  const handleRecentlyViewedClick = () => {
+    navigate('/recently-viewed');
+  };
+
+  const handleVisitHistoryClick = () => {
+    navigate('/visit-history');
+  };
+
   return (
     <div className="mypage-container">
       {/* 상단 네비게이션 */}
@@ -57,12 +65,12 @@ const Mypage = () => {
             <span>내 리뷰</span>
             <span className="arrow">→</span>
           </div>
-          <div className="menu-item">
+          <div className="menu-item" onClick={handleRecentlyViewedClick}>
             <span>최근 본 식당</span>
             <span className="arrow">→</span>
           </div>
-          <div className="menu-item">
-            <span>방문 기록</span>
+          <div className="menu-item" onClick={handleVisitHistoryClick}>
+            <span>방문 내역</span>
             <span className="arrow">→</span>
           </div>
           <div className="menu-item">

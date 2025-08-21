@@ -8,6 +8,8 @@ import Mypage from './pages/Mypage';
 import AllergySettings from './pages/AllergySettings';
 import FoodPreferences from './pages/FoodPreferences';
 import BudgetManagement from './pages/BudgetManagement';
+import RecentlyViewed from './pages/RecentlyViewed';
+import VisitHistory from './pages/VisitHistory';
 import './Font.css';
 import './App.css';
 
@@ -25,6 +27,8 @@ function App() {
           <Route path="/allergy-settings" element={<AllergySettings />} />
           <Route path="/food-preferences" element={<FoodPreferences />} />
           <Route path="/budget-management" element={<BudgetManagement />} />
+          <Route path="/recently-viewed" element={<RecentlyViewed />} />
+          <Route path="/visit-history" element={<VisitHistory />} />
         </Routes>
         </main>
       </div>

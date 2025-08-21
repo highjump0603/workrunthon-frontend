@@ -1,0 +1,228 @@
+.visit-history-container {
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: #fff;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* 헤더 */
+.visit-history-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #000;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 16px;
+}
+
+.visit-history-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+/* 검색 섹션 */
+.search-section {
+  margin-bottom: 24px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+  font-size: 14px;
+  color: #000;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+/* 필터 및 정렬 섹션 */
+.filter-sort-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.period-filter {
+  display: flex;
+  gap: 8px;
+}
+
+.period-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background-color: #f3f4f6;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.period-button.active {
+  background-color: white;
+  color: #000;
+}
+
+.sort-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background-color: #f3f4f6;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 식당 목록 */
+.restaurant-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.restaurant-item {
+  position: relative;
+}
+
+.restaurant-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 0;
+  cursor: pointer;
+}
+
+.restaurant-left {
+  flex: 1;
+}
+
+.restaurant-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.restaurant-rating {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.star {
+  font-size: 16px;
+}
+
+.star.filled {
+  color: #26CA1D;
+}
+
+.star.empty {
+  color: #e5e7eb;
+}
+
+.restaurant-price {
+  font-size: 14px;
+  color: #666;
+}
+
+.restaurant-right {
+  text-align: right;
+}
+
+.visit-date {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.restaurant-distance {
+  font-size: 14px;
+  color: #666;
+}
+
+.divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .visit-history-container {
+    padding: 16px;
+  }
+  
+  .visit-history-header {
+    margin-bottom: 20px;
+  }
+  
+  .visit-history-title {
+    font-size: 22px;
+  }
+  
+  .search-section {
+    margin-bottom: 20px;
+  }
+  
+  .search-input {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .filter-sort-section {
+    margin-bottom: 20px;
+  }
+  
+  .period-button,
+  .sort-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .restaurant-info {
+    padding: 14px 0;
+  }
+  
+  .restaurant-name {
+    font-size: 15px;
+  }
+  
+  .star {
+    font-size: 15px;
+  }
+  
+  .restaurant-price,
+  .visit-date,
+  .restaurant-distance {
+    font-size: 13px;
+  }
+}
+
+/* 스크롤바 숨김 */
+.visit-history-container::-webkit-scrollbar {
+  display: none;
+}
+
+.visit-history-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
