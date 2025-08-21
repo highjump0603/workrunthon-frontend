@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Plan from './pages/Plan';
-import Explore from './pages/Home';
+import Explore from './pages/Explore';
 import Ledger from './pages/Home';
 import Mypage from './pages/Home';
 import './Font.css';
