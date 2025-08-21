@@ -78,7 +78,7 @@ const RecentlyViewed = () => {
         <button className="sort-button">
           {sortBy}
         </button>
-      </div>image.png
+      </div>
 
       {/* 식당 목록 */}
       <div className="restaurant-list">
