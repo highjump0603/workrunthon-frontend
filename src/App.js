@@ -12,6 +12,9 @@ import RecentlyViewed from './pages/RecentlyViewed';
 import VisitHistory from './pages/VisitHistory';
 import MyReviews from './pages/MyReviews';
 import AddressManagement from './pages/AddressManagement';
+import SavedRestaurants from './pages/SavedRestaurants';
+import ProfileEdit from './pages/ProfileEdit';
+import Settings from './pages/Settings';
 import './Font.css';
 import './App.css';
 
@@ -33,6 +36,9 @@ function App() {
           <Route path="/visit-history" element={<VisitHistory />} />
           <Route path="/my-reviews" element={<MyReviews />} />
           <Route path="/address-management" element={<AddressManagement />} />
+          <Route path="/saved-restaurants" element={<SavedRestaurants />} />
+          <Route path="/profile-edit" element={<ProfileEdit />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
         </main>
       </div>

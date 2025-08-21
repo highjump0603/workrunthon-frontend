@@ -46,7 +46,7 @@ const BudgetManagement = () => {
           >
             -
           </button>
-          <div className="budget-amount">₩ {currentBudget.toLocaleString()}</div>
+          <div className="manage-budget-amount">₩ {currentBudget.toLocaleString()}</div>
           <button 
             className="budget-button plus-button" 
             onClick={() => handleBudgetChange(10000)}

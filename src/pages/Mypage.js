@@ -35,6 +35,18 @@ const Mypage = () => {
     navigate('/address-management');
   };
 
+  const handleProfileEditClick = () => {
+    navigate('/profile-edit');
+  };
+
+  const handleSettingsClick = () => {
+    navigate('/settings');
+  };
+
+  const handleSavedRestaurantsClick = () => {
+    navigate('/saved-restaurants');
+  };
+
   return (
     <div className="mypage-container">
       {/* 상단 네비게이션 */}
@@ -82,8 +94,8 @@ const Mypage = () => {
             <span>방문 내역</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
-          <div className="menu-item">
-            <span>저장됨</span>
+          <div className="menu-item" onClick={handleSavedRestaurantsClick}>
+            <span>저장한 가게</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
           <div className="menu-item" onClick={handleAllergyClick}>
@@ -101,7 +113,7 @@ const Mypage = () => {
       <div className="account-section">
         <h2 className="section-title">나의 계정 정보</h2>
         <div className="menu-list">
-          <div className="menu-item">
+          <div className="menu-item" onClick={handleProfileEditClick}>
             <span>회원 정보 수정</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
@@ -109,7 +121,7 @@ const Mypage = () => {
             <span>주소 관리</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
-          <div className="menu-item">
+          <div className="menu-item" onClick={handleSettingsClick}>
             <span>설정</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>

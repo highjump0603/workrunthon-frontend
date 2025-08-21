@@ -53,7 +53,7 @@ const Explore = () => {
   useEffect(() => {
     if (viewMode === 'map') {
       const script = document.createElement('script');
-      script.src = 'https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=YOUR_CLIENT_ID';
+      script.src = 'https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qjeimluyjg';
       script.async = true;
       script.onload = initMap;
       script.onerror = () => {
