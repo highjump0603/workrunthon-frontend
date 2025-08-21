@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './FoodPreferences.css';
 import BottomNavigation from '../components/BottomNavigation';
+import LeftArrowIcon from '../assets/left_arrow.svg';
 
 const FoodPreferences = () => {
   const navigate = useNavigate();
@@ -34,9 +35,14 @@ const FoodPreferences = () => {
     <div className="food-preferences-container">
       {/* 헤더 */}
       <div className="food-preferences-header">
+        <button className="back-button" onClick={() => navigate('/mypage')}>
+          <img src={LeftArrowIcon} alt="back" className="back-arrow" />
+        </button>
         <h1 className="food-preferences-title">비선호 음식</h1>
-        <p className="food-preferences-description">선호하지 않는 음식을 선택해주세요.</p>
       </div>
+      
+      {/* 설명 */}
+      <p className="food-preferences-description">선호하지 않는 음식을 선택해주세요.</p>
 
       {/* 비선호 음식 체크박스 그리드 */}
       <div className="food-preferences-checkbox-grid">
@@ -115,8 +121,8 @@ const FoodPreferences = () => {
       </div>
 
       {/* 저장 버튼 */}
-      <div className="save-button-container">
-        <button className="save-button" onClick={handleSave}>
+      <div className="save-button-container2">
+        <button className="save-button2" onClick={handleSave}>
           저장
         </button>
       </div>

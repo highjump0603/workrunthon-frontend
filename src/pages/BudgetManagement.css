@@ -8,7 +8,26 @@
 
 /* 헤더 */
 .budget-header {
+  display: flex;
+  align-items: center;
   margin-bottom: 32px;
+  position: relative;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-arrow {
+  width: 24px;
+  height: 24px;
 }
 
 .budget-title {
@@ -16,6 +35,10 @@
   font-weight: bold;
   color: #000;
   margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
 }
 
 /* 예산 조정 섹션 */

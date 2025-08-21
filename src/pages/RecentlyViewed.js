@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RecentlyViewed.css';
 import BottomNavigation from '../components/BottomNavigation';
+import ArrowRightIcon from '../assets/arrow.svg';
+import LeftArrowIcon from '../assets/left_arrow.svg';
 
 const RecentlyViewed = () => {
   const navigate = useNavigate();
@@ -52,7 +54,7 @@ const RecentlyViewed = () => {
       {/* 헤더 */}
       <div className="recently-viewed-header">
         <button className="back-button" onClick={() => navigate('/mypage')}>
-          ←
+          <img src={LeftArrowIcon} alt="back" className="back-arrow" />
         </button>
         <h1 className="recently-viewed-title">최근 본 식당</h1>
       </div>
@@ -76,7 +78,7 @@ const RecentlyViewed = () => {
         <button className="sort-button">
           {sortBy}
         </button>
-      </div>
+      </div>image.png
 
       {/* 식당 목록 */}
       <div className="restaurant-list">
@@ -111,7 +113,7 @@ const RecentlyViewed = () => {
               </button>
             </div>
             
-            <div className="restaurant-arrow">→</div>
+            <img src={ArrowRightIcon} alt="arrow" className="restaurant-arrow" />
           </div>
         ))}
       </div>

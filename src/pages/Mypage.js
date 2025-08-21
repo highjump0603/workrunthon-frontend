@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Mypage.css';
 import BottomNavigation from '../components/BottomNavigation';
+import ArrowRightIcon from '../assets/arrow.svg';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -24,6 +25,10 @@ const Mypage = () => {
 
   const handleVisitHistoryClick = () => {
     navigate('/visit-history');
+  };
+
+  const handleMyReviewsClick = () => {
+    navigate('/my-reviews');
   };
 
   return (
@@ -59,31 +64,31 @@ const Mypage = () => {
         <div className="menu-list">
           <div className="menu-item" onClick={handleBudgetClick}>
             <span>내 예산</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
-          <div className="menu-item">
+          <div className="menu-item" onClick={handleMyReviewsClick}>
             <span>내 리뷰</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
           <div className="menu-item" onClick={handleRecentlyViewedClick}>
             <span>최근 본 식당</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
           <div className="menu-item" onClick={handleVisitHistoryClick}>
             <span>방문 내역</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
           <div className="menu-item">
             <span>저장됨</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
           <div className="menu-item" onClick={handleAllergyClick}>
             <span>알레르기 설정</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
           <div className="menu-item" onClick={handleFoodPreferencesClick}>
             <span>비선호 음식 설정</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
         </div>
       </div>
@@ -94,20 +99,18 @@ const Mypage = () => {
         <div className="menu-list">
           <div className="menu-item">
             <span>회원 정보 수정</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
           <div className="menu-item">
             <span>주소 관리</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
           <div className="menu-item">
             <span>설정</span>
-            <span className="arrow">→</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
         </div>
       </div>
-
-
 
       <div style={{height: '100px'}}></div>
       <BottomNavigation activeTab="mypage" />

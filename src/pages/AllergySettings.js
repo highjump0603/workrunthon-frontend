@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AllergySettings.css';
+import LeftArrowIcon from '../assets/left_arrow.svg';
 
 const AllergySettings = () => {
   const navigate = useNavigate();
@@ -39,9 +40,14 @@ const AllergySettings = () => {
     <div className="allergy-settings-container">
       {/* 헤더 */}
       <div className="allergy-header">
+        <button className="back-button" onClick={() => navigate('/mypage')}>
+          <img src={LeftArrowIcon} alt="back" className="back-arrow" />
+        </button>
         <h1 className="allergy-title">알레르기 선택</h1>
-        <p className="allergy-description">선택 할 수 없는 음식 재료를 선택해주세요.</p>
       </div>
+      
+      {/* 설명 */}
+      <p className="allergy-description">선택 할 수 없는 음식 재료를 선택해주세요.</p>
 
       {/* 알레르기 체크박스 그리드 */}
       <div className="allergy-checkbox-grid">
@@ -174,8 +180,8 @@ const AllergySettings = () => {
       </div>
 
       {/* 저장 버튼 */}
-      <div className="save-button-container">
-        <button className="save-button" onClick={handleSave}>
+      <div className="save-button-container2">
+        <button className="save-button2" onClick={handleSave}>
           저장
         </button>
       </div>

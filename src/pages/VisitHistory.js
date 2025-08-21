@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './VisitHistory.css';
 import BottomNavigation from '../components/BottomNavigation';
+import LeftArrowIcon from '../assets/left_arrow.svg';
 
 const VisitHistory = () => {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ const VisitHistory = () => {
       {/* 헤더 */}
       <div className="visit-history-header">
         <button className="back-button" onClick={() => navigate('/mypage')}>
-          ←
+          <img src={LeftArrowIcon} alt="back" className="back-arrow" />
         </button>
         <h1 className="visit-history-title">방문 내역</h1>
       </div>

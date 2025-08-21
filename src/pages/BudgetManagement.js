@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './BudgetManagement.css';
+import LeftArrowIcon from '../assets/left_arrow.svg';
 
 const BudgetManagement = () => {
   const navigate = useNavigate();
@@ -30,6 +31,9 @@ const BudgetManagement = () => {
     <div className="budget-management-container">
       {/* 헤더 */}
       <div className="budget-header">
+        <button className="back-button" onClick={() => navigate('/mypage')}>
+          <img src={LeftArrowIcon} alt="back" className="back-arrow" />
+        </button>
         <h1 className="budget-title">내 예산</h1>
       </div>
 
