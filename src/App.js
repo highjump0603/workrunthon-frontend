@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Plan from './pages/Plan';
 import Explore from './pages/Explore';
-import Ledger from './pages/Home';
+import Ledger from './pages/Ledger';
 import Mypage from './pages/Mypage';
 import './Font.css';
 import './App.css';

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Plan.css';
 import BottomNavigation from '../components/BottomNavigation';
+import ArrowRightIcon from '../assets/arrow.svg';
 
 const Plan = () => {
   const [currentMonth, setCurrentMonth] = useState(8);
@@ -9,6 +10,7 @@ const Plan = () => {
   const [remainingBudget] = useState(350000);
   const [aiReallocation, setAiReallocation] = useState(true);
   const [paydayApply, setPaydayApply] = useState(true);
+  const [weatherMenuRecommendation, setWeatherMenuRecommendation] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showExpensePopup, setShowExpensePopup] = useState(false);
   const [showLunchPopup, setShowLunchPopup] = useState(false);
@@ -231,6 +233,18 @@ const Plan = () => {
             <span className="toggle-slider"></span>
           </label>
         </div>
+        
+        <div className="setting-item">
+          <span className="setting-label">비 오는 날 따뜻한 메뉴 추천</span>
+          <label className="toggle-switch">
+            <input 
+              type="checkbox" 
+              checked={weatherMenuRecommendation}
+              onChange={(e) => setWeatherMenuRecommendation(e.target.checked)}
+            />
+            <span className="toggle-slider"></span>
+          </label>
+        </div>
       </div>
 
       <div style={{height: '100px'}}></div>
@@ -244,7 +258,12 @@ const Plan = () => {
               <div className="expense-info">
                 <div className="expense-name">스시야</div>
                 <div className="expense-amount">-100,000 원</div>
-                <div className="expense-arrow">→</div>
+                                  <img 
+                    src={ArrowRightIcon} 
+                    alt="arrow" 
+                    className="expense-arrow"
+                    onClick={() => console.log('가게 상세 페이지로 이동')}
+                  />
               </div>
               <div className="expense-category">
                 <span className="category-label">항목</span>

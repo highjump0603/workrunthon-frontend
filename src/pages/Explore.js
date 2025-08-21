@@ -1,60 +1,116 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Explore.css';
 import BottomNavigation from '../components/BottomNavigation';
 
 const Explore = () => {
+  const [viewMode, setViewMode] = useState('list'); // 'map' 또는 'list'
   const mapRef = useRef(null);
 
-  useEffect(() => {
-    // 네이버 지도 API 스크립트 로드
-    const script = document.createElement('script');
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qjeimluyjg`;
-    script.async = true;
-    script.onload = initMap;
-    document.head.appendChild(script);
+  // 음식점 데이터
+  const restaurants = [
+    {
+      id: 1,
+      name: '안동국밥',
+      price: '10000원 이내',
+      distance: '1.1km',
+      rating: 4.5
+    },
+    {
+      id: 2,
+      name: '서울 식당',
+      price: '9000원 이내',
+      distance: '2.3km',
+      rating: 4.2
+    },
+    {
+      id: 3,
+      name: '김밥 천국',
+      price: '5000원 미만',
+      distance: '4.7km',
+      rating: 4.0
+    },
+    {
+      id: 4,
+      name: '이탈리안 비스트로',
+      price: '12000원 이내',
+      distance: '5.0km',
+      rating: 4.3
+    },
+    {
+      id: 5,
+      name: '고기 굽는 하루',
+      price: '삼겹살 1인분 13000원',
+      distance: '7.2km',
+      rating: 4.7
+    }
+  ];
 
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
+  const handleViewToggle = (mode) => {
+    setViewMode(mode);
+  };
+
+  // 네이버 지도 초기화
+  useEffect(() => {
+    if (viewMode === 'map') {
+      const script = document.createElement('script');
+      script.src = 'https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=YOUR_CLIENT_ID';
+      script.async = true;
+      script.onload = initMap;
+      script.onerror = () => {
+        console.error('Naver Maps API 로드 실패');
+      };
+      document.head.appendChild(script);
+
+      return () => {
+        if (document.head.contains(script)) {
+          document.head.removeChild(script);
+        }
+      };
+    }
+  }, [viewMode]);
 
   const initMap = () => {
     try {
-      console.log('지도 초기화 시작...');
-      console.log('window.naver:', window.naver);
-      console.log('mapRef.current:', mapRef.current);
+      console.log('네이버 지도 초기화 시작...');
       
-      if (window.naver && mapRef.current) {
-        console.log('네이버 지도 API 로드 완료, 지도 생성 중...');
-        
-        const map = new window.naver.maps.Map(mapRef.current, {
-          center: new window.naver.maps.LatLng(37.5665, 126.9780), // 서울시청
-          zoom: 15,
-          mapTypeControl: true,
-          mapTypeControlOptions: {
-            style: window.naver.maps.MapTypeControlStyle.DROPDOWN
-          }
-        });
-        
-        console.log('지도 생성 완료:', map);
+      if (!window.naver || !window.naver.maps) {
+        console.error('Naver Maps 객체를 찾을 수 없습니다');
+        return;
+      }
 
-      // 현재 위치 마커 (사용하지 않음 - 향후 기능 확장 시 활용)
-      // const currentLocationMarker = new window.naver.maps.Marker({
-      //   position: new window.naver.maps.LatLng(37.5665, 126.9780),
-      //   map: map,
-      //   title: '현재 위치'
-      // });
+      if (!mapRef.current) {
+        console.error('지도 컨테이너를 찾을 수 없습니다');
+        return;
+      }
 
-      // 주변 맛집 마커들 (예시)
-      const restaurants = [
-        { name: '피자헛 강남점', lat: 37.5665, lng: 126.9780, type: '피자' },
-        { name: '라멘집', lat: 37.5666, lng: 126.9781, type: '일식' },
-        { name: '스테이크하우스', lat: 37.5664, lng: 126.9779, type: '양식' }
+      console.log('네이버 지도 API 로드 완료, 지도 생성 중...');
+      
+      const map = new window.naver.maps.Map(mapRef.current, {
+        center: new window.naver.maps.LatLng(37.5665, 126.9780), // 서울시청
+        zoom: 15,
+        mapTypeControl: false,
+        scaleControl: false,
+        logoControl: false,
+        mapDataControl: false,
+        zoomControl: true,
+        minZoom: 10,
+        maxZoom: 20
+      });
+      
+      console.log('지도 생성 완료:', map);
+
+      // 음식점 마커들 추가
+      const restaurantMarkers = [
+        { name: '안동국밥', lat: 37.5665, lng: 126.9780, price: '10000원 이내' },
+        { name: '서울 식당', lat: 37.5666, lng: 126.9781, price: '9000원 이내' },
+        { name: '김밥 천국', lat: 37.5664, lng: 126.9779, price: '5000원 미만' },
+        { name: '이탈리안 비스트로', lat: 37.5667, lng: 126.9782, price: '12000원 이내' },
+        { name: '고기 굽는 하루', lat: 37.5663, lng: 126.9778, price: '삼겹살 1인분 13000원' }
       ];
 
-      restaurants.forEach((restaurant, index) => {
+      restaurantMarkers.forEach((restaurant, index) => {
         try {
-          console.log(`${index + 1}번째 맛집 마커 생성 중:`, restaurant.name);
+          console.log(`${index + 1}번째 음식점 마커 생성 중:`, restaurant.name);
           
           const marker = new window.naver.maps.Marker({
             position: new window.naver.maps.LatLng(restaurant.lat, restaurant.lng),
@@ -69,7 +125,7 @@ const Explore = () => {
             content: `
               <div style="padding: 10px; min-width: 200px;">
                 <h3 style="margin: 0 0 5px 0; font-size: 16px;">${restaurant.name}</h3>
-                <p style="margin: 0; color: #666;">${restaurant.type}</p>
+                <p style="margin: 0; color: #666;">${restaurant.price}</p>
                 <button onclick="alert('${restaurant.name} 상세정보')" style="margin-top: 10px; padding: 5px 10px; background: #26CA1D; color: white; border: none; border-radius: 5px; cursor: pointer;">상세보기</button>
               </div>
             `
@@ -93,91 +149,80 @@ const Explore = () => {
       });
 
       console.log('모든 마커 및 이벤트 설정 완료');
-    } else {
-      console.error('지도 초기화 실패: window.naver 또는 mapRef.current가 없음');
-      console.log('window.naver 존재 여부:', !!window.naver);
-      console.log('mapRef.current 존재 여부:', !!mapRef.current);
+    } catch (error) {
+      console.error('지도 초기화 중 오류 발생:', error);
     }
-  } catch (error) {
-    console.error('지도 초기화 중 오류 발생:', error);
-    console.error('오류 스택:', error.stack);
-  }
-};
+  };
 
   return (
     <div className="explore-container">
+      {/* 헤더 */}
       <div className="explore-header">
-        <h1>탐색</h1>
-        <p>주변 맛집과 서비스를 발견해보세요</p>
-      </div>
-      
-      <div className="search-section">
-        <input 
-          type="text" 
-          placeholder="검색어를 입력하세요..."
-          className="search-input"
-        />
-        <button className="search-button">검색</button>
-      </div>
-      
-      <div className="category-section">
-        <h2>카테고리</h2>
-        <div className="category-grid">
-          <div className="category-item">
-            <div className="category-icon">🍕</div>
-            <span>피자</span>
+        <h1 className="explore-title">탐색</h1>
+        
+        {/* 검색바 */}
+        <div className="search-section">
+          <div className="search-bar">
+            <span className="search-placeholder">음식, 식당 둘러보기</span>
           </div>
-          <div className="category-item">
-            <div className="category-icon">🍜</div>
-            <span>면류</span>
-          </div>
-          <div className="category-item">
-            <div className="category-icon">🍖</div>
-            <span>고기</span>
-          </div>
-          <div className="category-item">
-            <div className="category-icon">🍣</div>
-            <span>일식</span>
-          </div>
-          <div className="category-item">
-            <div className="category-icon">🍔</div>
-            <span>패스트푸드</span>
-          </div>
-          <div className="category-item">
-            <div className="category-icon">☕</div>
-            <span>카페</span>
-          </div>
+          <button className="filter-btn">필터</button>
+        </div>
+        
+        {/* 뷰 토글 버튼 */}
+        <div className="view-toggle">
+          <button 
+            className={`toggle-btn ${viewMode === 'map' ? 'active' : ''}`}
+            onClick={() => handleViewToggle('map')}
+          >
+            지도
+          </button>
+          <button 
+            className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+            onClick={() => handleViewToggle('list')}
+          >
+            목록
+          </button>
         </div>
       </div>
-      
-      <div className="map-section">
-        <h2>지도</h2>
-        <div className="map-container">
-          <div ref={mapRef} className="naver-map"></div>
+
+      {/* 지도 또는 목록 표시 */}
+      {viewMode === 'map' ? (
+        <div className="map-section">
+          <div className="map-container" ref={mapRef}></div>
         </div>
-      </div>
-      
-      <div className="trending-section">
-        <h2>인기 맛집</h2>
-        <div className="restaurant-list">
-          <div className="restaurant-item">
-            <div className="restaurant-image">🍕</div>
-            <div className="restaurant-info">
-              <h3>피자헛 강남점</h3>
-              <p>⭐ 4.5 (리뷰 128개)</p>
-              <p>📍 강남구 역삼동</p>
+      ) : (
+        <>
+          {/* 추천 배너 */}
+          <div className="recommendation-banner">
+            <div className="banner-content">
+              <p className="banner-text">
+                오늘 점심은 <strong>12,000원</strong> 이하의 한식을 먹는 것이 좋겠어요!
+              </p>
             </div>
           </div>
-          <div className="restaurant-item">
-            <div className="restaurant-image">🍜</div>
-            <div className="restaurant-info">
-              <h3>라멘집</h3>
-              <p>⭐ 4.3 (리뷰 95개)</p>
-              <p>📍 강남구 논현동</p>
-            </div>
+
+          {/* 음식점 목록 */}
+          <div className="restaurants-section">
+            {restaurants.map((restaurant) => (
+              <div key={restaurant.id} className="restaurant-item">
+                <div className="restaurant-image">
+                  {/* 플레이스홀더 이미지 */}
+                </div>
+                <div className="restaurant-info">
+                  <div className="restaurant-header">
+                    <h3 className="restaurant-name">{restaurant.name}</h3>
+                    <span className="star-icon">★</span>
+                  </div>
+                  <p className="restaurant-price">{restaurant.price}</p>
+                </div>
+                <div className="restaurant-distance">
+                  {restaurant.distance}
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       <div style={{height: '100px'}}></div>
       <BottomNavigation activeTab="explore" />

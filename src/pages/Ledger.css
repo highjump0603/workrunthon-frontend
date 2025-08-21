@@ -1,0 +1,228 @@
+.ledger-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  min-height: 100vh;
+}
+
+/* 페이지 제목 */
+.ledger-page-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+/* 예산 요약 섹션 */
+.ledger-budget-summary {
+  background-color: #f8f9fa;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ledger-budget-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ledger-budget-row:last-child {
+  margin-bottom: 0;
+}
+
+.ledger-budget-label {
+  font-size: 16px;
+  color: #000;
+  font-weight: 500;
+}
+
+.ledger-budget-amount {
+  font-size: 16px;
+  color: #000;
+  font-weight: 600;
+}
+
+.ledger-budget-remaining {
+  font-size: 20px;
+  color: #000;
+  font-weight: bold;
+}
+
+.ledger-budget-spent {
+  font-size: 16px;
+  color: #000;
+  font-weight: 600;
+}
+
+/* 진행률 바 */
+.ledger-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+
+.ledger-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* 내역 추가 버튼 */
+.ledger-add-details-btn {
+  width: 100%;
+  background-color: #f3f4f6;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: background-color 0.2s;
+}
+
+.ledger-add-details-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.ledger-add-details-btn:active {
+  background-color: #d1d5db;
+}
+
+/* 지출 내역 섹션 */
+.ledger-expenses-section {
+  margin-bottom: 24px;
+}
+
+.ledger-section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 16px;
+}
+
+.ledger-expenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ledger-expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ledger-expense-item:last-child {
+  border-bottom: none;
+}
+
+.ledger-expense-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ledger-expense-date {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.ledger-expense-restaurant {
+  font-size: 16px;
+  color: #000;
+  font-weight: 600;
+}
+
+.ledger-expense-menu {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+.ledger-expense-amount {
+  font-size: 16px;
+  color: #000;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .ledger-page {
+    padding: 16px;
+  }
+  
+  .ledger-page-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+  
+  .ledger-budget-summary {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .ledger-budget-row {
+    margin-bottom: 14px;
+  }
+  
+  .ledger-budget-label,
+  .ledger-budget-amount,
+  .ledger-budget-spent {
+    font-size: 15px;
+  }
+  
+  .ledger-budget-remaining {
+    font-size: 18px;
+  }
+  
+  .ledger-add-details-btn {
+    padding: 14px;
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .ledger-section-title {
+    font-size: 17px;
+    margin-bottom: 14px;
+  }
+  
+  .ledger-expense-item {
+    padding: 14px 0;
+  }
+  
+  .ledger-expense-restaurant {
+    font-size: 15px;
+  }
+  
+  .ledger-expense-amount {
+    font-size: 15px;
+  }
+  
+
+}
+
+/* 스크롤바 숨김 */
+.ledger-page::-webkit-scrollbar {
+  display: none;
+}
+
+.ledger-page {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
