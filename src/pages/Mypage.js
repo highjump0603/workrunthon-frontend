@@ -14,6 +14,10 @@ const Mypage = () => {
     navigate('/food-preferences');
   };
 
+  const handleBudgetClick = () => {
+    navigate('/budget-management');
+  };
+
   return (
     <div className="mypage-container">
       {/* 상단 네비게이션 */}
@@ -45,7 +49,7 @@ const Mypage = () => {
       <div className="info-section">
         <h2 className="section-title font-bold">나의 정보</h2>
         <div className="menu-list">
-          <div className="menu-item">
+          <div className="menu-item" onClick={handleBudgetClick}>
             <span>내 예산</span>
             <span className="arrow">→</span>
           </div>

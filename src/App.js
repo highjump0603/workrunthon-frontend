@@ -7,6 +7,7 @@ import Ledger from './pages/Ledger';
 import Mypage from './pages/Mypage';
 import AllergySettings from './pages/AllergySettings';
 import FoodPreferences from './pages/FoodPreferences';
+import BudgetManagement from './pages/BudgetManagement';
 import './Font.css';
 import './App.css';
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/allergy-settings" element={<AllergySettings />} />
           <Route path="/food-preferences" element={<FoodPreferences />} />
+          <Route path="/budget-management" element={<BudgetManagement />} />
         </Routes>
         </main>
       </div>
