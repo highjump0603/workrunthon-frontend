@@ -218,6 +218,177 @@ input:checked + .toggle-slider:before {
   transform: translateX(26px);
 }
 
+/* 팝업 오버레이 */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 지출 상세 팝업 */
+.expense-popup {
+  background-color: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.popup-date {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 20px;
+}
+
+.expense-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.expense-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+.expense-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+}
+
+.expense-amount {
+  font-size: 16px;
+  color: #666;
+  margin-left: auto;
+  margin-right: 12px;
+}
+
+.expense-arrow {
+  font-size: 18px;
+  color: #000;
+  cursor: pointer;
+}
+
+.expense-category,
+.expense-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.expense-category:last-child,
+.expense-toggle:last-child {
+  border-bottom: none;
+}
+
+.category-label,
+.toggle-label {
+  font-size: 16px;
+  color: #000;
+}
+
+.category-value {
+  font-size: 16px;
+  color: #666;
+}
+
+/* 점심 후보 팝업 */
+.lunch-popup {
+  background-color: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.popup-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.popup-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.popup-budget {
+  font-size: 24px;
+  font-weight: bold;
+  color: #26CA1D;
+}
+
+.lunch-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.lunch-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.option-info {
+  flex: 1;
+}
+
+.restaurant-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.menu-item {
+  font-size: 14px;
+  color: #666;
+}
+
+.star-icon {
+  font-size: 20px;
+  color: #ddd;
+  margin-left: 12px;
+}
+
+.star-icon.active {
+  color: #26CA1D;
+}
+
+.popup-footer {
+  text-align: center;
+}
+
+.view-more {
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 480px) {
   .plan-container {
@@ -238,6 +409,12 @@ input:checked + .toggle-slider:before {
   
   .calendar-day {
     font-size: 12px;
+  }
+  
+  .expense-popup,
+  .lunch-popup {
+    padding: 20px;
+    margin: 16px;
   }
 }
 

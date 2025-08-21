@@ -9,6 +9,22 @@ const Plan = () => {
   const [remainingBudget] = useState(350000);
   const [aiReallocation, setAiReallocation] = useState(true);
   const [paydayApply, setPaydayApply] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showExpensePopup, setShowExpensePopup] = useState(false);
+  const [showLunchPopup, setShowLunchPopup] = useState(false);
+  const [expenseIncluded, setExpenseIncluded] = useState(true);
+
+  // 지출 합계 포함 토글 핸들러
+  const handleExpenseToggle = (checked) => {
+    setExpenseIncluded(checked);
+    console.log(`지출 합계 포함: ${checked ? '예' : '아니오'}`);
+    
+    if (checked) {
+      console.log('이 지출이 총 지출에 포함됩니다.');
+    } else {
+      console.log('이 지출이 총 지출에서 제외됩니다.');
+    }
+  };
 
   // 월별 데이터
   const months = [
@@ -52,6 +68,29 @@ const Plan = () => {
   };
 
   const calendarDays = getCalendarDays(currentYear, currentMonth);
+
+  // 날짜 클릭 핸들러
+  const handleDateClick = (day) => {
+    const today = new Date();
+    const clickedDate = day.date;
+    
+    if (clickedDate < today) {
+      // 이전 날짜: 지출 상세 팝업
+      setSelectedDate(day);
+      setShowExpensePopup(true);
+    } else {
+      // 미래 날짜: 점심 후보 팝업
+      setSelectedDate(day);
+      setShowLunchPopup(true);
+    }
+  };
+
+  // 팝업 닫기 핸들러
+  const closePopups = () => {
+    setShowExpensePopup(false);
+    setShowLunchPopup(false);
+    setSelectedDate(null);
+  };
 
   const handleMonthChange = (direction) => {
     if (direction === 'prev') {
@@ -147,6 +186,7 @@ const Plan = () => {
                 day.date.getDay() === 0 ? 'sunday' : 
                 day.date.getDay() === 6 ? 'saturday' : ''
               } ${day.isToday ? 'today' : ''}`}
+              onClick={() => handleDateClick(day)}
             >
               {day.date.getDate()}
             </div>
@@ -181,6 +221,75 @@ const Plan = () => {
       </div>
 
       <div style={{height: '100px'}}></div>
+
+      {/* 지출 상세 팝업 (이전 날짜) */}
+      {showExpensePopup && selectedDate && (
+        <div className="popup-overlay" onClick={closePopups}>
+          <div className="expense-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="popup-date">{selectedDate.date.getMonth() + 1}월 {selectedDate.date.getDate()}일 {['일', '월', '화', '수', '목', '금', '토'][selectedDate.date.getDay()]}요일</div>
+            <div className="expense-details">
+              <div className="expense-info">
+                <div className="expense-name">스시야</div>
+                <div className="expense-amount">-100,000 원</div>
+                <div className="expense-arrow">→</div>
+              </div>
+              <div className="expense-category">
+                <span className="category-label">항목</span>
+                <span className="category-value">오마카세</span>
+              </div>
+                             <div className="expense-toggle">
+                 <span className="toggle-label">지출 합계에 포함</span>
+                 <label className="toggle-switch">
+                   <input 
+                     type="checkbox" 
+                     checked={expenseIncluded}
+                     onChange={(e) => handleExpenseToggle(e.target.checked)}
+                   />
+                   <span className="toggle-slider"></span>
+                 </label>
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 점심 후보 팝업 (미래 날짜) */}
+      {showLunchPopup && selectedDate && (
+        <div className="popup-overlay" onClick={closePopups}>
+          <div className="lunch-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="popup-header">
+              <div className="popup-title">{selectedDate.date.getMonth() + 1}월 {selectedDate.date.getDate()}일 점심 후보</div>
+              <div className="popup-budget">10,500 원</div>
+            </div>
+            <div className="lunch-options">
+              <div className="lunch-option">
+                <div className="option-info">
+                  <div className="restaurant-name">김밥천국</div>
+                  <div className="menu-item">떡갈비 김밥</div>
+                </div>
+                <div className="star-icon active">★</div>
+              </div>
+              <div className="lunch-option">
+                <div className="option-info">
+                  <div className="restaurant-name">역전우동</div>
+                  <div className="menu-item">우동 + 돈까스</div>
+                </div>
+                <div className="star-icon">★</div>
+              </div>
+              <div className="lunch-option">
+                <div className="option-info">
+                  <div className="restaurant-name">맘스터치</div>
+                  <div className="menu-item">싸이버거 세트</div>
+                </div>
+                <div className="star-icon active">★</div>
+              </div>
+            </div>
+            <div className="popup-footer">
+              <span className="view-more">후보 더 보기</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNavigation activeTab="plan" />
     </div>
