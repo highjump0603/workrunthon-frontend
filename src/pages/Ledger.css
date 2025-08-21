@@ -17,7 +17,8 @@
 
 /* 예산 요약 섹션 */
 .ledger-budget-summary {
-  background-color: #f8f9fa;
+  margin-top: 20px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
@@ -71,7 +72,7 @@
 
 .ledger-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  background: #26CA1D;
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -79,24 +80,24 @@
 /* 내역 추가 버튼 */
 .ledger-add-details-btn {
   width: 100%;
-  background-color: #f3f4f6;
+  background-color: white;
   border: none;
   border-radius: 12px;
   padding: 16px;
   font-size: 16px;
-  color: #000;
-  font-weight: 500;
+  color: #26CA1D;
   cursor: pointer;
   margin-bottom: 24px;
   transition: background-color 0.2s;
+  border: 1px solid #C4C4C4;
 }
 
 .ledger-add-details-btn:hover {
-  background-color: #e5e7eb;
+  background-color: #f3f3f3;
 }
 
 .ledger-add-details-btn:active {
-  background-color: #d1d5db;
+  background-color: #ececec;
 }
 
 /* 지출 내역 섹션 */

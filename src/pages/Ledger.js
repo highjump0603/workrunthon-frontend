@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Ledger.css';
 import BottomNavigation from '../components/BottomNavigation';
 
 const Ledger = () => {
+  const navigate = useNavigate();
   const [monthlyBudget] = useState(300000);
   const [remainingAmount] = useState(162500);
   const [spentAmount] = useState(137500);
@@ -40,17 +42,13 @@ const Ledger = () => {
   ];
 
   const handleAddDetails = () => {
-    console.log('내역 추가 버튼 클릭됨');
-    // 여기에 내역 추가 로직 구현
+    navigate('/add-details');
   };
 
 
 
   return (
     <div className="ledger-page">
-      {/* 페이지 제목 */}
-      <div className="ledger-page-title">식비 플래너</div>
-
       {/* 예산 요약 섹션 */}
       <div className="ledger-budget-summary">
         <div className="ledger-budget-row">
@@ -78,7 +76,7 @@ const Ledger = () => {
       </div>
 
       {/* 내역 추가 버튼 */}
-      <button className="ledger-add-details-btn" onClick={handleAddDetails}>
+      <button className="ledger-add-details-btn font-bold" onClick={handleAddDetails}>
         내역 추가
       </button>
 

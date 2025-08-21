@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Plan from './pages/Plan';
 import Explore from './pages/Explore';
 import Ledger from './pages/Ledger';
+import AddDetails from './pages/AddDetails';
 import Mypage from './pages/Mypage';
 import AllergySettings from './pages/AllergySettings';
 import FoodPreferences from './pages/FoodPreferences';
@@ -32,6 +33,7 @@ function AppContent() {
           <Route path="/plan" element={<Plan />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/ledger" element={<Ledger />} />
+          <Route path="/add-details" element={<AddDetails />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/allergy-settings" element={<AllergySettings />} />
           <Route path="/food-preferences" element={<FoodPreferences />} />
