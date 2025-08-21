@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Plan from './pages/Plan';
 import Explore from './pages/Explore';
 import Ledger from './pages/Home';
-import Mypage from './pages/Home';
+import Mypage from './pages/Mypage';
 import './Font.css';
 import './App.css';
 
