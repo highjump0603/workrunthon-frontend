@@ -11,6 +11,7 @@ import BudgetManagement from './pages/BudgetManagement';
 import RecentlyViewed from './pages/RecentlyViewed';
 import VisitHistory from './pages/VisitHistory';
 import MyReviews from './pages/MyReviews';
+import AddressManagement from './pages/AddressManagement';
 import './Font.css';
 import './App.css';
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/recently-viewed" element={<RecentlyViewed />} />
           <Route path="/visit-history" element={<VisitHistory />} />
           <Route path="/my-reviews" element={<MyReviews />} />
+          <Route path="/address-management" element={<AddressManagement />} />
         </Routes>
         </main>
       </div>

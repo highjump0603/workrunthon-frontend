@@ -31,6 +31,10 @@ const Mypage = () => {
     navigate('/my-reviews');
   };
 
+  const handleAddressManagementClick = () => {
+    navigate('/address-management');
+  };
+
   return (
     <div className="mypage-container">
       {/* 상단 네비게이션 */}
@@ -101,7 +105,7 @@ const Mypage = () => {
             <span>회원 정보 수정</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
-          <div className="menu-item">
+          <div className="menu-item" onClick={handleAddressManagementClick}>
             <span>주소 관리</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
