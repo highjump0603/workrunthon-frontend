@@ -179,6 +179,7 @@ const Explore = () => {
         </div>
       </div>
 
+      <div style={{height: '100px'}}></div>
       <BottomNavigation activeTab="explore" />
     </div>
   );
