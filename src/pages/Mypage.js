@@ -1,8 +1,19 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Mypage.css';
 import BottomNavigation from '../components/BottomNavigation';
 
 const Mypage = () => {
+  const navigate = useNavigate();
+
+  const handleAllergyClick = () => {
+    navigate('/allergy-settings');
+  };
+
+  const handleFoodPreferencesClick = () => {
+    navigate('/food-preferences');
+  };
+
   return (
     <div className="mypage-container">
       {/* 상단 네비게이션 */}
@@ -54,6 +65,14 @@ const Mypage = () => {
             <span>저장됨</span>
             <span className="arrow">→</span>
           </div>
+          <div className="menu-item" onClick={handleAllergyClick}>
+            <span>알레르기 설정</span>
+            <span className="arrow">→</span>
+          </div>
+          <div className="menu-item" onClick={handleFoodPreferencesClick}>
+            <span>비선호 음식 설정</span>
+            <span className="arrow">→</span>
+          </div>
         </div>
       </div>
 
@@ -75,6 +94,8 @@ const Mypage = () => {
           </div>
         </div>
       </div>
+
+
 
       <div style={{height: '100px'}}></div>
       <BottomNavigation activeTab="mypage" />
