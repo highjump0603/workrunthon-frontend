@@ -77,15 +77,15 @@ const Plan = () => {
       <div className="budget-section">
         <div className="budget-info">
           <div className="budget-item">
-            <div className="budget-label">이번달 한도</div>
-            <div className="budget-amount">₩{monthlyLimit.toLocaleString()}</div>
+            <div className="budget-label font-bold">이번달 한도</div>
+            <div className="budget-amount font-semi-bold">₩{monthlyLimit.toLocaleString()}</div>
           </div>
           <div className="budget-item">
-            <div className="budget-label">남은 예산</div>
-            <div className="budget-amount">₩{remainingBudget.toLocaleString()}</div>
+            <div className="budget-label font-bold">남은 예산</div>
+            <div className="budget-amount font-semi-bold">₩{remainingBudget.toLocaleString()}</div>
           </div>
         </div>
-        <div className="budget-comparison">
+        <div className="budget-comparison font-regular">
           지난달 보다 <span className="highlight">13만원</span> 여유 있어요
         </div>
       </div>
