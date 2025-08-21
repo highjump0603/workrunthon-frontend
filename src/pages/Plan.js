@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Plan.css';
 import BottomNavigation from '../components/BottomNavigation';
 
@@ -13,6 +13,13 @@ const Plan = () => {
   const [showExpensePopup, setShowExpensePopup] = useState(false);
   const [showLunchPopup, setShowLunchPopup] = useState(false);
   const [expenseIncluded, setExpenseIncluded] = useState(true);
+
+  // 컴포넌트 언마운트 시 body 클래스 정리
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('popup-open');
+    };
+  }, []);
 
   // 지출 합계 포함 토글 핸들러
   const handleExpenseToggle = (checked) => {
@@ -78,10 +85,14 @@ const Plan = () => {
       // 이전 날짜: 지출 상세 팝업
       setSelectedDate(day);
       setShowExpensePopup(true);
+      // body 스크롤 방지
+      document.body.classList.add('popup-open');
     } else {
       // 미래 날짜: 점심 후보 팝업
       setSelectedDate(day);
       setShowLunchPopup(true);
+      // body 스크롤 방지
+      document.body.classList.add('popup-open');
     }
   };
 
@@ -90,6 +101,8 @@ const Plan = () => {
     setShowExpensePopup(false);
     setShowLunchPopup(false);
     setSelectedDate(null);
+    // body 스크롤 복원
+    document.body.classList.remove('popup-open');
   };
 
   const handleMonthChange = (direction) => {
