@@ -57,67 +57,67 @@ const ProfileEdit = () => {
     <div className="profile-edit-container">
       {/* 헤더 */}
       <div className="profile-edit-header">
-        <button className="back-button" onClick={() => navigate('/mypage')}>
-          <img src={LeftArrowIcon} alt="back" className="back-arrow" />
+        <button className="profile-edit-back-button" onClick={() => navigate('/mypage')}>
+          <img src={LeftArrowIcon} alt="back" className="profile-edit-back-arrow" />
         </button>
         <h1 className="profile-edit-title">회원 정보 수정</h1>
       </div>
 
       {/* 프로필 정보 */}
-      <div className="profile-section">
-        <h2 className="section-title">기본 정보</h2>
+      <div className="profile-edit-profile-section">
+        <h2 className="profile-edit-section-title">기본 정보</h2>
         
-        <div className="profile-item">
-          <label className="profile-label">이름</label>
+        <div className="profile-edit-profile-item">
+          <label className="profile-edit-profile-label">이름</label>
           <input
             type="text"
             value={profileData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             disabled={!isEditing}
-            className="profile-input"
+            className="profile-edit-profile-input"
           />
         </div>
 
-        <div className="profile-item">
-          <label className="profile-label">이메일</label>
+        <div className="profile-edit-profile-item">
+          <label className="profile-edit-profile-label">이메일</label>
           <input
             type="email"
             value={profileData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             disabled={!isEditing}
-            className="profile-input"
+            className="profile-edit-profile-input"
           />
         </div>
 
-        <div className="profile-item">
-          <label className="profile-label">전화번호</label>
+        <div className="profile-edit-profile-item">
+          <label className="profile-edit-profile-label">전화번호</label>
           <input
             type="tel"
             value={profileData.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
             disabled={!isEditing}
-            className="profile-input"
+            className="profile-edit-profile-input"
           />
         </div>
 
-        <div className="profile-item">
-          <label className="profile-label">생년월일</label>
+        <div className="profile-edit-profile-item">
+          <label className="profile-edit-profile-label">생년월일</label>
           <input
             type="date"
             value={profileData.birthDate}
             onChange={(e) => handleInputChange('birthDate', e.target.value)}
             disabled={!isEditing}
-            className="profile-input"
+            className="profile-edit-profile-input"
           />
         </div>
 
-        <div className="profile-item">
-          <label className="profile-label">성별</label>
+        <div className="profile-edit-profile-item">
+          <label className="profile-edit-profile-label">성별</label>
           <select
             value={profileData.gender}
             onChange={(e) => handleInputChange('gender', e.target.value)}
             disabled={!isEditing}
-            className="profile-select"
+            className="profile-edit-profile-select"
           >
             <option value="남성">남성</option>
             <option value="여성">여성</option>
@@ -127,38 +127,38 @@ const ProfileEdit = () => {
       </div>
 
       {/* 계정 보안 */}
-      <div className="security-section">
-        <h2 className="section-title">계정 보안</h2>
+      <div className="profile-edit-security-section">
+        <h2 className="profile-edit-section-title">계정 보안</h2>
         
-        <div className="security-item">
-          <div className="security-info">
-            <span className="security-label">비밀번호 변경</span>
-            <span className="security-description">마지막 변경: 3개월 전</span>
+        <div className="profile-edit-security-item">
+          <div className="profile-edit-security-info">
+            <span className="profile-edit-security-label">비밀번호 변경</span>
+            <span className="profile-edit-security-description">마지막 변경: 3개월 전</span>
           </div>
-          <button className="security-button">변경</button>
+          <button className="profile-edit-security-button">변경</button>
         </div>
 
-        <div className="security-item">
-          <div className="security-info">
-            <span className="security-label">2단계 인증</span>
-            <span className="security-description">SMS 인증</span>
+        <div className="profile-edit-security-item">
+          <div className="profile-edit-security-info">
+            <span className="profile-edit-security-label">2단계 인증</span>
+            <span className="profile-edit-security-description">SMS 인증</span>
           </div>
-          <button className="security-button">설정</button>
+          <button className="profile-edit-security-button">설정</button>
         </div>
       </div>
 
       {/* 액션 버튼들 */}
-      <div className="action-buttons">
+      <div className="profile-edit-action-buttons">
         {!isEditing ? (
-          <button className="edit-button" onClick={handleEditToggle}>
+          <button className="profile-edit-edit-button" onClick={handleEditToggle}>
             수정하기
           </button>
         ) : (
-          <div className="edit-actions">
-            <button className="save-button" onClick={handleSave}>
+          <div className="profile-edit-edit-actions">
+            <button className="profile-edit-save-button" onClick={handleSave}>
               저장
             </button>
-            <button className="cancel-button" onClick={handleCancel}>
+            <button className="profile-edit-cancel-button" onClick={handleCancel}>
               취소
             </button>
           </div>
@@ -166,8 +166,8 @@ const ProfileEdit = () => {
       </div>
 
       {/* 계정 삭제 */}
-      <div className="delete-account-section">
-        <button className="delete-account-button" onClick={handleDeleteAccount}>
+      <div className="profile-edit-delete-account-section">
+        <button className="profile-edit-delete-account-button" onClick={handleDeleteAccount}>
           계정 삭제
         </button>
       </div>

@@ -94,16 +94,16 @@ const SavedRestaurants = () => {
     const hasHalfStar = rating % 1 !== 0;
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<span key={i} className="star filled">★</span>);
+      stars.push(<span key={i} className="saved-restaurants-star filled">★</span>);
     }
     
     if (hasHalfStar) {
-      stars.push(<span key="half" className="star half">☆</span>);
+      stars.push(<span key="half" className="saved-restaurants-star half">☆</span>);
     }
 
     const emptyStars = 5 - Math.ceil(rating);
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<span key={`empty-${i}`} className="star empty">☆</span>);
+      stars.push(<span key={`empty-${i}`} className="saved-restaurants-star empty">☆</span>);
     }
 
     return stars;
@@ -122,30 +122,30 @@ const SavedRestaurants = () => {
     <div className="saved-restaurants-container">
       {/* 헤더 */}
       <div className="saved-restaurants-header">
-        <button className="back-button" onClick={() => navigate('/mypage')}>
-          <img src={LeftArrowIcon} alt="back" className="back-arrow" />
+        <button className="saved-restaurants-back-button" onClick={() => navigate('/mypage')}>
+          <img src={LeftArrowIcon} alt="back" className="saved-restaurants-back-arrow" />
         </button>
         <h1 className="saved-restaurants-title">저장한 가게</h1>
       </div>
 
       {/* 검색 및 필터 */}
-      <div className="search-filter-section">
+      <div className="saved-restaurants-search-filter-section">
         <input
           type="text"
           placeholder="가게명, 메뉴로 검색"
           value={searchQuery}
           onChange={handleSearch}
-          className="search-input"
+          className="saved-restaurants-search-input"
         />
         
-        <div className="filter-row">
-          <div className="filter-group">
-            <span className="filter-label">기간</span>
-            <div className="filter-buttons">
+        <div className="saved-restaurants-filter-row">
+          <div className="saved-restaurants-filter-group">
+            <span className="saved-restaurants-filter-label">기간</span>
+            <div className="saved-restaurants-filter-buttons">
               {periods.map((period) => (
                 <button
                   key={period}
-                  className={`filter-button ${selectedPeriod === period ? 'active' : ''}`}
+                  className={`saved-restaurants-filter-button ${selectedPeriod === period ? 'active' : ''}`}
                   onClick={() => handlePeriodChange(period)}
                 >
                   {period}
@@ -154,13 +154,13 @@ const SavedRestaurants = () => {
             </div>
           </div>
           
-          <div className="filter-group">
-            <span className="filter-label">정렬</span>
-            <div className="filter-buttons">
+          <div className="saved-restaurants-filter-group">
+            <span className="saved-restaurants-filter-label">정렬</span>
+            <div className="saved-restaurants-filter-buttons">
               {sortOptions.map((sort) => (
                 <button
                   key={sort}
-                  className={`filter-button ${selectedSort === sort ? 'active' : ''}`}
+                  className={`saved-restaurants-filter-button ${selectedSort === sort ? 'active' : ''}`}
                   onClick={() => handleSortChange(sort)}
                 >
                   {sort}
@@ -174,29 +174,29 @@ const SavedRestaurants = () => {
       {/* 저장된 가게 목록 */}
       <div className="saved-restaurants-list">
         {savedRestaurants.map((restaurant) => (
-          <div key={restaurant.id} className="restaurant-item">
-            <div className="restaurant-info" onClick={() => handleRestaurantClick(restaurant)}>
-              <div className="restaurant-header">
-                <h3 className="restaurant-name">{restaurant.name}</h3>
-                <div className="restaurant-rating">
+          <div key={restaurant.id} className="saved-restaurants-restaurant-item">
+            <div className="saved-restaurants-restaurant-info" onClick={() => handleRestaurantClick(restaurant)}>
+              <div className="saved-restaurants-restaurant-header">
+                <h3 className="saved-restaurants-restaurant-name">{restaurant.name}</h3>
+                <div className="saved-restaurants-restaurant-rating">
                   {renderStars(restaurant.rating)}
-                  <span className="rating-number">{restaurant.rating}</span>
+                  <span className="saved-restaurants-rating-number">{restaurant.rating}</span>
                 </div>
               </div>
               
-              <div className="restaurant-details">
-                <div className="restaurant-category">{restaurant.category}</div>
-                <div className="restaurant-price">{getPriceText(restaurant.price)}</div>
-                <div className="restaurant-distance">{restaurant.distance}</div>
+              <div className="saved-restaurants-restaurant-details">
+                <div className="saved-restaurants-restaurant-category">{restaurant.category}</div>
+                <div className="saved-restaurants-restaurant-price">{getPriceText(restaurant.price)}</div>
+                <div className="saved-restaurants-restaurant-distance">{restaurant.distance}</div>
               </div>
               
-              <div className="restaurant-address">{restaurant.address}</div>
-              <div className="saved-date">저장일: {restaurant.savedDate}</div>
+              <div className="saved-restaurants-restaurant-address">{restaurant.address}</div>
+              <div className="saved-restaurants-saved-date">저장일: {restaurant.savedDate}</div>
             </div>
             
-            <div className="restaurant-actions">
+            <div className="saved-restaurants-restaurant-actions">
               <button 
-                className="action-button remove-button"
+                className="saved-restaurants-action-button saved-restaurants-remove-button"
                 onClick={() => handleRemoveSaved(restaurant)}
               >
                 저장 해제

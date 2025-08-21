@@ -14,7 +14,7 @@
   position: relative;
 }
 
-.back-button {
+.saved-restaurants-back-button {
   background: none;
   border: none;
   cursor: pointer;
@@ -25,7 +25,7 @@
   justify-content: center;
 }
 
-.back-arrow {
+.saved-restaurants-back-arrow {
   width: 24px;
   height: 24px;
 }
@@ -42,11 +42,11 @@
 }
 
 /* 검색 및 필터 */
-.search-filter-section {
+.saved-restaurants-search-filter-section {
   margin-bottom: 24px;
 }
 
-.search-input {
+.saved-restaurants-search-input {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #e5e7eb;
@@ -57,35 +57,35 @@
   margin-bottom: 16px;
 }
 
-.search-input::placeholder {
+.saved-restaurants-search-input::placeholder {
   color: #999;
 }
 
-.filter-row {
+.saved-restaurants-filter-row {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.filter-group {
+.saved-restaurants-filter-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.filter-label {
+.saved-restaurants-filter-label {
   font-size: 14px;
   font-weight: 600;
   color: #374151;
 }
 
-.filter-buttons {
+.saved-restaurants-filter-buttons {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.filter-button {
+.saved-restaurants-filter-button {
   padding: 6px 12px;
   border: 1px solid #d1d5db;
   border-radius: 16px;
@@ -96,12 +96,12 @@
   transition: all 0.2s;
 }
 
-.filter-button:hover {
+.saved-restaurants-filter-button:hover {
   border-color: #9ca3af;
   color: #374151;
 }
 
-.filter-button.active {
+.saved-restaurants-filter-button.active {
   background: #26CA1D;
   border-color: #26CA1D;
   color: white;
@@ -114,7 +114,7 @@
   gap: 16px;
 }
 
-.restaurant-item {
+.saved-restaurants-restaurant-item {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -122,22 +122,22 @@
   transition: box-shadow 0.2s;
 }
 
-.restaurant-item:hover {
+.saved-restaurants-restaurant-item:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.restaurant-info {
+.saved-restaurants-restaurant-info {
   cursor: pointer;
 }
 
-.restaurant-header {
+.saved-restaurants-restaurant-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 8px;
 }
 
-.restaurant-name {
+.saved-restaurants-restaurant-name {
   font-size: 16px;
   font-weight: bold;
   color: #000;
@@ -146,46 +146,46 @@
   margin-right: 12px;
 }
 
-.restaurant-rating {
+.saved-restaurants-restaurant-rating {
   display: flex;
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
 }
 
-.star {
+.saved-restaurants-star {
   font-size: 14px;
 }
 
-.star.filled {
+.saved-restaurants-star.filled {
   color: #fbbf24;
 }
 
-.star.half {
+.saved-restaurants-star.half {
   color: #fbbf24;
 }
 
-.star.empty {
+.saved-restaurants-star.empty {
   color: #d1d5db;
 }
 
-.rating-number {
+.saved-restaurants-rating-number {
   font-size: 12px;
   font-weight: 600;
   color: #374151;
   margin-left: 4px;
 }
 
-.restaurant-details {
+.saved-restaurants-restaurant-details {
   display: flex;
   gap: 12px;
   margin-bottom: 8px;
   flex-wrap: wrap;
 }
 
-.restaurant-category,
-.restaurant-price,
-.restaurant-distance {
+.saved-restaurants-restaurant-category,
+.saved-restaurants-restaurant-price,
+.saved-restaurants-restaurant-distance {
   font-size: 12px;
   color: #6b7280;
   background: #f3f4f6;
@@ -193,19 +193,19 @@
   border-radius: 12px;
 }
 
-.restaurant-address {
+.saved-restaurants-restaurant-address {
   font-size: 13px;
   color: #374151;
   margin-bottom: 6px;
   line-height: 1.4;
 }
 
-.saved-date {
+.saved-restaurants-saved-date {
   font-size: 12px;
   color: #9ca3af;
 }
 
-.restaurant-actions {
+.saved-restaurants-restaurant-actions {
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid #f3f4f6;
@@ -213,7 +213,7 @@
   justify-content: flex-end;
 }
 
-.action-button {
+.saved-restaurants-action-button {
   background: none;
   border: none;
   font-size: 13px;
@@ -224,12 +224,12 @@
   transition: all 0.2s;
 }
 
-.action-button:hover {
+.saved-restaurants-action-button:hover {
   background: #f3f4f6;
   color: #374151;
 }
 
-.remove-button:hover {
+.saved-restaurants-remove-button:hover {
   color: #dc2626;
 }
 
@@ -247,25 +247,25 @@
     font-size: 22px;
   }
   
-  .search-filter-section {
+  .saved-restaurants-search-filter-section {
     margin-bottom: 20px;
   }
   
-  .search-input {
+  .saved-restaurants-search-input {
     padding: 10px 14px;
     font-size: 13px;
     margin-bottom: 14px;
   }
   
-  .filter-row {
+  .saved-restaurants-filter-row {
     gap: 14px;
   }
   
-  .filter-label {
+  .saved-restaurants-filter-label {
     font-size: 13px;
   }
   
-  .filter-button {
+  .saved-restaurants-filter-button {
     padding: 5px 10px;
     font-size: 11px;
   }
@@ -274,34 +274,34 @@
     gap: 14px;
   }
   
-  .restaurant-item {
+  .saved-restaurants-restaurant-item {
     padding: 14px;
   }
   
-  .restaurant-name {
+  .saved-restaurants-restaurant-name {
     font-size: 15px;
   }
   
-  .star {
+  .saved-restaurants-star {
     font-size: 13px;
   }
   
-  .restaurant-category,
-  .restaurant-price,
-  .restaurant-distance {
+  .saved-restaurants-restaurant-category,
+  .saved-restaurants-restaurant-price,
+  .saved-restaurants-restaurant-distance {
     font-size: 11px;
     padding: 3px 6px;
   }
   
-  .restaurant-address {
+  .saved-restaurants-restaurant-address {
     font-size: 12px;
   }
   
-  .saved-date {
+  .saved-restaurants-saved-date {
     font-size: 11px;
   }
   
-  .action-button {
+  .saved-restaurants-action-button {
     font-size: 12px;
     padding: 5px 10px;
   }

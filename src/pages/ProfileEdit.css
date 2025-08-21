@@ -14,7 +14,7 @@
   position: relative;
 }
 
-.back-button {
+.profile-edit-back-button {
   background: none;
   border: none;
   cursor: pointer;
@@ -25,7 +25,7 @@
   justify-content: center;
 }
 
-.back-arrow {
+.profile-edit-back-arrow {
   width: 24px;
   height: 24px;
 }
@@ -42,7 +42,7 @@
 }
 
 /* 섹션 제목 */
-.section-title {
+.profile-edit-section-title {
   font-size: 18px;
   font-weight: bold;
   color: #000;
@@ -50,15 +50,15 @@
 }
 
 /* 프로필 정보 섹션 */
-.profile-section {
+.profile-edit-profile-section {
   margin-bottom: 32px;
 }
 
-.profile-item {
+.profile-edit-profile-item {
   margin-bottom: 20px;
 }
 
-.profile-label {
+.profile-edit-profile-label {
   display: block;
   font-size: 14px;
   font-weight: 600;
@@ -66,8 +66,8 @@
   margin-bottom: 8px;
 }
 
-.profile-input,
-.profile-select {
+.profile-edit-profile-input,
+.profile-edit-profile-select {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #d1d5db;
@@ -79,24 +79,24 @@
   transition: border-color 0.2s;
 }
 
-.profile-input:focus,
-.profile-select:focus {
+.profile-edit-profile-input:focus,
+.profile-edit-profile-select:focus {
   border-color: #26CA1D;
 }
 
-.profile-input:disabled,
-.profile-select:disabled {
+.profile-edit-profile-input:disabled,
+.profile-edit-profile-select:disabled {
   background-color: #f9fafb;
   color: #6b7280;
   cursor: not-allowed;
 }
 
 /* 계정 보안 섹션 */
-.security-section {
+.profile-edit-security-section {
   margin-bottom: 32px;
 }
 
-.security-item {
+.profile-edit-security-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -104,28 +104,28 @@
   border-bottom: 1px solid #f3f4f6;
 }
 
-.security-item:last-child {
+.profile-edit-security-item:last-child {
   border-bottom: none;
 }
 
-.security-info {
+.profile-edit-security-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.security-label {
+.profile-edit-security-label {
   font-size: 14px;
   font-weight: 600;
   color: #000;
 }
 
-.security-description {
+.profile-edit-security-description {
   font-size: 12px;
   color: #6b7280;
 }
 
-.security-button {
+.profile-edit-security-button {
   background: none;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -136,17 +136,17 @@
   transition: all 0.2s;
 }
 
-.security-button:hover {
+.profile-edit-security-button:hover {
   background-color: #f3f4f6;
   border-color: #9ca3af;
 }
 
 /* 액션 버튼들 */
-.action-buttons {
+.profile-edit-action-buttons {
   margin-bottom: 32px;
 }
 
-.edit-button {
+.profile-edit-edit-button {
   width: 100%;
   padding: 14px 24px;
   background-color: #26CA1D;
@@ -159,16 +159,16 @@
   transition: background-color 0.2s;
 }
 
-.edit-button:hover {
+.profile-edit-edit-button:hover {
   background-color: #22b91a;
 }
 
-.edit-actions {
+.profile-edit-edit-actions {
   display: flex;
   gap: 12px;
 }
 
-.save-button {
+.profile-edit-save-button {
   flex: 1;
   padding: 14px 24px;
   background-color: #26CA1D;
@@ -181,11 +181,11 @@
   transition: background-color 0.2s;
 }
 
-.save-button:hover {
+.profile-edit-save-button:hover {
   background-color: #22b91a;
 }
 
-.cancel-button {
+.profile-edit-cancel-button {
   flex: 1;
   padding: 14px 24px;
   background-color: #6b7280;
@@ -198,17 +198,17 @@
   transition: background-color 0.2s;
 }
 
-.cancel-button:hover {
+.profile-edit-cancel-button:hover {
   background-color: #4b5563;
 }
 
 /* 계정 삭제 섹션 */
-.delete-account-section {
+.profile-edit-delete-account-section {
   display: flex;
   justify-content: center;
 }
 
-.delete-account-button {
+.profile-edit-delete-account-button {
   background: none;
   border: none;
   font-size: 14px;
@@ -218,7 +218,7 @@
   transition: color 0.2s;
 }
 
-.delete-account-button:hover {
+.profile-edit-delete-account-button:hover {
   color: #b91c1c;
 }
 
@@ -236,67 +236,67 @@
     font-size: 22px;
   }
   
-  .section-title {
+  .profile-edit-section-title {
     font-size: 17px;
     margin-bottom: 14px;
   }
   
-  .profile-section {
+  .profile-edit-profile-section {
     margin-bottom: 28px;
   }
   
-  .profile-item {
+  .profile-edit-profile-item {
     margin-bottom: 18px;
   }
   
-  .profile-label {
+  .profile-edit-profile-label {
     font-size: 13px;
     margin-bottom: 6px;
   }
   
-  .profile-input,
-  .profile-select {
+  .profile-edit-profile-input,
+  .profile-edit-profile-select {
     padding: 10px 14px;
     font-size: 13px;
   }
   
-  .security-section {
+  .profile-edit-security-section {
     margin-bottom: 28px;
   }
   
-  .security-item {
+  .profile-edit-security-item {
     padding: 14px 0;
   }
   
-  .security-label {
+  .profile-edit-security-label {
     font-size: 13px;
   }
   
-  .security-description {
+  .profile-edit-security-description {
     font-size: 11px;
   }
   
-  .security-button {
+  .profile-edit-security-button {
     padding: 6px 12px;
     font-size: 12px;
   }
   
-  .action-buttons {
+  .profile-edit-action-buttons {
     margin-bottom: 28px;
   }
   
-  .edit-button,
-  .save-button,
-  .cancel-button {
+  .profile-edit-edit-button,
+  .profile-edit-save-button,
+  .profile-edit-cancel-button {
     padding: 12px 20px;
     font-size: 15px;
   }
   
-  .edit-actions {
+  .profile-edit-edit-actions {
     gap: 10px;
   }
   
-  .delete-account-button {
+  .profile-edit-delete-account-button {
     font-size: 13px;
     padding: 10px 20px;
   }
