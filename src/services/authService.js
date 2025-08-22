@@ -2,17 +2,17 @@ const API_BASE_URL = 'http://15.165.7.141:8000';
 
 export const authService = {
   // 로그인
-  async login(email, password) {
+  async login(userId, password) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'accept': 'application/json'
         },
         body: JSON.stringify({
-          email,
-          password
+          user_id: userId,
+          password: password
         })
       });
 
@@ -47,6 +47,32 @@ export const authService = {
       return data;
     } catch (error) {
       console.error('사용자 정보 가져오기 에러:', error);
+      throw error;
+    }
+  },
+
+  // 토큰 갱신
+  async refreshToken(refreshToken) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json'
+        },
+        body: JSON.stringify({
+          refresh_token: refreshToken
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('토큰 갱신에 실패했습니다.');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('토큰 갱신 에러:', error);
       throw error;
     }
   },

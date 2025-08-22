@@ -5,7 +5,7 @@ import { authService } from '../services/authService';
 import './LoginPage.css';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [keepLogin, setKeepLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,10 +21,10 @@ const LoginPage = () => {
 
     try {
       // 실제 로그인 API 호출
-      const response = await authService.login(email, password);
+      const response = await authService.login(userId, password);
       
       if (response.access_token) {
-        await login(response.access_token);
+        await login(response);
         navigate('/home');
       } else {
         setError('로그인 응답에 토큰이 없습니다.');
@@ -45,13 +45,13 @@ const LoginPage = () => {
         
         <form onSubmit={handleSubmit} className="login-form">
           <div className="login-form-group">
-            <label htmlFor="email">이메일</label>
+            <label htmlFor="userId">아이디</label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="이메일을 입력하세요"
+              type="text"
+              id="userId"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              placeholder="아이디"
               required
             />
           </div>
@@ -63,7 +63,7 @@ const LoginPage = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="비밀번호를 입력하세요"
+              placeholder="비밀번호"
               required
             />
           </div>

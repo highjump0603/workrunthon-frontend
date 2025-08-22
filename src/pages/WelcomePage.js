@@ -1,9 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './WelcomePage.css';
 
 const WelcomePage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleStartClick = () => {
     navigate('/signup');
@@ -11,6 +13,23 @@ const WelcomePage = () => {
 
   const handleLoginClick = () => {
     navigate('/login');
+  };
+
+  // 개발용: 로그인 없이 홈으로 이동
+  const handleDevLogin = () => {
+    // 개발용 더미 토큰 생성
+    const dummyTokens = {
+      access_token: 'dev_access_token_' + Date.now(),
+      refresh_token: 'dev_refresh_token_' + Date.now()
+    };
+    
+    // 더미 사용자 정보와 함께 로그인 처리
+    login(dummyTokens);
+    
+    // 잠시 대기 후 홈으로 이동 (상태 업데이트 완료 대기)
+    setTimeout(() => {
+      navigate('/home');
+    }, 100);
   };
 
   return (
@@ -50,6 +69,16 @@ const WelcomePage = () => {
               로그인
             </button>
           </p>
+        </div>
+
+        {/* 개발용 로그인 버튼 */}
+        <div className="welcome-dev-section">
+          <button 
+            className="welcome-dev-button"
+            onClick={handleDevLogin}
+          >
+            🚀 개발용: 바로 홈으로
+          </button>
         </div>
       </div>
     </div>

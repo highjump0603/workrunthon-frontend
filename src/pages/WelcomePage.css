@@ -109,6 +109,37 @@
   color: #45a049;
 }
 
+/* 개발용 버튼 섹션 */
+.welcome-dev-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.welcome-dev-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+.welcome-dev-button:hover {
+  background-color: #f57c00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+}
+
+.welcome-dev-button:active {
+  transform: translateY(0);
+}
+
 /* 반응형 디자인 */
 @media (max-width: 480px) {
   .welcome-container {
