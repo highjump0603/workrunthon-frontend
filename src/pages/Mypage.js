@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import './Mypage.css';
 import BottomNavigation from '../components/BottomNavigation';
 import ArrowRightIcon from '../assets/arrow.svg';
+import { reviewService } from '../services/reviewService';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ const Mypage = () => {
     remaining_budget: 0,
     budget_percentage: 0
   });
+
+  // 리뷰 개수 state 추가
+  const [reviewCount, setReviewCount] = useState(0);
 
   const handleAllergyClick = () => {
     navigate('/allergy-settings');
@@ -79,9 +83,21 @@ const Mypage = () => {
     }
   };
 
-  // 컴포넌트 마운트 시 예산 정보 가져오기
+  // 리뷰 개수 가져오기
+  const fetchReviewCount = async () => {
+    try {
+      const count = await reviewService.getMyReviewCount();
+      setReviewCount(count);
+    } catch (error) {
+      console.error('리뷰 개수 조회 에러:', error);
+      setReviewCount(0); // 오류 시 0으로 설정
+    }
+  };
+
+  // 컴포넌트 마운트 시 예산 정보와 리뷰 개수 가져오기
   useEffect(() => {
     fetchBudgetInfo();
+    fetchReviewCount();
   }, []);
 
   const handleLogout = async () => {
@@ -104,12 +120,12 @@ const Mypage = () => {
       <div className="user-stats">
         <div className="stat-item">
           <div className="stat-label font-regular">저장됨</div>
-          <div className="stat-value font-semi-bold">25</div>
+          <div className="stat-value font-semi-bold">0</div>
         </div>
         <div className="stat-divider"></div>
         <div className="stat-item">
           <div className="stat-label font-regular">내 리뷰</div>
-          <div className="stat-value font-semi-bold">8</div>
+          <div className="stat-value font-semi-bold">{reviewCount}</div>
         </div>
         <div className="stat-divider"></div>
         <div className="stat-item">
