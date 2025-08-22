@@ -87,7 +87,24 @@ const RestaurantSelection = () => {
       if (center) {
         const centerLat = center.lat();
         const centerLng = center.lng();
-        const sortedList = sortRestaurants(restaurants, newSortType, centerLat, centerLng);
+        
+        // 지도 중심점으로부터 일정 거리 내의 식당만 필터링
+        const maxDistance = 10; // 10km 반경
+        const nearbyRestaurants = restaurants.filter(restaurant => {
+          if (!restaurant.latitude || !restaurant.longitude) return false;
+          
+          const distance = calculateDistance(
+            centerLat, 
+            centerLng, 
+            restaurant.latitude, 
+            restaurant.longitude
+          );
+          
+          return distance <= maxDistance;
+        });
+        
+        // 필터링된 식당들을 정렬
+        const sortedList = sortRestaurants(nearbyRestaurants, newSortType, centerLat, centerLng);
         setDisplayedRestaurants(sortedList);
       }
     }
@@ -221,7 +238,14 @@ const RestaurantSelection = () => {
 
           // 마커 클릭 시 식당 선택
           window.naver.maps.Event.addListener(marker, 'click', () => {
+            console.log(`${restaurant.name} 마커 클릭됨`);
             handleRestaurantSelect(restaurant);
+            
+            // 선택된 식당이 목록에서 보이도록 스크롤
+            const restaurantElement = document.querySelector(`[data-restaurant-id="${restaurant.id}"]`);
+            if (restaurantElement) {
+              restaurantElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
           });
 
         } catch (markerError) {
@@ -322,6 +346,30 @@ const RestaurantSelection = () => {
     // 검색 결과에 따라 마커 업데이트 (지도가 준비된 경우)
     if (map) {
       updateMarkersForCurrentView();
+      
+      // 검색 결과도 지도 중심점 기준으로 필터링하여 목록 업데이트
+      const center = map.getCenter();
+      if (center) {
+        const centerLat = center.lat();
+        const centerLng = center.lng();
+        
+        const maxDistance = 10; // 10km 반경
+        const nearbyRestaurants = restaurants.filter(restaurant => {
+          if (!restaurant.latitude || !restaurant.longitude) return false;
+          
+          const distance = calculateDistance(
+            centerLat, 
+            centerLng, 
+            restaurant.latitude, 
+            restaurant.longitude
+          );
+          
+          return distance <= maxDistance;
+        });
+        
+        const sortedList = sortRestaurants(nearbyRestaurants, sortType, centerLat, centerLng);
+        setDisplayedRestaurants(sortedList);
+      }
     }
   };
 
@@ -331,6 +379,30 @@ const RestaurantSelection = () => {
     // 검색어 초기화 시 마커 업데이트 (지도가 준비된 경우)
     if (map) {
       updateMarkersForCurrentView();
+      
+      // 검색 초기화 시에도 지도 중심점 기준으로 필터링하여 목록 업데이트
+      const center = map.getCenter();
+      if (center) {
+        const centerLat = center.lat();
+        const centerLng = center.lng();
+        
+        const maxDistance = 10; // 10km 반경
+        const nearbyRestaurants = restaurants.filter(restaurant => {
+          if (!restaurant.latitude || !restaurant.longitude) return false;
+          
+          const distance = calculateDistance(
+            centerLat, 
+            centerLng, 
+            restaurant.latitude, 
+            restaurant.longitude
+          );
+          
+          return distance <= maxDistance;
+        });
+        
+        const sortedList = sortRestaurants(nearbyRestaurants, sortType, centerLat, centerLng);
+        setDisplayedRestaurants(sortedList);
+      }
     }
   };
 
@@ -462,7 +534,24 @@ const RestaurantSelection = () => {
       if (center) {
         const centerLat = center.lat();
         const centerLng = center.lng();
-        const sortedList = sortRestaurants(restaurants, sortType, centerLat, centerLng);
+        
+        // 지도 중심점으로부터 일정 거리 내의 식당만 필터링
+        const maxDistance = 10; // 10km 반경
+        const nearbyRestaurants = restaurants.filter(restaurant => {
+          if (!restaurant.latitude || !restaurant.longitude) return false;
+          
+          const distance = calculateDistance(
+            centerLat, 
+            centerLng, 
+            restaurant.latitude, 
+            restaurant.longitude
+          );
+          
+          return distance <= maxDistance;
+        });
+        
+        // 필터링된 식당들을 정렬
+        const sortedList = sortRestaurants(nearbyRestaurants, sortType, centerLat, centerLng);
         setDisplayedRestaurants(sortedList);
         updateMarkersForCurrentView();
       }
@@ -570,6 +659,7 @@ const RestaurantSelection = () => {
                   key={`${restaurant.id}-${index}`}
                   className={`restaurant-item ${selectedRestaurant?.id === restaurant.id ? 'selected' : ''}`}
                   onClick={() => handleRestaurantSelect(restaurant)}
+                  data-restaurant-id={restaurant.id}
                 >
                   <div className="restaurant-image">
                     <div className="image-placeholder"></div>
@@ -582,6 +672,9 @@ const RestaurantSelection = () => {
                     <div className="restaurant-price">10000원 이내</div>
                     <div className="restaurant-distance">{distanceText}</div>
                   </div>
+                  {selectedRestaurant?.id === restaurant.id && (
+                    <div className="selection-indicator">✓</div>
+                  )}
                 </div>
               );
             })}

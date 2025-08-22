@@ -288,12 +288,15 @@
 
 .restaurant-item {
   display: flex;
-  gap: 16px;
-  padding: 16px;
-  border: 1px solid #e5e7eb;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
+  margin-bottom: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  background-color: white;
+  position: relative;
 }
 
 .restaurant-item:hover {
@@ -301,9 +304,85 @@
   box-shadow: 0 2px 8px rgba(38, 202, 29, 0.1);
 }
 
+/* 선택된 식당 강조 표시 */
 .restaurant-item.selected {
-  border-color: #26CA1D;
-  background-color: #f0fdf4;
+  border: 2px solid #26CA1D;
+  background-color: #f0fff0;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(38, 202, 29, 0.2);
+}
+
+/* 선택 표시기 */
+.selection-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background-color: #26CA1D;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* 선택된 식당 정보 섹션 */
+.selected-restaurant-info {
+  background: linear-gradient(135deg, #26CA1D, #1a9d14);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+  box-shadow: 0 4px 20px rgba(38, 202, 29, 0.3);
+  position: sticky;
+  bottom: 20px;
+  z-index: 10;
+}
+
+.selected-restaurant-info h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.selected-restaurant-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.selected-restaurant-info strong {
+  color: #e8f5e8;
+  margin-right: 8px;
+}
+
+.confirm-selection-button {
+  background-color: white;
+  color: #26CA1D;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.confirm-selection-button:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.confirm-selection-button:active {
+  transform: translateY(0);
 }
 
 .restaurant-image {
