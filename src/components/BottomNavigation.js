@@ -43,7 +43,7 @@ const BottomNavigation = ({ activeTab = 'home' }) => {
   const handleTabClick = (tabId) => {
     switch (tabId) {
       case 'home':
-        navigate('/');
+        navigate('/home');
         break;
       case 'explore':
         navigate('/explore');
@@ -58,7 +58,7 @@ const BottomNavigation = ({ activeTab = 'home' }) => {
         navigate('/mypage');
         break;
       default:
-        navigate('/');
+        navigate('/home');
     }
   };
 

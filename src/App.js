@@ -16,6 +16,13 @@ import AddressManagement from './pages/AddressManagement';
 import SavedRestaurants from './pages/SavedRestaurants';
 import ProfileEdit from './pages/ProfileEdit';
 import Settings from './pages/Settings';
+import WelcomePage from './pages/WelcomePage';
+import BudgetSetupPage from './pages/BudgetSetupPage';
+import OnboardingPage from './pages/OnboardingPage';
+import SignupPage from './pages/SignupPage';
+import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 import useScrollToTop from './hooks/useScrollToTop';
 import './Font.css';
 import './App.css';
@@ -29,22 +36,27 @@ function AppContent() {
     <div className="App">
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/plan" element={<Plan />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/ledger" element={<Ledger />} />
-          <Route path="/add-details" element={<AddDetails />} />
-          <Route path="/mypage" element={<Mypage />} />
-          <Route path="/allergy-settings" element={<AllergySettings />} />
-          <Route path="/food-preferences" element={<FoodPreferences />} />
-          <Route path="/budget-management" element={<BudgetManagement />} />
-          <Route path="/recently-viewed" element={<RecentlyViewed />} />
-          <Route path="/visit-history" element={<VisitHistory />} />
-          <Route path="/my-reviews" element={<MyReviews />} />
-          <Route path="/address-management" element={<AddressManagement />} />
-          <Route path="/saved-restaurants" element={<SavedRestaurants />} />
-          <Route path="/profile-edit" element={<ProfileEdit />} />
-          <Route path="/settings" element={<Settings />} />
+                  <Route path="/" element={<WelcomePage />} />
+        <Route path="/budget-setup" element={<BudgetSetupPage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/plan" element={<ProtectedRoute><Plan /></ProtectedRoute>} />
+          <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
+          <Route path="/ledger" element={<ProtectedRoute><Ledger /></ProtectedRoute>} />
+          <Route path="/add-details" element={<ProtectedRoute><AddDetails /></ProtectedRoute>} />
+          <Route path="/mypage" element={<ProtectedRoute><Mypage /></ProtectedRoute>} />
+          <Route path="/allergy-settings" element={<ProtectedRoute><AllergySettings /></ProtectedRoute>} />
+          <Route path="/food-preferences" element={<ProtectedRoute><FoodPreferences /></ProtectedRoute>} />
+          <Route path="/budget-management" element={<ProtectedRoute><BudgetManagement /></ProtectedRoute>} />
+          <Route path="/recently-viewed" element={<ProtectedRoute><RecentlyViewed /></ProtectedRoute>} />
+          <Route path="/visit-history" element={<ProtectedRoute><VisitHistory /></ProtectedRoute>} />
+          <Route path="/my-reviews" element={<ProtectedRoute><MyReviews /></ProtectedRoute>} />
+          <Route path="/address-management" element={<ProtectedRoute><AddressManagement /></ProtectedRoute>} />
+          <Route path="/saved-restaurants" element={<ProtectedRoute><SavedRestaurants /></ProtectedRoute>} />
+          <Route path="/profile-edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>
@@ -53,9 +65,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 

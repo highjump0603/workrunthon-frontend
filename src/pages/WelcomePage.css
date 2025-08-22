@@ -1,0 +1,138 @@
+.welcome-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  padding: 20px;
+}
+
+.welcome-container {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+/* 로고 섹션 */
+.welcome-logo-section {
+  margin-bottom: 60px;
+}
+
+.welcome-app-title {
+  font-size: 4rem;
+  color: #000000;
+  margin: 0;
+}
+
+/* 메인 콘텐츠 */
+.welcome-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.welcome-main-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #000000;
+  margin: 0 0 20px 0;
+  line-height: 1.3;
+}
+
+.welcome-main-description {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 액션 섹션 */
+.welcome-action-section {
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.welcome-start-button {
+  width: 100%;
+  padding: 18px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.welcome-start-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.welcome-start-button:active {
+  transform: translateY(0);
+}
+
+/* 로그인 섹션 */
+.welcome-login-section {
+  margin-top: auto;
+}
+
+.welcome-login-text {
+  font-size: 0.9rem;
+  color: #666666;
+  margin: 0;
+}
+
+.welcome-login-link {
+  background: none;
+  border: none;
+  color: #4CAF50;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin: 0;
+}
+
+.welcome-login-link:hover {
+  color: #45a049;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .welcome-container {
+    min-height: 70vh;
+  }
+  
+  .welcome-logo-section {
+    margin-bottom: 40px;
+  }
+  
+  .welcome-app-title {
+    font-size: 4rem;
+  }
+  
+  .welcome-main-title {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-main-description {
+    font-size: 0.9rem;
+  }
+  
+  .welcome-start-button {
+    padding: 16px;
+    font-size: 1.1rem;
+  }
+}

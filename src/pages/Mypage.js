@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Mypage.css';
 import BottomNavigation from '../components/BottomNavigation';
 import ArrowRightIcon from '../assets/arrow.svg';
 
 const Mypage = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const handleAllergyClick = () => {
     navigate('/allergy-settings');
@@ -47,12 +49,19 @@ const Mypage = () => {
     navigate('/saved-restaurants');
   };
 
+  const handleLogout = async () => {
+    if (window.confirm('로그아웃 하시겠습니까?')) {
+      await logout();
+      navigate('/login');
+    }
+  };
+
   return (
     <div className="mypage-container">
       {/* 상단 네비게이션 */}
       <div className="mypage-header">
         <div className="user-profile">
-          <div className="user-name font-bold">홍길동</div>
+          <div className="user-name font-bold">{user?.name || '사용자'}</div>
         </div>
       </div>
 
@@ -123,6 +132,10 @@ const Mypage = () => {
           </div>
           <div className="menu-item" onClick={handleSettingsClick}>
             <span>설정</span>
+            <img src={ArrowRightIcon} alt="arrow" className="arrow" />
+          </div>
+          <div className="menu-item logout-item" onClick={handleLogout}>
+            <span>로그아웃</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
         </div>

@@ -1,0 +1,288 @@
+.signup-page {
+  min-height: 100vh;
+}
+
+.signup-container {
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+/* 헤더 */
+.signup-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  position: relative;
+}
+
+.signup-back-button {
+  position: absolute;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.signup-back-button:hover {
+  background-color: #f3f4f6;
+}
+
+.signup-back-arrow {
+  width: 24px;
+  height: 24px;
+}
+
+.signup-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+}
+
+/* 폼 */
+.signup-form {
+  padding: 20px;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 20px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #4CAF50;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.address-group {
+  margin-bottom: 20px;
+}
+
+.address-search-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.address-search-input {
+  flex: 1;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.address-search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.selected-address {
+  background-color: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.address-label {
+  font-weight: 500;
+  color: #666;
+  margin-right: 8px;
+}
+
+.address-value {
+  color: #000;
+  font-weight: 500;
+}
+
+.zip-code {
+  color: #666;
+  font-size: 0.9rem;
+  margin-left: 8px;
+}
+
+.address-results {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.address-result-item {
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.address-result-item:last-child {
+  border-bottom: none;
+}
+
+.address-result-item:hover {
+  background-color: #f8f9fa;
+}
+
+.address-main {
+  font-weight: 500;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.address-sub {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.search-button {
+  padding: 16px 24px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.search-button:hover {
+  background-color: #45a049;
+}
+
+
+
+/* 일반 라벨 */
+.label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000;
+  margin-bottom: 12px;
+}
+
+
+
+/* 체크박스 */
+.agreement-group {
+  margin-bottom: 16px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #4CAF50;
+  margin-top: 2px;
+}
+
+/* 제출 버튼 */
+.submit-button {
+  width: 100%;
+  padding: 18px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  
+  .signup-container {
+    border-radius: 12px;
+  }
+  
+  .signup-header {
+    padding: 16px;
+  }
+  
+  .signup-title {
+    font-size: 1.3rem;
+  }
+  
+  .signup-form {
+    padding: 16px;
+  }
+  
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="password"] {
+    padding: 14px;
+  }
+  
+  .search-button {
+    padding: 14px 20px;
+  }
+  
+  .radio-group {
+    gap: 16px;
+  }
+  
+  .submit-button {
+    padding: 16px;
+    font-size: 1.1rem;
+  }
+}
