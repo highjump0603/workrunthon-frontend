@@ -13,13 +13,13 @@ const Ledger = () => {
     budget_percentage: 0
   });
 
-  // 예산 정보 가져오기
+  // 사용자 프로필에서 예산 정보 가져오기
   const fetchBudgetInfo = async () => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
-
-      const response = await fetch('http://15.165.7.141:8000/users/budget', {
+      
+      const response = await fetch('http://15.165.7.141:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -28,11 +28,16 @@ const Ledger = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setBudgetInfo(data);
+        const userData = await response.json();
+        // 사용자 프로필에서 예산 정보 추출
+        setBudgetInfo({
+          total_budget: userData.budget || 0,
+          remaining_budget: userData.budget || 0, // 현재는 총 예산과 동일하게 설정
+          budget_percentage: 0 // 아직 지출 정보가 없어서 0으로 설정
+        });
       }
     } catch (error) {
-      console.error('예산 정보 조회 에러:', error);
+      console.error('사용자 프로필 조회 에러:', error);
     }
   };
 

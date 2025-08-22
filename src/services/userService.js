@@ -36,7 +36,43 @@ export const userService = {
     }
   },
 
-  // 사용자 정보 수정
+  // 사용자 프로필 수정 (PUT /users/me)
+  async updateProfile(updateData) {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('액세스 토큰이 없습니다.');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (response.status === 401) {
+        throw new Error('인증이 만료되었습니다.');
+      }
+
+      if (response.status === 500) {
+        throw new Error('서버 오류가 발생했습니다.');
+      }
+
+      if (!response.ok) {
+        throw new Error('사용자 프로필 수정에 실패했습니다.');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('사용자 프로필 수정 오류:', error);
+      throw error;
+    }
+  },
+
+  // 사용자 정보 수정 (PUT /users/{user_id})
   async updateUser(userId, updateData) {
     try {
       const accessToken = localStorage.getItem('accessToken');

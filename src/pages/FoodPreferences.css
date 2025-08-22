@@ -165,6 +165,18 @@
   }
 }
 
+/* 로딩 상태 스타일 */
+.food-preferences-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.food-preferences-loading p {
+  margin: 0;
+  font-size: 16px;
+}
+
 /* 스크롤바 숨김 */
 .food-preferences-container::-webkit-scrollbar {
   display: none;

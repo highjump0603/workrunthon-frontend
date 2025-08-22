@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AllergySettings.css';
 import LeftArrowIcon from '../assets/left_arrow.svg';
+import { userService } from '../services/userService';
 
 const AllergySettings = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const AllergySettings = () => {
     shellfish: false,
     pork: false
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleAllergyChange = (id) => {
     setAllergies(prev => ({
@@ -29,11 +31,99 @@ const AllergySettings = () => {
     }));
   };
 
-  const handleSave = () => {
-    console.log('알레르기 설정 저장:', allergies);
-    // 여기에 저장 로직을 추가할 수 있습니다
-    alert('알레르기 설정이 저장되었습니다.');
-    navigate('/mypage');
+  // 알레르기 정보를 API 형식으로 변환
+  const convertAllergiesToAPI = () => {
+    const allergyList = [];
+    Object.entries(allergies).forEach(([key, value]) => {
+      if (value) {
+        const allergyMap = {
+          egg: '계란',
+          milk: '우유',
+          buckwheat: '메밀',
+          peanut: '땅콩',
+          mackerel: '고등어',
+          crab: '게',
+          squid: '오징어',
+          nuts: '견과류',
+          soybean: '대두',
+          wheat: '밀',
+          peach: '복숭아',
+          shrimp: '새우',
+          shellfish: '조개류',
+          pork: '돼지고기'
+        };
+        allergyList.push(allergyMap[key]);
+      }
+    });
+    return allergyList;
+  };
+
+  // API 형식의 알레르기 정보를 체크박스 상태로 변환
+  const convertAPItoAllergies = (apiAllergies) => {
+    const newAllergies = { ...allergies };
+    if (apiAllergies && Array.isArray(apiAllergies)) {
+      apiAllergies.forEach(allergy => {
+        const key = Object.keys(allergies).find(k => {
+          const allergyMap = {
+            '계란': 'egg',
+            '우유': 'milk',
+            '메밀': 'buckwheat',
+            '땅콩': 'peanut',
+            '고등어': 'mackerel',
+            '게': 'crab',
+            '오징어': 'squid',
+            '견과류': 'nuts',
+            '대두': 'soybean',
+            '밀': 'wheat',
+            '복숭아': 'peach',
+            '새우': 'shrimp',
+            '조개류': 'shellfish',
+            '돼지고기': 'pork'
+          };
+          return allergyMap[allergy] === k;
+        });
+        if (key) {
+          newAllergies[key] = true;
+        }
+      });
+    }
+    return newAllergies;
+  };
+
+  // 사용자 알레르기 정보 가져오기
+  const fetchAllergyInfo = async () => {
+    try {
+      setIsLoading(true);
+      const userData = await userService.getCurrentUser();
+      if (userData.allergies) {
+        const convertedAllergies = convertAPItoAllergies(userData.allergies);
+        setAllergies(convertedAllergies);
+      }
+    } catch (error) {
+      console.error('알레르기 정보 조회 에러:', error);
+      // 에러 시 기본값(모두 false) 유지
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 컴포넌트 마운트 시 알레르기 정보 가져오기
+  useEffect(() => {
+    fetchAllergyInfo();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSave = async () => {
+    try {
+      const allergyList = convertAllergiesToAPI();
+      await userService.updateProfile({
+        allergies: allergyList
+      });
+      alert('알레르기 설정이 저장되었습니다.');
+      navigate('/mypage');
+    } catch (error) {
+      console.error('알레르기 설정 저장 에러:', error);
+      alert('알레르기 설정 저장에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -49,8 +139,16 @@ const AllergySettings = () => {
       {/* 설명 */}
       <p className="allergy-description">선택 할 수 없는 음식 재료를 선택해주세요.</p>
 
+      {/* 로딩 상태 */}
+      {isLoading && (
+        <div className="allergy-loading">
+          <p>알레르기 정보를 불러오는 중...</p>
+        </div>
+      )}
+
       {/* 알레르기 체크박스 그리드 */}
-      <div className="allergy-checkbox-grid">
+      {!isLoading && (
+        <div className="allergy-checkbox-grid">
         <div className="checkbox-item">
           <input 
             type="checkbox" 
@@ -178,6 +276,7 @@ const AllergySettings = () => {
           <label htmlFor="pork">돼지고기</label>
         </div>
       </div>
+      )}
 
       {/* 저장 버튼 */}
       <div className="save-button-container2">

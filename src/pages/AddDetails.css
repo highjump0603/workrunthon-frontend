@@ -75,7 +75,7 @@
   border: none;
   background: transparent;
   font-size: 16px;
-  color: #D070707;
+  color: #000000;
   text-align: right;
   outline: none;
   width: 60%;
@@ -91,6 +91,35 @@
 
 .amount-input {
   font-weight: bold;
+}
+
+/* 음식점 선택 버튼 스타일 */
+.restaurant-input-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.restaurant-select-button {
+  padding: 12px 16px;
+  background-color: #26CA1D;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.restaurant-select-button:hover {
+  background-color: #22b91a;
+}
+
+.restaurant-input-container .field-input {
+  flex: 1;
 }
 
 .add-details-actions {

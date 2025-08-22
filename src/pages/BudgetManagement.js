@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './BudgetManagement.css';
 import LeftArrowIcon from '../assets/left_arrow.svg';
+import { userService } from '../services/userService';
 
 const BudgetManagement = () => {
   const navigate = useNavigate();
-  const [currentBudget, setCurrentBudget] = useState(400000);
-  const [recommendedBudget] = useState(325000);
-  const [recentSpendingAverage] = useState(392000);
+  const [currentBudget, setCurrentBudget] = useState(0);
+  const [recommendedBudget] = useState(0); // API가 아직 없어서 0으로 설정
+  const [recentSpendingAverage] = useState(0); // API가 아직 없어서 0으로 설정
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleBudgetChange = (amount) => {
     const newBudget = currentBudget + amount;
@@ -21,11 +23,58 @@ const BudgetManagement = () => {
     setCurrentBudget(value);
   };
 
-  const handleSave = () => {
-    console.log('예산 설정 저장:', currentBudget);
-    alert('예산이 저장되었습니다.');
-    navigate('/mypage');
+  // 사용자 프로필에서 예산 정보 가져오기
+  const fetchBudgetInfo = async () => {
+    try {
+      setIsLoading(true);
+      const userData = await userService.getCurrentUser();
+      setCurrentBudget(userData.budget || 0);
+    } catch (error) {
+      console.error('예산 정보 조회 에러:', error);
+      setCurrentBudget(0); // 에러 시 0원으로 설정
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // 컴포넌트 마운트 시 예산 정보 가져오기
+  useEffect(() => {
+    fetchBudgetInfo();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      // 사용자 프로필 업데이트
+      await userService.updateProfile({
+        budget: currentBudget
+      });
+      
+      alert('예산이 성공적으로 저장되었습니다.');
+      navigate('/mypage');
+    } catch (error) {
+      console.error('예산 저장 에러:', error);
+      alert('예산 저장에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  // 로딩 상태 표시
+  if (isLoading) {
+    return (
+      <div className="budget-management-container">
+        <div className="budget-header">
+          <button className="back-button" onClick={() => navigate('/mypage')}>
+            <img src={LeftArrowIcon} alt="back" className="back-arrow" />
+          </button>
+          <h1 className="budget-title">내 예산</h1>
+        </div>
+        <div className="budget-loading">
+          <p>예산 정보를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+
 
   return (
     <div className="budget-management-container">

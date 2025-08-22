@@ -17,6 +17,7 @@ import AddressManagement from './pages/AddressManagement';
 import SavedRestaurants from './pages/SavedRestaurants';
 import ProfileEdit from './pages/ProfileEdit';
 import Settings from './pages/Settings';
+import RestaurantSelection from './pages/RestaurantSelection';
 import WelcomePage from './pages/WelcomePage';
 import BudgetSetupPage from './pages/BudgetSetupPage';
 import OnboardingPage from './pages/OnboardingPage';
@@ -59,6 +60,7 @@ function AppContent() {
           <Route path="/saved-restaurants" element={<ProtectedRoute><SavedRestaurants /></ProtectedRoute>} />
           <Route path="/profile-edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/restaurant-selection" element={<ProtectedRoute><RestaurantSelection /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>

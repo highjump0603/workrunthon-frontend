@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './AddDetails.css';
 import leftArrow from '../assets/left_arrow.svg';
 
 const AddDetails = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     date: '2025.7.1',
     restaurant: '',
@@ -14,6 +15,18 @@ const AddDetails = () => {
 
   const [selectedRestaurant, setSelectedRestaurant] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(false);
+
+  // 식당 선택 페이지에서 돌아온 경우 선택된 식당 정보 처리
+  useEffect(() => {
+    if (location.state?.fromRestaurantSelection && location.state?.selectedRestaurant) {
+      const restaurant = location.state.selectedRestaurant;
+      setFormData(prev => ({
+        ...prev,
+        restaurant: restaurant.name
+      }));
+      setSelectedRestaurant(true);
+    }
+  }, [location.state]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -61,13 +74,22 @@ const AddDetails = () => {
 
                  <div className="form-field">
            <label className="field-label">음식점</label>
-           <input
-             type="text"
-             className={`field-input ${selectedRestaurant ? 'selected' : ''}`}
-             placeholder="음식점"
-             value={formData.restaurant}
-             onChange={(e) => handleInputChange('restaurant', e.target.value)}
-           />
+           <div className="restaurant-input-container">
+             <input
+               type="text"
+               className={`field-input ${selectedRestaurant ? 'selected' : ''}`}
+               placeholder="음식점"
+               value={formData.restaurant}
+               onChange={(e) => handleInputChange('restaurant', e.target.value)}
+               readOnly
+             />
+             <button 
+               className="restaurant-select-button"
+               onClick={() => navigate('/restaurant-selection')}
+             >
+               음식점 선택
+             </button>
+           </div>
          </div>
 
          <div className="form-field">
