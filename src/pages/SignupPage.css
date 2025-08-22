@@ -71,7 +71,9 @@
 
 .form-group input[type="text"],
 .form-group input[type="email"],
-.form-group input[type="password"] {
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group select {
   width: 100%;
   padding: 16px;
   border: 2px solid #e5e7eb;
@@ -81,12 +83,31 @@
   box-sizing: border-box;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
   border-color: #4CAF50;
 }
 
-.address-group {
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.form-select {
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.form-input {
+  background-color: #ffffff;
+}
+
+.address-group,
+.company-address-group {
   margin-bottom: 20px;
 }
 

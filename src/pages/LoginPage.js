@@ -39,7 +39,7 @@ const LoginPage = () => {
   return (
     <div className="login-page">
       <div className="login-container">
-        <div className="login-header">
+        <div className="login-header" onClick={() => navigate('/')}>
           <h1>365 plate</h1>
         </div>
         

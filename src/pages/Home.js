@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import ArrowRightIcon from '../assets/arrow.svg';
@@ -6,12 +6,44 @@ import BottomNavigation from '../components/BottomNavigation';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [currentBalance] = useState(150000);
-  const [totalBudget] = useState(500000);
   const [todaySpending] = useState([
     { category: 'lunch', amount: 10000, time: '점심' },
     { category: 'dinner', amount: 30500, time: '저녁' }
   ]);
+
+  const [budgetInfo, setBudgetInfo] = useState({
+    total_budget: 0,
+    remaining_budget: 0,
+    budget_percentage: 0
+  });
+
+  // 예산 정보 가져오기
+  const fetchBudgetInfo = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      const response = await fetch('http://15.165.7.141:8000/users/budget', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBudgetInfo(data);
+      }
+    } catch (error) {
+      console.error('예산 정보 조회 에러:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 예산 정보 가져오기
+  useEffect(() => {
+    fetchBudgetInfo();
+  }, []);
 
   // 페이지뷰 관련 state
   const [currentPage, setCurrentPage] = useState(0);
@@ -51,7 +83,7 @@ const Home = () => {
     }
   ];
 
-  const spendingProgress = (currentBalance / totalBudget) * 100;
+
 
   // 터치/마우스 이벤트 핸들러
   const handleStart = (clientX) => {
@@ -132,7 +164,7 @@ const Home = () => {
       {/* Top Info Bar */}
       <div className="info-bar">
         <div className="location">반포동</div>
-        <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩{currentBalance.toLocaleString()}</span> 남음</div>
+                 <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩0</span> 남음</div>
       </div>
 
       {/* Promotional Banner */}
@@ -223,13 +255,13 @@ const Home = () => {
         <h2 className="home-section-title font-bold">my wallet</h2>
         <div className="card">
           <div className="wallet-amounts">
-            <div className="current-amount font-bold">₩{currentBalance.toLocaleString()}</div>
-            <div className="total-budget font-bold">₩ {totalBudget.toLocaleString()}</div>
+            <div className="current-amount font-bold">₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</div>
+            <div className="total-budget font-bold">₩{budgetInfo?.total_budget?.toLocaleString() || 0}</div>
           </div>
           <div className="progress-bar">
             <div 
               className="progress-fill" 
-              style={{ width: `${spendingProgress}%` }}
+              style={{ width: `${Math.min(budgetInfo?.budget_percentage || 0, 100)}%` }}
             ></div>
           </div>
         </div>
