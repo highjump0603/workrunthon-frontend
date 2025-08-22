@@ -61,7 +61,7 @@
 
 .login-form-group input:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #25A71E;
 }
 
 .login-form-group input::placeholder {
@@ -87,7 +87,7 @@
 .login-checkbox-label input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: #4CAF50;
+  accent-color: #25A71E;
   margin: 0;
 }
 
@@ -105,7 +105,7 @@
 .login-button {
   width: 100%;
   padding: 18px;
-  background-color: #4CAF50;
+  background-color: #25A71E;
   color: white;
   border: none;
   border-radius: 12px;
@@ -182,7 +182,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #4CAF50;
+  background-color: #25A71E;
   color: white;
 }
 

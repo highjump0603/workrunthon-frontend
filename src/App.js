@@ -13,6 +13,7 @@ import RecentlyViewed from './pages/RecentlyViewed';
 import VisitHistory from './pages/VisitHistory';
 import MyReviews from './pages/MyReviews';
 import AddressManagement from './pages/AddressManagement';
+
 import SavedRestaurants from './pages/SavedRestaurants';
 import ProfileEdit from './pages/ProfileEdit';
 import Settings from './pages/Settings';
@@ -54,6 +55,7 @@ function AppContent() {
           <Route path="/visit-history" element={<ProtectedRoute><VisitHistory /></ProtectedRoute>} />
           <Route path="/my-reviews" element={<ProtectedRoute><MyReviews /></ProtectedRoute>} />
           <Route path="/address-management" element={<ProtectedRoute><AddressManagement /></ProtectedRoute>} />
+  
           <Route path="/saved-restaurants" element={<ProtectedRoute><SavedRestaurants /></ProtectedRoute>} />
           <Route path="/profile-edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

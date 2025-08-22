@@ -169,6 +169,32 @@
   color: #26CA1D;
 }
 
+/* 로딩, 에러, 빈 상태 스타일 */
+.address-management-loading,
+.address-management-error,
+.address-management-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.address-management-loading p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.address-management-error p {
+  margin: 0;
+  font-size: 16px;
+  color: #dc3545;
+}
+
+.address-management-empty p {
+  margin: 0;
+  font-size: 16px;
+  color: #999;
+}
+
 /* 새 주소 추가 버튼 */
 .address-management-add-address-section {
   display: flex;
