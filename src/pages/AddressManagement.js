@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import './AddressManagement.css';
 import BottomNavigation from '../components/BottomNavigation';
 import LeftArrowIcon from '../assets/left_arrow.svg';
 
 const AddressManagement = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
 
+
+
+  // 주소 검색 결과
   const addresses = [
     {
       id: 1,
@@ -23,14 +26,11 @@ const AddressManagement = () => {
     }
   ];
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-  };
 
-  const handleCurrentLocation = () => {
-    console.log('현재 위치로 찾기');
-    // 현재 위치 찾기 로직 추가 가능
-  };
+
+
+
+
 
   const handleEditAddress = (address) => {
     console.log(`${address.title} 주소 편집`);
@@ -62,22 +62,9 @@ const AddressManagement = () => {
         <h1 className="address-management-title">주소 관리</h1>
       </div>
 
-      {/* 주소 검색 및 현재 위치 찾기 */}
-      <div className="address-management-search-location-section">
-        <input
-          type="text"
-          placeholder="지번, 도로명, 건물명으로 검색"
-          value={searchQuery}
-          onChange={handleSearch}
-          className="address-management-search-input"
-        />
-        <button 
-          className="address-management-current-location-button"
-          onClick={handleCurrentLocation}
-        >
-          현재 위치로 찾기
-        </button>
-      </div>
+
+
+
 
       {/* 저장된 주소 목록 */}
       <div className="address-management-saved-addresses-section">

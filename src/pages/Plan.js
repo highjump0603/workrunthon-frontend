@@ -6,15 +6,48 @@ import ArrowRightIcon from '../assets/arrow.svg';
 const Plan = () => {
   const [currentMonth, setCurrentMonth] = useState(8);
   const [currentYear, setCurrentYear] = useState(2025);
-  const [monthlyLimit] = useState(500000);
-  const [remainingBudget] = useState(350000);
   const [aiReallocation, setAiReallocation] = useState(true);
+  
+  // 예산 정보 state 추가
+  const [budgetInfo, setBudgetInfo] = useState({
+    total_budget: 0,
+    remaining_budget: 0,
+    budget_percentage: 0
+  });
   const [paydayApply, setPaydayApply] = useState(true);
   const [weatherMenuRecommendation, setWeatherMenuRecommendation] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showExpensePopup, setShowExpensePopup] = useState(false);
   const [showLunchPopup, setShowLunchPopup] = useState(false);
   const [expenseIncluded, setExpenseIncluded] = useState(true);
+
+  // 예산 정보 가져오기
+  const fetchBudgetInfo = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      const response = await fetch('http://15.165.7.141:8000/users/budget', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBudgetInfo(data);
+      }
+    } catch (error) {
+      console.error('예산 정보 조회 에러:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 예산 정보 가져오기
+  useEffect(() => {
+    fetchBudgetInfo();
+  }, []);
 
   // 컴포넌트 언마운트 시 body 클래스 정리
   useEffect(() => {
@@ -132,11 +165,11 @@ const Plan = () => {
         <div className="budget-info">
           <div className="budget-item">
             <div className="budget-label font-bold">이번달 한도</div>
-            <div className="budget-amount font-semi-bold">₩{monthlyLimit.toLocaleString()}</div>
+            <div className="budget-amount font-semi-bold">₩{budgetInfo?.total_budget?.toLocaleString() || 0}</div>
           </div>
           <div className="budget-item">
             <div className="budget-label font-bold">남은 예산</div>
-            <div className="budget-amount font-semi-bold">₩{remainingBudget.toLocaleString()}</div>
+            <div className="budget-amount font-semi-bold">₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</div>
           </div>
         </div>
         <div className="budget-comparison font-regular">

@@ -121,8 +121,8 @@ const FoodPreferences = () => {
       </div>
 
       {/* 저장 버튼 */}
-      <div classNam="save-button-container2">
-        <butto className="save-button2" onClick={handleSave}>
+      <div classNam="food-preferences-save-button-container">
+        <butto className="food-preferences-save-button" onClick={handleSave}>
           저장
         </butto>
       </div>

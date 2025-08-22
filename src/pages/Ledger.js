@@ -1,13 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Ledger.css';
 import BottomNavigation from '../components/BottomNavigation';
 
 const Ledger = () => {
   const navigate = useNavigate();
-  const [monthlyBudget] = useState(300000);
-  const [remainingAmount] = useState(162500);
-  const [spentAmount] = useState(137500);
+  
+  // 예산 정보 state 추가
+  const [budgetInfo, setBudgetInfo] = useState({
+    total_budget: 0,
+    remaining_budget: 0,
+    budget_percentage: 0
+  });
+
+  // 예산 정보 가져오기
+  const fetchBudgetInfo = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      const response = await fetch('http://15.165.7.141:8000/users/budget', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBudgetInfo(data);
+      }
+    } catch (error) {
+      console.error('예산 정보 조회 에러:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 예산 정보 가져오기
+  useEffect(() => {
+    fetchBudgetInfo();
+  }, []);
 
   // 지출 내역 데이터
   const expenses = [
@@ -53,25 +85,25 @@ const Ledger = () => {
       <div className="ledger-budget-summary">
         <div className="ledger-budget-row">
           <span className="ledger-budget-label">월 예산</span>
-          <span className="ledger-budget-amount">₩{monthlyBudget.toLocaleString()}</span>
+          <span className="ledger-budget-amount">₩{budgetInfo?.total_budget?.toLocaleString() || 0}</span>
         </div>
         
         {/* 진행률 바 */}
         <div className="ledger-progress-bar">
           <div 
             className="ledger-progress-fill" 
-            style={{ width: `${(spentAmount / monthlyBudget) * 100}%` }}
+            style={{ width: `${Math.min(budgetInfo?.budget_percentage || 0, 100)}%` }}
           ></div>
         </div>
         
         <div className="ledger-budget-row">
           <span className="ledger-budget-label">남은 금액</span>
-          <span className="ledger-budget-remaining">₩{remainingAmount.toLocaleString()}</span>
+          <span className="ledger-budget-remaining">₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</span>
         </div>
         
         <div className="ledger-budget-row">
           <span className="ledger-budget-label">지출 금액</span>
-          <span className="ledger-budget-spent">₩{spentAmount.toLocaleString()}</span>
+          <span className="ledger-budget-spent">₩{(budgetInfo?.total_budget - budgetInfo?.remaining_budget)?.toLocaleString() || 0}</span>
         </div>
       </div>
 

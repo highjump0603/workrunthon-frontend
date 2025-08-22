@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Mypage.css';
@@ -8,6 +8,13 @@ import ArrowRightIcon from '../assets/arrow.svg';
 const Mypage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  
+  // 예산 정보 state 추가
+  const [budgetInfo, setBudgetInfo] = useState({
+    total_budget: 0,
+    remaining_budget: 0,
+    budget_percentage: 0
+  });
 
   const handleAllergyClick = () => {
     navigate('/allergy-settings');
@@ -49,6 +56,34 @@ const Mypage = () => {
     navigate('/saved-restaurants');
   };
 
+  // 예산 정보 가져오기
+  const fetchBudgetInfo = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      const response = await fetch('http://15.165.7.141:8000/users/budget', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBudgetInfo(data);
+      }
+    } catch (error) {
+      console.error('예산 정보 조회 에러:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 예산 정보 가져오기
+  useEffect(() => {
+    fetchBudgetInfo();
+  }, []);
+
   const handleLogout = async () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
       await logout();
@@ -79,7 +114,7 @@ const Mypage = () => {
         <div className="stat-divider"></div>
         <div className="stat-item">
           <div className="stat-label font-regular">이번 달 남은 돈</div>
-          <div className="stat-value font-semi-bold">350,000</div>
+          <div className="stat-value font-semi-bold">{budgetInfo?.remaining_budget?.toLocaleString() || 0}</div>
         </div>
       </div>
 

@@ -164,7 +164,7 @@ const Home = () => {
       {/* Top Info Bar */}
       <div className="info-bar">
         <div className="location">반포동</div>
-                 <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩0</span> 남음</div>
+                 <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</span> 남음</div>
       </div>
 
       {/* Promotional Banner */}
