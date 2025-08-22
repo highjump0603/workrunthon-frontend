@@ -13,8 +13,85 @@ const RestaurantSelection = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [mapCenter, setMapCenter] = useState({ lat: 37.4966, lng: 126.9577 }); // 숭실대 기본값
   const [map, setMap] = useState(null);
+  const [sortType, setSortType] = useState('distance'); // 'distance', 'rating', 'list'
+  const [displayedRestaurants, setDisplayedRestaurants] = useState([]); // 화면에 표시할 식당 목록
 
   const pageSize = 100; // API 최대 제한
+
+  // 두 지점 간의 거리 계산 (km 단위)
+  const calculateDistance = (lat1, lng1, lat2, lng2) => {
+    if (!lat1 || !lng1) return 99999;
+
+    const R = 6371; // 지구 반지름 (단위: km)
+    const toRad = (deg) => (deg * Math.PI) / 180;
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lng2 - lng1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  };
+
+  // 식당 목록 정렬
+  const sortRestaurants = (restaurantList, sortType, centerLat, centerLng) => {
+    if (!restaurantList.length) return restaurantList;
+
+    const sortedList = [...restaurantList];
+
+    switch (sortType) {
+      case 'distance':
+        // 거리순 정렬 (가까운 순)
+        if (centerLat && centerLng) {
+          sortedList.sort((a, b) => {
+            if (!a.latitude || !a.longitude) return 1;
+            if (!b.latitude || !b.longitude) return -1;
+            
+            const distanceA = calculateDistance(centerLat, centerLng, a.latitude, a.longitude);
+            const distanceB = calculateDistance(centerLat, centerLng, b.latitude, b.longitude);
+            return distanceA - distanceB;
+          });
+        }
+        break;
+      
+      case 'rating':
+        // 추천순 정렬 (랜덤 평점 기준)
+        sortedList.sort((a, b) => {
+          const ratingA = 4.0 + Math.random() * 1.0;
+          const ratingB = 4.0 + Math.random() * 1.0;
+          return ratingB - ratingA; // 높은 평점 순
+        });
+        break;
+      
+      case 'list':
+      default:
+        // 목록 순 (ID 순)
+        sortedList.sort((a, b) => a.id - b.id);
+        break;
+    }
+
+    return sortedList;
+  };
+
+  // 정렬 타입 변경 처리
+  const handleSortChange = (newSortType) => {
+    setSortType(newSortType);
+    
+    if (map) {
+      const center = map.getCenter();
+      if (center) {
+        const centerLat = center.lat();
+        const centerLng = center.lng();
+        const sortedList = sortRestaurants(restaurants, newSortType, centerLat, centerLng);
+        setDisplayedRestaurants(sortedList);
+      }
+    }
+  };
 
   // 모든 식당 데이터를 가져오기
   const fetchAllRestaurants = async (name = '') => {
@@ -47,8 +124,23 @@ const RestaurantSelection = () => {
           }
         }
         
-        setRestaurants(allRestaurants);
-        console.log(`총 ${allRestaurants.length}개의 식당 데이터를 수집했습니다.`);
+        // 중복된 ID 제거 (마지막에 온 데이터 우선)
+        const uniqueRestaurants = [];
+        const seenIds = new Set();
+        
+        for (let i = allRestaurants.length - 1; i >= 0; i--) {
+          const restaurant = allRestaurants[i];
+          if (!seenIds.has(restaurant.id)) {
+            seenIds.add(restaurant.id);
+            uniqueRestaurants.unshift(restaurant);
+          }
+        }
+        
+        setRestaurants(uniqueRestaurants);
+        console.log(`총 ${uniqueRestaurants.length}개의 고유한 식당 데이터를 수집했습니다.`);
+        
+        // 초기 정렬된 목록 설정
+        setDisplayedRestaurants(uniqueRestaurants);
       }
     } catch (error) {
       console.error('식당 목록 조회 에러:', error);
@@ -61,9 +153,6 @@ const RestaurantSelection = () => {
   // 현재 지도 영역의 식당만 마커로 표시
   const updateMarkersForCurrentView = () => {
     if (!map || !restaurants.length) return;
-    
-    const bounds = map.getBounds();
-    if (!bounds) return;
     
     try {
       // 기존 마커들 제거
@@ -78,27 +167,37 @@ const RestaurantSelection = () => {
       // 마커 배열 초기화
       window.restaurantMarkers = [];
       
-      // 현재 지도 영역에 있는 식당만 마커로 표시
-      const restaurantsInView = restaurants.filter(restaurant => {
+      // 지도 중심점 가져오기
+      const center = map.getCenter();
+      const centerLat = center.lat();
+      const centerLng = center.lng();
+      
+      // 지도 중심점으로부터 일정 거리 내의 식당만 필터링 (예: 10km)
+      const maxDistance = 10; // 10km 반경
+      
+      const nearbyRestaurants = restaurants.filter(restaurant => {
         if (!restaurant.latitude || !restaurant.longitude) return false;
         
-        const lat = restaurant.latitude;
-        const lng = restaurant.longitude;
+        const distance = calculateDistance(
+          centerLat, 
+          centerLng, 
+          restaurant.latitude, 
+          restaurant.longitude
+        );
         
-        // 지도 영역 내에 있는지 확인 (약간의 여유 공간 포함)
-        return lat >= bounds.southWest.lat - 0.1 && 
-               lat <= bounds.northEast.lat + 0.1 && 
-               lng >= bounds.southWest.lng - 0.1 && 
-               lng <= bounds.northEast.lng + 0.1;
+        return distance <= maxDistance;
       });
       
-      console.log(`현재 지도 영역에 ${restaurantsInView.length}개의 식당이 있습니다.`);
+      console.log(`지도 중심점으로부터 ${maxDistance}km 이내에 ${nearbyRestaurants.length}개의 식당이 있습니다.`);
+      
+      // 현재 정렬 타입에 따라 정렬
+      const sortedNearbyRestaurants = sortRestaurants(nearbyRestaurants, sortType, centerLat, centerLng);
       
       // 마커 생성 및 표시
-      restaurantsInView.forEach((restaurant) => {
+      sortedNearbyRestaurants.forEach((restaurant) => {
         try {
-          // 커스텀 마커 HTML 생성
-          const markerHTML = createCustomMarkerHTML(restaurant);
+          // 커스텀 마커 HTML 생성 (거리 정보 포함)
+          const markerHTML = createCustomMarkerHTML(restaurant, centerLat, centerLng);
 
           // 식당의 실제 위치 사용
           const position = new window.naver.maps.LatLng(
@@ -307,11 +406,15 @@ const RestaurantSelection = () => {
   };
 
   // 커스텀 마커 HTML 생성
-  const createCustomMarkerHTML = (restaurant) => {
+  const createCustomMarkerHTML = (restaurant, centerLat, centerLng) => {
     // 랜덤 평점 (4.0 ~ 5.0)
     const rating = (4.0 + Math.random() * 1.0).toFixed(1);
     // 랜덤 가격 (5,000 ~ 15,000원)
     const price = Math.floor(5000 + Math.random() * 10000);
+
+    // 거리 계산
+    const distance = calculateDistance(centerLat, centerLng, restaurant.latitude, restaurant.longitude);
+    const distanceText = `${distance.toFixed(1)}km`;
 
     return `
       <div class="custom-marker" style="
@@ -342,6 +445,11 @@ const RestaurantSelection = () => {
           <span style="color: #FFD700;">⭐ ${rating}</span>
           <span style="color: #26CA1D; font-weight: 600;">₩${price.toLocaleString()}</span>
         </div>
+        <div style="
+          font-size: 10px;
+          color: #999;
+          margin-top: 4px;
+        ">${distanceText}</div>
       </div>
     `;
   };
@@ -349,9 +457,17 @@ const RestaurantSelection = () => {
   // 식당 목록이 변경될 때마다 마커 업데이트
   useEffect(() => {
     if (map && restaurants.length > 0) {
-      updateMarkersForCurrentView();
+      // 지도가 완전히 로드된 후에만 마커 업데이트
+      const center = map.getCenter();
+      if (center) {
+        const centerLat = center.lat();
+        const centerLng = center.lng();
+        const sortedList = sortRestaurants(restaurants, sortType, centerLat, centerLng);
+        setDisplayedRestaurants(sortedList);
+        updateMarkersForCurrentView();
+      }
     }
-  }, [restaurants, map]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [restaurants, map, sortType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 지도 렌더링
   const renderMap = () => {
@@ -402,9 +518,24 @@ const RestaurantSelection = () => {
         <div className="section-header">
           <h2 className="section-title">주변 음식점</h2>
           <div className="sort-options">
-            <span className="sort-option">추천순</span>
-            <span className="sort-option">거리순</span>
-            <span className="sort-option">목록</span>
+            <span 
+              className={`sort-option ${sortType === 'rating' ? 'active' : ''}`}
+              onClick={() => handleSortChange('rating')}
+            >
+              추천순
+            </span>
+            <span 
+              className={`sort-option ${sortType === 'distance' ? 'active' : ''}`}
+              onClick={() => handleSortChange('distance')}
+            >
+              거리순
+            </span>
+            <span 
+              className={`sort-option ${sortType === 'list' ? 'active' : ''}`}
+              onClick={() => handleSortChange('list')}
+            >
+              목록
+            </span>
           </div>
         </div>
 
@@ -416,32 +547,49 @@ const RestaurantSelection = () => {
         )}
 
         {/* 식당 목록 */}
-        {!isLoading && restaurants.length > 0 && (
+        {!isLoading && displayedRestaurants.length > 0 && (
           <div className="restaurant-list">
-            {restaurants.map((restaurant) => (
-              <div
-                key={restaurant.id}
-                className={`restaurant-item ${selectedRestaurant?.id === restaurant.id ? 'selected' : ''}`}
-                onClick={() => handleRestaurantSelect(restaurant)}
-              >
-                <div className="restaurant-image">
-                  <div className="image-placeholder"></div>
-                </div>
-                <div className="restaurant-info">
-                  <div className="restaurant-name">{restaurant.name}</div>
-                  <div className="restaurant-rating">
-                    <span className="star-icon">⭐</span>
+            {displayedRestaurants.map((restaurant, index) => {
+              // 지도가 준비된 경우 거리 계산
+              let distanceText = '거리 정보 없음';
+              if (map) {
+                const center = map.getCenter();
+                if (center && restaurant.latitude && restaurant.longitude) {
+                  const distance = calculateDistance(
+                    center.lat(), 
+                    center.lng(), 
+                    restaurant.latitude, 
+                    restaurant.longitude
+                  );
+                  distanceText = `${distance.toFixed(1)}km`;
+                }
+              }
+              
+              return (
+                <div
+                  key={`${restaurant.id}-${index}`}
+                  className={`restaurant-item ${selectedRestaurant?.id === restaurant.id ? 'selected' : ''}`}
+                  onClick={() => handleRestaurantSelect(restaurant)}
+                >
+                  <div className="restaurant-image">
+                    <div className="image-placeholder"></div>
                   </div>
-                  <div className="restaurant-price">10000원 이내</div>
-                  <div className="restaurant-distance">1.1km</div>
+                  <div className="restaurant-info">
+                    <div className="restaurant-name">{restaurant.name}</div>
+                    <div className="restaurant-rating">
+                      <span className="star-icon">⭐</span>
+                    </div>
+                    <div className="restaurant-price">10000원 이내</div>
+                    <div className="restaurant-distance">{distanceText}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
         {/* 식당이 없을 때 */}
-        {!isLoading && restaurants.length === 0 && (
+        {!isLoading && displayedRestaurants.length === 0 && (
           <div className="no-restaurants">
             <p>검색 결과가 없습니다.</p>
           </div>
