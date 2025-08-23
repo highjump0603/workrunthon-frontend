@@ -10,9 +10,8 @@ const ProfileEdit = () => {
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
-    phone: '',
     birthDate: '',
-    gender: 'male'
+    gender: 'prefer_not_to_say'
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -47,9 +46,8 @@ const ProfileEdit = () => {
       const convertedData = {
         name: userData.name || '',
         email: userData.email || '',
-        phone: userData.phone || '',
         birthDate: userData.birth_date || '',
-        gender: userData.gender || 'male'
+        gender: userData.gender || 'prefer_not_to_say'
       };
       
       setProfileData(convertedData);
@@ -82,7 +80,6 @@ const ProfileEdit = () => {
       const updateData = {
         name: profileData.name,
         email: profileData.email,
-        phone: profileData.phone,
         birth_date: profileData.birthDate,
         gender: profileData.gender
       };
@@ -161,17 +158,6 @@ const ProfileEdit = () => {
         </div>
 
         <div className="profile-edit-profile-item">
-          <label className="profile-edit-profile-label">전화번호</label>
-          <input
-            type="tel"
-            value={profileData.phone}
-            onChange={(e) => handleInputChange('phone', e.target.value)}
-            disabled={!isEditing}
-            className="profile-edit-profile-input"
-          />
-        </div>
-
-        <div className="profile-edit-profile-item">
           <label className="profile-edit-profile-label">생년월일</label>
           <input
             type="date"
@@ -192,7 +178,7 @@ const ProfileEdit = () => {
           >
             <option value="male">남성</option>
             <option value="female">여성</option>
-            <option value="other">기타</option>
+            <option value="prefer_not_to_say">선택하지 않음</option>
           </select>
         </div>
       </div>
