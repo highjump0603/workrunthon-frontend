@@ -99,10 +99,30 @@ const Plan = () => {
         return;
       }
 
+      // 먼저 사용자 ID를 가져오기
+      const userResponse = await fetch('http://15.165.7.141:8000/users/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (!userResponse.ok) {
+        console.error('사용자 정보 조회 실패');
+        setMealPlans({});
+        setLoading(false);
+        return;
+      }
+
+      const userData = await userResponse.json();
+      const userId = userData.id;
+
       // YYYY-MM 형식으로 날짜 생성
       const planDate = `${year}-${month.toString().padStart(2, '0')}`;
       
-      const response = await fetch(`http://15.165.7.141:8000/planners/?plan_date=${planDate}`, {
+      // user_id 파라미터를 추가하여 현재 사용자의 계획만 조회
+      const response = await fetch(`http://15.165.7.141:8000/planners/?plan_date=${planDate}&user_id=${userId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
