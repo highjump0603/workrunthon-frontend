@@ -163,6 +163,155 @@
   background-color: #45a049;
 }
 
+/* 메뉴 입력 컨테이너 */
+.menu-input-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.menu-select-button {
+  padding: 12px 16px;
+  background-color: #26CA1D;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.menu-select-button:hover {
+  background-color: #22b91a;
+}
+
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 메뉴 모달 */
+.menu-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* 모달 검색 */
+.modal-search {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #26CA1D;
+}
+
+/* 메뉴 목록 */
+.menu-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+  background-color: #f8f9fa;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+}
+
+.menu-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #26CA1D;
+}
+
+/* 로딩 및 빈 상태 */
+.loading, .no-menus {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 14px;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 480px) {
   .add-details-page {
@@ -185,5 +334,30 @@
   .save-btn {
     padding: 12px;
     font-size: 14px;
+  }
+
+  .menu-modal {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .modal-header {
+    padding: 16px;
+  }
+  
+  .modal-search {
+    padding: 16px;
+  }
+  
+  .menu-item {
+    padding: 14px 16px;
+  }
+  
+  .menu-name {
+    font-size: 15px;
+  }
+  
+  .menu-price {
+    font-size: 13px;
   }
 }

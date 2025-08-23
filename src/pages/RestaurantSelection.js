@@ -415,7 +415,7 @@ const RestaurantSelection = () => {
   const handleConfirmSelection = () => {
     if (selectedRestaurant) {
       // 내역추가 페이지로 돌아가면서 선택된 식당 정보 전달
-      navigate('/add-expense', { 
+      navigate('/add-details', { 
         state: { 
           selectedRestaurant: selectedRestaurant,
           fromRestaurantSelection: true 
