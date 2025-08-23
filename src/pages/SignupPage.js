@@ -20,14 +20,12 @@ const SignupPage = () => {
     address: '',
     zipCode: '',
     company_address: '',
-    budget: budgetFromSetup,
-    gender: 'prefer_not_to_say',
-    activity_radius: 10,
-    meal_pattern: '3_meals',
-    latitude: null,
-    longitude: null,
-    onboarding_completed: false,
-    onboarding_step: 0,
+            budget: budgetFromSetup,
+        gender: 'prefer_not_to_say',
+        activity_radius: 10,
+        meal_pattern: '3_meals',
+        latitude: null,
+        longitude: null,
     preferred_menus: [],
     disliked_menus: [],
     allergies: [],
@@ -94,7 +92,8 @@ const SignupPage = () => {
         budget: formData.budget,
         gender: formData.gender,
         activity_radius: formData.activity_radius,
-        meal_pattern: formData.meal_pattern
+        meal_pattern: formData.meal_pattern,
+        onboarding_completed: true // 회원가입 시 온보딩 완료로 설정
       };
 
       // 실제 회원가입 API 호출
@@ -112,9 +111,14 @@ const SignupPage = () => {
                     if (response.ok) {
           const result = await response.json();
           console.log('회원가입 성공:', result);
-          alert('회원가입이 완료되었습니다! 추가 정보를 입력해주세요.');
-          // 설정된 예산 정보를 온보딩 페이지에 전달
-          navigate('/onboarding', { state: { budget: formData.budget, userInfo: result } });
+          alert('회원가입이 완료되었습니다! 이제 로그인해주세요.');
+          // 회원가입 완료 후 로그인 페이지로 이동
+          navigate('/login', { 
+            state: { 
+              message: '회원가입이 완료되었습니다. 로그인해주세요.',
+              newUser: true 
+            } 
+          });
                 } else {
           const errorData = await response.json();
           console.error('회원가입 실패 응답:', errorData);

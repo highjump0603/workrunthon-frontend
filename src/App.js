@@ -21,7 +21,7 @@ import RestaurantSelection from './pages/RestaurantSelection';
 import RestaurantDetail from './pages/RestaurantDetail';
 import WelcomePage from './pages/WelcomePage';
 import BudgetSetupPage from './pages/BudgetSetupPage';
-import OnboardingPage from './pages/OnboardingPage';
+
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import PlannerDetail from './pages/PlannerDetail';
@@ -45,7 +45,7 @@ function AppContent() {
         <Routes>
                   <Route path="/" element={<WelcomePage />} />
         <Route path="/budget-setup" element={<BudgetSetupPage />} />
-        <Route path="/onboarding" element={<OnboardingPage />} />
+
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
