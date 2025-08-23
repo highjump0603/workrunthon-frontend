@@ -78,6 +78,44 @@
   background-color: #e5e7eb;
 }
 
+/* 사용자 정보 표시 */
+.address-management-user-info {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #e9ecef;
+}
+
+.address-management-user-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.address-management-location-info {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  font-family: monospace;
+}
+
+.address-management-edit-mode-info {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+}
+
+.address-management-edit-mode-text {
+  font-size: 13px;
+  color: #856404;
+  margin: 0;
+  font-weight: 500;
+}
+
 /* 저장된 주소 섹션 */
 .address-management-saved-addresses-section {
   margin-bottom: 32px;

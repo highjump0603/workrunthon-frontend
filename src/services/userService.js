@@ -44,6 +44,9 @@ export const userService = {
         throw new Error('액세스 토큰이 없습니다.');
       }
 
+      console.log('프로필 업데이트 요청 데이터:', updateData);
+      console.log('요청 URL:', `${API_BASE_URL}/users/me`);
+
       const response = await fetch(`${API_BASE_URL}/users/me`, {
         method: 'PUT',
         headers: {
@@ -53,19 +56,28 @@ export const userService = {
         body: JSON.stringify(updateData),
       });
 
+      console.log('프로필 업데이트 응답 상태:', response.status);
+      console.log('프로필 업데이트 응답 헤더:', response.headers);
+
       if (response.status === 401) {
         throw new Error('인증이 만료되었습니다.');
       }
 
       if (response.status === 500) {
+        const errorText = await response.text();
+        console.error('서버 500 에러 상세:', errorText);
         throw new Error('서버 오류가 발생했습니다.');
       }
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('프로필 업데이트 실패 응답:', errorText);
         throw new Error('사용자 프로필 수정에 실패했습니다.');
       }
 
-      return await response.json();
+      const result = await response.json();
+      console.log('프로필 업데이트 성공 결과:', result);
+      return result;
     } catch (error) {
       console.error('사용자 프로필 수정 오류:', error);
       throw error;

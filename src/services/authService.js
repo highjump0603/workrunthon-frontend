@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://15.165.7.141:8000';
+const API_BASE_URL = 'https://15.165.7.141:8000';
 
 export const authService = {
   // 로그인

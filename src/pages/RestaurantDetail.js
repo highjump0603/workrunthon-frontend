@@ -12,6 +12,42 @@ const RestaurantDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 주소를 기반으로 위도경도 설정
+  const setCoordinatesFromAddress = useCallback(async (address) => {
+    if (!address) return;
+    
+    try {
+      // 네이버 지도 API 지오코딩 (클라이언트 사이드에서 직접 호출)
+      const response = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
+        method: 'GET',
+        headers: {
+          'X-NCP-APIGW-API-KEY-ID': process.env.REACT_APP_NAVER_CLIENT_ID || '',
+          'X-NCP-APIGW-API-KEY': process.env.REACT_APP_NAVER_CLIENT_SECRET || ''
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.addresses && data.addresses.length > 0) {
+          const coords = data.addresses[0];
+          setRestaurant(prev => ({
+            ...prev,
+            latitude: parseFloat(coords.y),
+            longitude: parseFloat(coords.x)
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('주소 기반 좌표 변환 에러:', error);
+      // API 키가 없거나 에러 발생 시 기본값 사용
+      setRestaurant(prev => ({
+        ...prev,
+        latitude: 37.5665, // 서울 시청 기본값
+        longitude: 126.9780
+      }));
+    }
+  }, []);
+
   // 식당 상세 정보 가져오기
   const fetchRestaurantDetail = useCallback(async () => {
     try {
@@ -46,6 +82,24 @@ const RestaurantDetail = () => {
       fetchRestaurantDetail();
     }
   }, [id, fetchRestaurantDetail]);
+
+  // 식당 정보가 로드되면 주소 기반으로 위도경도 설정
+  useEffect(() => {
+    const updateCoordinates = async () => {
+      if (restaurant && restaurant.address && (!restaurant.latitude || !restaurant.longitude)) {
+        const coordinates = await setCoordinatesFromAddress(restaurant.address);
+        if (coordinates) {
+          setRestaurant(prev => ({
+            ...prev,
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude
+          }));
+        }
+      }
+    };
+    
+    updateCoordinates();
+  }, [restaurant, setCoordinatesFromAddress]);
 
   // 방문 버튼 클릭 핸들러
   const handleVisit = () => {
@@ -197,8 +251,12 @@ const RestaurantDetail = () => {
             </div>
           </div>
         </div>
-        <button className="restaurant-detail-directions-button" onClick={handleDirections}>
-          길안내
+        <button 
+          className="restaurant-detail-directions-button" 
+          onClick={handleDirections}
+          disabled={!restaurant.latitude || !restaurant.longitude}
+        >
+          {restaurant.latitude && restaurant.longitude ? '길안내' : '위치 정보 없음'}
         </button>
       </div>
 

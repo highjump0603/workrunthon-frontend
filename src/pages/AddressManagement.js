@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import './AddressManagement.css';
@@ -13,7 +13,9 @@ const AddressManagement = () => {
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
   const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
   const [selectedAddressType, setSelectedAddressType] = useState('home');
-  const [userInfo, setUserInfo] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [userInfo, setUserInfo] = useState(null); // 사용자 정보 표시용
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -21,6 +23,37 @@ const AddressManagement = () => {
 
   // 주소 목록 상태
   const [addresses, setAddresses] = useState([]);
+
+  // 주소를 기반으로 위도경도 설정
+  const setCoordinatesFromAddress = useCallback(async (address) => {
+    if (!address) return null;
+    
+    try {
+      // 네이버 지도 API 지오코딩 (클라이언트 사이드에서 직접 호출)
+      const response = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
+        method: 'GET',
+        headers: {
+          'X-NCP-APIGW-API-KEY-ID': process.env.REACT_APP_NAVER_CLIENT_ID || '',
+          'X-NCP-APIGW-API-KEY': process.env.REACT_APP_NAVER_CLIENT_SECRET || ''
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.addresses && data.addresses.length > 0) {
+          const coords = data.addresses[0];
+          return {
+            latitude: parseFloat(coords.y),
+            longitude: parseFloat(coords.x)
+          };
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('주소 기반 좌표 변환 에러:', error);
+      return null;
+    }
+  }, []);
 
 
 
@@ -43,7 +76,7 @@ const AddressManagement = () => {
       // 주소 목록 구성
       const addressList = [];
       
-      if (userData.address) {
+      if (userData.address && userData.address.trim() !== "") {
         addressList.push({
           id: 'home',
           title: '집',
@@ -53,7 +86,7 @@ const AddressManagement = () => {
         });
       }
       
-      if (userData.company_address) {
+      if (userData.company_address && userData.company_address.trim() !== "") {
         addressList.push({
           id: 'company',
           title: '회사',
@@ -75,8 +108,12 @@ const AddressManagement = () => {
 
   const handleEditAddress = async (address) => {
     try {
-      // 주소 편집을 위한 팝업 열기 (구현 필요)
-      console.log(`${address.title} 주소 편집`);
+      // 편집 모드 설정
+      setIsEditMode(true);
+      setEditingAddress(address);
+      setSelectedAddressType(address.type);
+      // 주소 검색 팝업 열기
+      setIsSearchPopupOpen(true);
     } catch (error) {
       console.error('주소 편집 실패:', error);
       alert('주소 편집에 실패했습니다.');
@@ -89,20 +126,26 @@ const AddressManagement = () => {
     }
 
     try {
+      console.log('삭제할 주소:', address);
+      
       const updateData = {};
       
       if (address.type === 'home') {
-        updateData.address = null;
-        updateData.latitude = null;
-        updateData.longitude = null;
+        updateData.address = ""; // null 대신 빈 문자열 사용
+        updateData.latitude = 0; // null 대신 0 사용
+        updateData.longitude = 0; // null 대신 0 사용
       } else if (address.type === 'company') {
-        updateData.company_address = null;
+        updateData.company_address = ""; // null 대신 빈 문자열 사용
       }
 
-      await userService.updateUser(userInfo.id, updateData);
+      console.log('업데이트할 데이터:', updateData);
+
+      // /users/me 엔드포인트를 사용하여 프로필 업데이트
+      const result = await userService.updateProfile(updateData);
+      console.log('프로필 업데이트 결과:', result);
       
-      // 주소 목록에서 제거
-      setAddresses(prev => prev.filter(addr => addr.id !== address.id));
+      // 사용자 정보 다시 로드하여 최신 정보 반영
+      await loadUserInfo();
       
       alert('주소가 삭제되었습니다.');
     } catch (error) {
@@ -125,13 +168,20 @@ const AddressManagement = () => {
         company_address: null
       };
 
-      await userService.updateUser(userInfo.id, updateData);
+      // 회사 주소를 기본 주소로 설정할 때 위도경도도 함께 설정
+      if (address.type === 'company') {
+        const coordinates = await setCoordinatesFromAddress(address.address);
+        if (coordinates) {
+          updateData.latitude = coordinates.latitude;
+          updateData.longitude = coordinates.longitude;
+        }
+      }
+
+      // /users/me 엔드포인트를 사용하여 프로필 업데이트
+      await userService.updateProfile(updateData);
       
-      // 주소 목록 업데이트
-      setAddresses(prev => prev.map(addr => ({
-        ...addr,
-        isDefault: addr.id === address.id
-      })));
+      // 사용자 정보 다시 로드하여 최신 정보 반영
+      await loadUserInfo();
       
       alert('기본 주소가 설정되었습니다.');
     } catch (error) {
@@ -164,36 +214,66 @@ const AddressManagement = () => {
 
   const handleAddressSelect = async (addressData) => {
     try {
-      console.log('새 주소 추가:', addressData);
-      
-      // API를 통해 주소 저장
-      const updateData = {};
-      
-      if (addressData.type === 'home') {
-        updateData.address = addressData.address;
-      } else if (addressData.type === 'company') {
-        updateData.company_address = addressData.address;
-      }
+      if (isEditMode) {
+        console.log('주소 편집:', addressData);
+        // 편집 모드: 기존 주소를 새 주소로 교체
+        const coordinates = await setCoordinatesFromAddress(addressData.address);
+        
+        const updateData = {};
+        
+        if (addressData.type === 'home') {
+          updateData.address = addressData.address;
+          if (coordinates) {
+            updateData.latitude = coordinates.latitude;
+            updateData.longitude = coordinates.longitude;
+          }
+        } else if (addressData.type === 'company') {
+          updateData.company_address = addressData.address;
+        }
 
-      await userService.updateUser(userInfo.id, updateData);
+        await userService.updateProfile(updateData);
+        await loadUserInfo();
+        
+        if (coordinates) {
+          alert('주소와 위치 정보가 성공적으로 수정되었습니다.');
+        } else {
+          alert('주소가 성공적으로 수정되었습니다. (위치 정보는 설정되지 않았습니다)');
+        }
+        
+        // 편집 모드 해제
+        setIsEditMode(false);
+        setEditingAddress(null);
+      } else {
+        console.log('새 주소 추가:', addressData);
+        // 추가 모드: 새 주소 추가
+        const coordinates = await setCoordinatesFromAddress(addressData.address);
+        
+        const updateData = {};
+        
+        if (addressData.type === 'home') {
+          updateData.address = addressData.address;
+          if (coordinates) {
+            updateData.latitude = coordinates.latitude;
+            updateData.longitude = coordinates.longitude;
+          }
+        } else if (addressData.type === 'company') {
+          updateData.company_address = addressData.address;
+        }
+
+        await userService.updateProfile(updateData);
+        await loadUserInfo();
+        
+        if (coordinates) {
+          alert('주소와 위치 정보가 성공적으로 추가되었습니다.');
+        } else {
+          alert('주소가 성공적으로 추가되었습니다. (위치 정보는 설정되지 않았습니다)');
+        }
+      }
       
-      // 새 주소를 주소 목록에 추가
-      const newAddress = {
-        id: addressData.type,
-        title: addressData.type === 'home' ? '집' : '회사',
-        address: addressData.address,
-        type: addressData.type,
-        isDefault: addressData.type === 'home'
-      };
-      
-      setAddresses(prevAddresses => [...prevAddresses, newAddress]);
-      console.log('추가된 주소:', newAddress);
-      
-      alert('주소가 성공적으로 추가되었습니다.');
       setIsSearchPopupOpen(false);
     } catch (error) {
-      console.error('주소 추가 실패:', error);
-      alert('주소 추가에 실패했습니다.');
+      console.error('주소 처리 실패:', error);
+      alert('주소 처리에 실패했습니다.');
     }
   };
 
@@ -213,9 +293,29 @@ const AddressManagement = () => {
 
 
 
-      {/* 저장된 주소 목록 */}
-      <div className="address-management-saved-addresses-section">
-        <h2 className="address-management-section-title">저장된 주소</h2>
+                           {/* 사용자 정보 표시 */}
+        {userInfo && (
+          <div className="address-management-user-info">
+            <h3 className="address-management-user-name">{userInfo.name}님의 주소</h3>
+            {userInfo.latitude && userInfo.longitude && (
+              <p className="address-management-location-info">
+                현재 위치: 위도 {userInfo.latitude.toFixed(6)}, 경도 {userInfo.longitude.toFixed(6)}
+              </p>
+            )}
+            {/* 편집 모드 표시 */}
+            {isEditMode && editingAddress && (
+              <div className="address-management-edit-mode-info">
+                <p className="address-management-edit-mode-text">
+                  📝 {editingAddress.title} 주소 편집 중...
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+       {/* 저장된 주소 목록 */}
+       <div className="address-management-saved-addresses-section">
+         <h2 className="address-management-section-title">저장된 주소</h2>
         
         {isLoading ? (
           <div className="address-management-loading">
@@ -289,13 +389,18 @@ const AddressManagement = () => {
         onAddressTypeSelect={handleAddressTypeSelect}
       />
 
-      {/* 주소 검색 팝업 */}
-      <AddressSearchPopup
-        isOpen={isSearchPopupOpen}
-        onClose={() => setIsSearchPopupOpen(false)}
-        onAddressSelect={handleAddressSelect}
-        addressType={selectedAddressType}
-      />
+             {/* 주소 검색 팝업 */}
+       <AddressSearchPopup
+         isOpen={isSearchPopupOpen}
+         onClose={() => {
+           setIsSearchPopupOpen(false);
+           // 편집 모드 초기화
+           setIsEditMode(false);
+           setEditingAddress(null);
+         }}
+         onAddressSelect={handleAddressSelect}
+         addressType={selectedAddressType}
+       />
 
       <div style={{height: '100px'}}></div>
       <BottomNavigation activeTab="mypage" />
