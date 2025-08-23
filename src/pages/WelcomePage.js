@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './WelcomePage.css';
 
 const WelcomePage = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, loading } = useAuth();
+
+  // 이미 로그인되어 있으면 홈 페이지로 리디렉션
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      console.log('이미 로그인되어 있음. 홈 페이지로 이동합니다.');
+      navigate('/home', { replace: true });
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   const handleStartClick = () => {
     navigate('/signup');
@@ -12,6 +22,20 @@ const WelcomePage = () => {
   const handleLoginClick = () => {
     navigate('/login');
   };
+
+  // 로딩 중이면 로딩 화면 표시
+  if (loading) {
+    return (
+      <div className="welcome-page">
+        <div className="welcome-container">
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>로딩 중...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="welcome-page">

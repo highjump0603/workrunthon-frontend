@@ -109,24 +109,6 @@ const RestaurantDetail = () => {
     // 방문 로직 구현
   };
 
-  // 저장 버튼 클릭 핸들러
-  const handleSave = () => {
-    console.log('저장 처리');
-    // 저장 로직 구현
-  };
-
-  // 플랜에 추가 버튼 클릭 핸들러
-  const handleAddToPlan = () => {
-    navigate('/plan');
-  };
-
-  // 길안내 버튼 클릭 핸들러
-  const handleDirections = () => {
-    if (restaurant && restaurant.latitude && restaurant.longitude) {
-      const url = `https://map.naver.com/?lat=${restaurant.latitude}&lng=${restaurant.longitude}&zoom=15`;
-      window.open(url, '_blank');
-    }
-  };
 
   if (loading) {
     return (
@@ -204,9 +186,6 @@ const RestaurantDetail = () => {
           <button className="restaurant-detail-action-button restaurant-detail-visit-button" onClick={handleVisit}>
             방문
           </button>
-          <button className="restaurant-detail-action-button restaurant-detail-save-button" onClick={handleSave}>
-            저장
-          </button>
         </div>
       </div>
 
@@ -228,38 +207,6 @@ const RestaurantDetail = () => {
           <span className="restaurant-detail-detail-label">휴무일</span>
           <span className="restaurant-detail-detail-value">일요일 휴무</span>
         </div>
-      </div>
-
-      {/* 플랜 추천 섹션 */}
-      <div className="restaurant-detail-plan-recommendation-section">
-        <h2 className="restaurant-detail-section-title">플랜 추천</h2>
-        <div className="restaurant-detail-recommendation-box">
-          <div className="restaurant-detail-recommendation-text">
-            오늘 월급날이라 비싼 오마카세 먹고싶어
-          </div>
-        </div>
-        <button className="restaurant-detail-add-to-plan-button" onClick={handleAddToPlan}>
-          플랜에 추가
-        </button>
-      </div>
-
-      {/* 네이버 지도 섹션 */}
-      <div className="restaurant-detail-map-section">
-        <div className="restaurant-detail-map-container">
-          <div className="restaurant-detail-map-placeholder">
-            <div className="restaurant-detail-map-text">네이버 지도</div>
-            <div className="restaurant-detail-map-coordinates">
-              위도: {restaurant.latitude}, 경도: {restaurant.longitude}
-            </div>
-          </div>
-        </div>
-        <button 
-          className="restaurant-detail-directions-button" 
-          onClick={handleDirections}
-          disabled={!restaurant.latitude || !restaurant.longitude}
-        >
-          {restaurant.latitude && restaurant.longitude ? '길안내' : '위치 정보 없음'}
-        </button>
       </div>
 
       <div style={{height: '100px'}}></div>

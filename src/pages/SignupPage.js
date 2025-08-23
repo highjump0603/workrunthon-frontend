@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SignupPage.css';
 import LeftArrowIcon from '../assets/left_arrow.svg';
+import { geocodingService } from '../services/geocodingService';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -74,13 +75,21 @@ const SignupPage = () => {
     }
 
     try {
-            // password_confirm 필드를 포함한 필수 필드
+            // password_confirm 필드를 포함한 필수 필드 + 위도/경도 정보
       const signupData = {
         user_id: formData.user_id,
         password: formData.password,
         password_confirm: formData.password_confirm,
         name: formData.name,
-        email: formData.email
+        email: formData.email,
+        address: formData.address || '',
+        company_address: formData.company_address || '',
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        budget: formData.budget,
+        gender: formData.gender,
+        activity_radius: formData.activity_radius,
+        meal_pattern: formData.meal_pattern
       };
 
       // 실제 회원가입 API 호출
@@ -196,12 +205,37 @@ const SignupPage = () => {
     }
   };
 
-  const handleAddressSelect = (address, zipCode) => {
-    setFormData(prev => ({
-      ...prev,
-      address: address,
-      zipCode: zipCode
-    }));
+  const handleAddressSelect = async (address, zipCode) => {
+    try {
+      // 주소를 위도/경도로 변환
+      console.log('주소를 좌표로 변환 중:', address);
+      const coordinates = await geocodingService.geocodeAddress(address);
+      
+      setFormData(prev => ({
+        ...prev,
+        address: address,
+        zipCode: zipCode,
+        latitude: coordinates ? coordinates.latitude : null,
+        longitude: coordinates ? coordinates.longitude : null
+      }));
+      
+      if (coordinates) {
+        console.log('주소 좌표 변환 성공:', coordinates);
+      } else {
+        console.warn('주소 좌표 변환 실패:', address);
+      }
+    } catch (error) {
+      console.error('주소 좌표 변환 에러:', error);
+      // 에러가 발생해도 주소는 저장
+      setFormData(prev => ({
+        ...prev,
+        address: address,
+        zipCode: zipCode,
+        latitude: null,
+        longitude: null
+      }));
+    }
+    
     setAddressResults([]);
     setAddressSearch('');
   };
@@ -235,11 +269,31 @@ const SignupPage = () => {
     }
   };
 
-  const handleCompanyAddressSelect = (address) => {
-    setFormData(prev => ({
-      ...prev,
-      company_address: address
-    }));
+  const handleCompanyAddressSelect = async (address) => {
+    try {
+      // 회사 주소를 위도/경도로 변환 (참고용, 집 주소가 메인)
+      console.log('회사 주소를 좌표로 변환 중:', address);
+      const coordinates = await geocodingService.geocodeAddress(address);
+      
+      setFormData(prev => ({
+        ...prev,
+        company_address: address
+      }));
+      
+      if (coordinates) {
+        console.log('회사 주소 좌표 변환 성공:', coordinates);
+      } else {
+        console.warn('회사 주소 좌표 변환 실패:', address);
+      }
+    } catch (error) {
+      console.error('회사 주소 좌표 변환 에러:', error);
+      // 에러가 발생해도 주소는 저장
+      setFormData(prev => ({
+        ...prev,
+        company_address: address
+      }));
+    }
+    
     setCompanyAddressResults([]);
     setCompanyAddressSearch('');
   };
@@ -349,6 +403,11 @@ const SignupPage = () => {
                   <span className="address-value">{formData.address}</span>
                   {formData.zipCode && (
                     <span className="zip-code">({formData.zipCode})</span>
+                  )}
+                  {formData.latitude && formData.longitude && (
+                    <div className="coordinates-info">
+                      <small>위도: {formData.latitude.toFixed(6)}, 경도: {formData.longitude.toFixed(6)}</small>
+                    </div>
                   )}
                 </div>
               )}

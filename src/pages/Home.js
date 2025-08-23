@@ -16,6 +16,10 @@ const Home = () => {
   });
   // 현재 사용자 ID 추가
   const [currentUserId, setCurrentUserId] = useState(null);
+  
+  // API 추천 데이터 상태
+  const [recommendationComment, setRecommendationComment] = useState('');
+  const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(true);
 
   // 오늘 날짜를 YYYY-MM-DD 형식으로 가져오기
   const getTodayDate = () => {
@@ -73,11 +77,15 @@ const Home = () => {
         
         // 사용자 ID 저장
         setCurrentUserId(userId);
+        // 예산 정보 설정
+        const userBudget = userData.budget || 0;
         setBudgetInfo({
-          total_budget: userData.budget || 0,
-          remaining_budget: userData.budget || 0,
+          total_budget: userBudget,
+          remaining_budget: userBudget,
           budget_percentage: 0
         });
+        
+        console.log('예산 정보 설정 완료:', { budget: userBudget, userId });
       }
     } catch (error) {
       console.error('사용자 프로필 조회 에러:', error);
@@ -171,11 +179,81 @@ const Home = () => {
         } catch (e) {
           console.error('에러 응답 읽기 실패:', e);
         }
+        // 에러 발생 시 빈 배열로 초기화
+        setTodaySpending([]);
       }
     } catch (error) {
       console.error('지출 이력 조회 에러:', error);
+      // 에러 발생 시 빈 배열로 초기화
+      setTodaySpending([]);
     }
   }, [currentUserId, budgetInfo.total_budget]);
+
+  // AI 추천 코멘트 가져오기
+  const fetchAiRecommendation = useCallback(async () => {
+    try {
+      setIsLoadingRecommendation(true);
+      
+      // 기본 메시지로 초기화 (API 실패 시에도 이 메시지 사용)
+      const defaultMessage = '오늘도 맛있는 식사 하세요! 😊';
+      setRecommendationComment(defaultMessage);
+      
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        console.log('토큰이 없어서 AI 추천을 가져올 수 없습니다.');
+        return;
+      }
+
+      // AI 추천 API 호출 시도 (실패해도 기본 메시지 유지)
+      try {
+        const userResponse = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          const userId = userData.id;  // 숫자 ID 사용 (다른 API와 일관성 맞춤)
+          
+          console.log('AI 추천 API 호출 시도 - 사용자 ID:', userId);
+          
+          const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/recommand?user_id=${userId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'accept': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log('AI 추천 성공:', data);
+            
+            let comment = data.comment || data;
+            if (typeof comment === 'string') {
+              comment = comment.replace(/^["']|["']$/g, '').trim();
+              if (comment) {
+                setRecommendationComment(comment);
+              }
+            }
+          } else {
+            console.log(`AI 추천 API 응답 실패: ${response.status} - 기본 메시지 사용`);
+          }
+        } else {
+          console.log('사용자 정보 조회 실패 - 기본 메시지 사용');
+        }
+      } catch (apiError) {
+        console.log('AI 추천 API 호출 중 에러:', apiError.message, '- 기본 메시지 사용');
+      }
+    } catch (error) {
+      console.error('AI 추천 전체 프로세스 에러:', error);
+      setRecommendationComment('오늘도 맛있는 식사 하세요! 😊');
+    } finally {
+      setIsLoadingRecommendation(false);
+    }
+  }, []);
 
   // 이번주와 지난주 지출 비교
   const fetchWeekComparison = useCallback(async () => {
@@ -269,13 +347,18 @@ const Home = () => {
     fetchBudgetInfo();
   }, [fetchBudgetInfo]);
 
-  // 예산 정보가 로드된 후 지출 데이터 가져오기 (가계부와 동일한 방식)
+  // 사용자 ID가 설정된 후 지출 데이터 가져오기
   useEffect(() => {
-    if (budgetInfo.total_budget > 0 && currentUserId) {
+    if (currentUserId) {
       fetchMonthlySpending();
       fetchWeekComparison();
     }
-  }, [budgetInfo.total_budget, currentUserId, fetchMonthlySpending, fetchWeekComparison]);
+  }, [currentUserId, fetchMonthlySpending, fetchWeekComparison]);
+
+  // AI 추천 조회
+  useEffect(() => {
+    fetchAiRecommendation();
+  }, [fetchAiRecommendation]);
 
   // 페이지뷰 관련 state
   const [currentPage, setCurrentPage] = useState(0);
@@ -287,31 +370,22 @@ const Home = () => {
   // refs
   const pageWrapperRef = useRef(null);
   
-  // 페이지 데이터
+  // 페이지 데이터 (이미지와 AI 추천 멘트만)
   const pages = [
     {
       id: 1,
-      title: "오늘은 월급날!",
-      subtitle: "고생한 연우 님께 선보이는",
-      menuTitle: "오늘의 추천 메뉴",
       image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop&crop=center",
-      buttonText: "오늘의 추천 맛집 확인하기"
+      content: isLoadingRecommendation ? "로딩 중..." : recommendationComment
     },
     {
       id: 2,
-      title: "주말 특별 메뉴!",
-      subtitle: "친구들과 함께 즐기는",
-      menuTitle: "주말 추천 메뉴",
       image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center",
-      buttonText: "주말 맛집 둘러보기"
+      content: "주말에는 친구들과 함께 맛있는 음식을 즐겨보세요!"
     },
     {
       id: 3,
-      title: "건강한 한끼!",
-      subtitle: "건강을 생각하는 당신을 위한",
-      menuTitle: "건강식 추천 메뉴",
       image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop&crop=center",
-      buttonText: "건강식 메뉴 보기"
+      content: "몸과 마음이 건강해지는 영양 만점 식단을 추천드려요!"
     }
   ];
 
@@ -416,7 +490,7 @@ const Home = () => {
       {/* Top Info Bar */}
       <div className="info-bar">
         <div className="location">반포동</div>
-        <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</span> 남음</div>
+                 <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</span> 남음</div>
       </div>
 
       {/* Promotional Banner */}
@@ -448,13 +522,13 @@ const Home = () => {
                 className="page"
               >
                 <div className="page-content">
-                  <h2>{page.title}</h2>
-                  <p>{page.subtitle}</p>
-                  <h3>{page.menuTitle}</h3>
+                  <div className="recommendation-content font-bold">
+                    {page.content}
+                  </div>
                   <div className="food-image">
                     <img 
                       src={page.image} 
-                      alt={page.menuTitle}
+                      alt="추천 음식"
                       onError={(e) => {
                         e.target.style.display = 'none';
                         e.target.nextSibling.style.display = 'block';
@@ -464,8 +538,11 @@ const Home = () => {
                       {index === 0 ? '🍣' : index === 1 ? '🍕' : '🥗'}
                     </div>
                   </div>
-                  <button className="recommend-btn font-regular">
-                    {page.buttonText}
+                  <button 
+                    className="recommend-btn font-regular"
+                    onClick={() => navigate('/explore')}
+                  >
+                    탐색하기
                   </button>
                 </div>
               </div>
@@ -492,9 +569,9 @@ const Home = () => {
           <div className="spending-list">
             {todaySpending.length > 0 ? (
               todaySpending.map((item, index) => (
-                <div key={index} className="spending-item">
-                  <span className="dot green"></span>
-                  <span className="spending-text font-bold">{item.time} - <span className="font-bold spending-text-green">{item.amount.toLocaleString()}원</span></span>
+              <div key={index} className="spending-item">
+                <span className="dot green"></span>
+                <span className="spending-text font-bold">{item.time} - <span className="font-bold spending-text-green">{item.amount.toLocaleString()}원</span></span>
                 </div>
               ))
             ) : (

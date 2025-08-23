@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 const Plan = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [aiReallocation, setAiReallocation] = useState(true);
   
   // 예산 정보 state 추가
   const [budgetInfo, setBudgetInfo] = useState({
@@ -18,7 +17,6 @@ const Plan = () => {
   
 
   
-  const [paydayApply, setPaydayApply] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showExpensePopup, setShowExpensePopup] = useState(false);
   const [showLunchPopup, setShowLunchPopup] = useState(false);
@@ -476,9 +474,6 @@ const Plan = () => {
             <div className="budget-amount font-semi-bold">₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</div>
           </div>
         </div>
-        <div className="budget-comparison font-regular">
-          지난달 보다 <span className="highlight">13만원</span> 여유 있어요
-        </div>
       </div>
 
       {/* 달력 네비게이션 */}
@@ -596,26 +591,7 @@ const Plan = () => {
                >
                  {aiRecommendationLoading ? '조회중...' : '조회'}
                </button>
-               <label className="toggle-switch">
-                 <input 
-                   type="checkbox" 
-                   checked={aiReallocation}
-                   onChange={(e) => setAiReallocation(e.target.checked)}
-                 />
-                 <span className="toggle-slider"></span>
-               </label>
              </div>
-           </div>
-           <div className="setting-item">
-             <span className="setting-label">월급날 가중치 ON</span>
-             <label className="toggle-switch">
-               <input 
-                 type="checkbox" 
-                 checked={paydayApply}
-                 onChange={(e) => setPaydayApply(e.target.checked)}
-               />
-               <span className="toggle-slider"></span>
-             </label>
            </div>
          </div>
 
