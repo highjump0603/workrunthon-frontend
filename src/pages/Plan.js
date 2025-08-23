@@ -15,6 +15,10 @@ const Plan = () => {
     remaining_budget: 0,
     budget_percentage: 0
   });
+  
+  // 현재 사용자 ID 추가
+  const [currentUserId, setCurrentUserId] = useState(null);
+  
   const [paydayApply, setPaydayApply] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showExpensePopup, setShowExpensePopup] = useState(false);
@@ -37,7 +41,7 @@ const Plan = () => {
 
 
   // 사용자 프로필에서 예산 정보 가져오기
-  const fetchBudgetInfo = async () => {
+  const fetchBudgetInfo = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
@@ -52,17 +56,22 @@ const Plan = () => {
 
       if (response.ok) {
         const userData = await response.json();
+        console.log('사용자 데이터:', userData); // 디버깅용
+        
+        // 사용자 ID 저장
+        setCurrentUserId(userData.id);
+        
         // 사용자 프로필에서 예산 정보 추출
         setBudgetInfo({
           total_budget: userData.budget || 0,
-          remaining_budget: userData.budget || 0, // 현재는 총 예산과 동일하게 설정
-          budget_percentage: 0 // 아직 지출 정보가 없어서 0으로 설정
+          remaining_budget: userData.budget || 0, // 초기값은 총 예산과 동일
+          budget_percentage: 0 // 초기값
         });
       }
     } catch (error) {
       console.error('사용자 프로필 조회 에러:', error);
     }
-  };
+  }, []);
 
   // AI 추천 멘트 가져오기
   const fetchAiRecommendation = async () => {
@@ -140,6 +149,46 @@ const Plan = () => {
     }
   };
 
+  // 지출 정보를 가져와서 예산 계산하기
+  const fetchExpenseInfo = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token || !currentUserId) return;
+
+      // /planners/ API 호출하여 지출 정보 가져오기
+      const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?user_id=${currentUserId}&limit=100`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const allPlans = data.items || [];
+        
+        // 전체 지출 계산
+        const totalSpent = allPlans.reduce((sum, plan) => sum + (plan.cost || 0), 0);
+        
+        // 예산 정보 업데이트
+        setBudgetInfo(prev => {
+          const totalBudget = prev.total_budget;
+          const remainingBudget = Math.max(0, totalBudget - totalSpent);
+          const budgetPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+          
+          return {
+            ...prev,
+            remaining_budget: remainingBudget,
+            budget_percentage: budgetPercentage
+          };
+        });
+      }
+    } catch (error) {
+      console.error('지출 정보 조회 에러:', error);
+    }
+  }, [currentUserId]);
+
   // 월별 식사 계획 조회
   const fetchMealPlans = useCallback(async (year, month) => {
     try {
@@ -215,7 +264,14 @@ const Plan = () => {
   // 컴포넌트 마운트 시 예산 정보 가져오기
   useEffect(() => {
     fetchBudgetInfo();
-  }, []);
+  }, [fetchBudgetInfo]);
+
+  // 예산 정보가 로드된 후 지출 정보 가져오기
+  useEffect(() => {
+    if (budgetInfo.total_budget > 0 && currentUserId) {
+      fetchExpenseInfo();
+    }
+  }, [budgetInfo.total_budget, currentUserId, fetchExpenseInfo]);
 
   // 월이나 연도가 변경될 때 식사 계획 다시 조회
   useEffect(() => {
@@ -262,20 +318,48 @@ const Plan = () => {
 
   // 달력 데이터 생성
   const getCalendarDays = (year, month) => {
+    // 첫 번째 날짜 (1일)
     const firstDay = new Date(year, month - 1, 1);
-    const lastDay = new Date(year, month, 0);
+    
+    // 달력 시작 날짜 (첫 주의 일요일부터)
     const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    const firstDayOfWeek = firstDay.getDay(); // 0=일요일, 1=월요일, ...
+    startDate.setDate(startDate.getDate() - firstDayOfWeek);
+    
+    // 디버깅: 날짜 계산 확인
+    console.log('달력 생성 디버깅:', {
+      year,
+      month,
+      firstDay: firstDay.toISOString().split('T')[0],
+      startDate: startDate.toISOString().split('T')[0],
+      firstDayOfWeek
+    });
     
     const days = [];
     const currentDate = new Date(startDate);
     
-    while (currentDate <= lastDay || days.length < 42) {
+    // 오늘 날짜를 로컬 시간 기준으로 정확하게 가져오기
+    const today = new Date();
+    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    
+    console.log('오늘 날짜:', todayString);
+    
+    // 6주(42일) 또는 마지막 날짜까지 채우기
+    while (days.length < 42) {
+      const currentDateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+      
+      // 디버깅: 처음 몇 개 날짜 확인
+      if (days.length < 10) {
+        console.log(`날짜 ${days.length + 1}:`, currentDateString, 'isToday:', currentDateString === todayString);
+      }
+      
       days.push({
         date: new Date(currentDate),
         isCurrentMonth: currentDate.getMonth() === month - 1,
-        isToday: currentDate.toDateString() === new Date().toDateString()
+        isToday: currentDateString === todayString
       });
+      
+      // 다음 날짜로 이동
       currentDate.setDate(currentDate.getDate() + 1);
     }
     
@@ -286,7 +370,9 @@ const Plan = () => {
 
   // 특정 날짜의 식사 계획 가져오기
   const getMealPlansForDate = (date) => {
-    const dateString = date.toISOString().split('T')[0];
+    // 로컬 시간 기준으로 YYYY-MM-DD 형식 생성
+    const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    console.log('getMealPlansForDate:', dateString, 'mealPlans:', mealPlans[dateString]);
     return mealPlans[dateString] || [];
   };
 

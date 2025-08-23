@@ -112,8 +112,16 @@ const Home = () => {
         const todayPlansFiltered = allPlans.filter(plan => {
           const planDate = plan.plan_date;
           const today = getTodayDate();
-          console.log('계획 날짜:', planDate, '오늘 날짜:', today, '일치:', planDate === today); // 디버깅용
-          return planDate === today;
+          
+          // 날짜 형식 통일 (YYYY-MM-DD)
+          const normalizedPlanDate = planDate.split('T')[0]; // 시간 정보 제거
+          const normalizedToday = today;
+          
+          console.log('계획 날짜:', planDate, '정규화된 계획 날짜:', normalizedPlanDate);
+          console.log('오늘 날짜:', today, '정규화된 오늘 날짜:', normalizedToday);
+          console.log('일치 여부:', normalizedPlanDate === normalizedToday);
+          
+          return normalizedPlanDate === normalizedToday;
         });
         
         console.log('오늘 필터링된 계획:', todayPlansFiltered); // 디버깅용
