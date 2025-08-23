@@ -58,10 +58,6 @@ const Mypage = () => {
     navigate('/settings');
   };
 
-  const handleSavedRestaurantsClick = () => {
-    navigate('/saved-restaurants');
-  };
-
   // 가계부와 동일한 방식으로 예산 정보와 지출 계산을 한 번에 처리
   const fetchBudgetAndExpenseInfo = useCallback(async () => {
     try {
@@ -212,10 +208,10 @@ const Mypage = () => {
             <span>방문 내역</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
           </div>
-          <div className="menu-item" onClick={handleSavedRestaurantsClick}>
+          {/* <div className="menu-item" onClick={handleSavedRestaurantsClick}>
             <span>저장한 가게</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />
-          </div>
+          </div> */}
           <div className="menu-item" onClick={handleAllergyClick}>
             <span>알레르기 설정</span>
             <img src={ArrowRightIcon} alt="arrow" className="arrow" />

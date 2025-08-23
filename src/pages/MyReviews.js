@@ -6,6 +6,11 @@ import { reviewService } from '../services/reviewService';
 
 const MyReviews = () => {
   const navigate = useNavigate();
+
+  // 리뷰 상세 페이지로 이동
+  const handleReviewDetail = (reviewId) => {
+    navigate(`/review-detail/${reviewId}`);
+  };
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -166,7 +171,12 @@ const MyReviews = () => {
             <div className="reviews-list">
               {reviews.map((review) => (
                 <div key={review.id} className="review-item">
-                  <div className="review-header">
+                  <div 
+                    className="review-content-area"
+                    onClick={() => handleReviewDetail(review.id)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="review-header">
                     <div className="review-rating">
                       {renderStars(review.rating)}
                     </div>
@@ -176,11 +186,12 @@ const MyReviews = () => {
                   </div>
                   <div className="review-title">{review.title}</div>
                   <div className="review-content">{review.content}</div>
-                  {review.image && (
-                    <div className="review-image">
-                      <img src={review.image} alt="리뷰 이미지" />
-                    </div>
-                  )}
+                    {review.image && (
+                      <div className="review-image">
+                        <img src={review.image} alt="리뷰 이미지" />
+                      </div>
+                    )}
+                  </div>
                   <div className="review-actions">
                     <button 
                       className="edit-button"

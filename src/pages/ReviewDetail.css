@@ -1,0 +1,237 @@
+/* ReviewDetail Page Styles */
+.review-detail-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.review-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.review-detail-back-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  padding: 0;
+}
+
+.review-detail-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.review-detail-edit-btn,
+.review-detail-delete-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.review-detail-edit-btn {
+  color: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.review-detail-edit-btn:hover {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.review-detail-delete-btn {
+  color: #f44336;
+  border-color: #f44336;
+}
+
+.review-detail-delete-btn:hover {
+  background-color: #f44336;
+  color: white;
+}
+
+.review-detail-loading,
+.review-detail-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 16px;
+  color: #666;
+}
+
+.review-detail-content {
+  padding: 20px;
+}
+
+.review-detail-info {
+  margin-bottom: 25px;
+}
+
+.review-detail-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.review-detail-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.review-detail-star {
+  font-size: 20px;
+  color: #ddd;
+}
+
+.review-detail-star.active {
+  color: #4CAF50;
+}
+
+.review-detail-rating-text {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.review-detail-meta {
+  margin-bottom: 20px;
+}
+
+.review-detail-date {
+  font-size: 14px;
+  color: #888;
+}
+
+.review-detail-modified {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.review-detail-image {
+  margin-bottom: 25px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.review-detail-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.review-detail-text {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #4CAF50;
+}
+
+.review-detail-text p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.review-detail-restaurant-info {
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #f0f8ff;
+  border-radius: 8px;
+  border: 1px solid #e3f2fd;
+}
+
+.review-detail-restaurant-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.review-detail-restaurant-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.review-detail-system-info {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.review-detail-system-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.review-detail-system-row:last-child {
+  border-bottom: none;
+}
+
+.review-detail-system-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.review-detail-system-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .review-detail-container {
+    max-width: 100%;
+  }
+  
+  .review-detail-content {
+    padding: 16px;
+  }
+  
+  .review-detail-title {
+    font-size: 18px;
+  }
+  
+  .review-detail-text {
+    padding: 16px;
+  }
+  
+  .review-detail-text p {
+    font-size: 15px;
+  }
+  
+  .review-detail-actions {
+    gap: 8px;
+  }
+  
+  .review-detail-edit-btn,
+  .review-detail-delete-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}

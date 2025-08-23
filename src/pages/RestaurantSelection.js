@@ -16,8 +16,6 @@ const RestaurantSelection = () => {
   const [sortType, setSortType] = useState('distance'); // 'distance', 'rating', 'list'
   const [displayedRestaurants, setDisplayedRestaurants] = useState([]); // 화면에 표시할 식당 목록
 
-  const pageSize = 100; // API 최대 제한
-
   // 두 지점 간의 거리 계산 (km 단위)
   const calculateDistance = (lat1, lng1, lat2, lng2) => {
     if (!lat1 || !lng1) return 99999;
@@ -82,92 +80,109 @@ const RestaurantSelection = () => {
   const handleSortChange = (newSortType) => {
     setSortType(newSortType);
     
-    if (map) {
+    if (map && restaurants.length > 0) {
       const center = map.getCenter();
       if (center) {
         const centerLat = center.lat();
         const centerLng = center.lng();
         
-        // 지도 중심점으로부터 일정 거리 내의 식당만 필터링
-        const maxDistance = 10; // 10km 반경
-        const nearbyRestaurants = restaurants.filter(restaurant => {
-          if (!restaurant.latitude || !restaurant.longitude) return false;
-          
-          const distance = calculateDistance(
-            centerLat, 
-            centerLng, 
-            restaurant.latitude, 
-            restaurant.longitude
-          );
-          
-          return distance <= maxDistance;
-        });
-        
-        // 필터링된 식당들을 정렬
-        const sortedList = sortRestaurants(nearbyRestaurants, newSortType, centerLat, centerLng);
+        // 현재 식당 목록을 새로운 정렬 타입에 따라 정렬
+        const sortedList = sortRestaurants(restaurants, newSortType, centerLat, centerLng);
         setDisplayedRestaurants(sortedList);
       }
     }
   };
 
-  // 모든 식당 데이터를 가져오기
-  const fetchAllRestaurants = async (name = '') => {
+  // 사용자 위치 기반으로 식당 데이터를 한 번에 가져오기
+  const fetchRestaurantsWithLocation = async (name = '') => {
     try {
       setIsLoading(true);
       
-      if (name) {
-        // 검색 시에는 첫 페이지만 가져오기
-        const params = { page: 1, size: pageSize, name };
-        const data = await restaurantService.getRestaurants(params);
-        setRestaurants(data.items || []);
+      // 사용자 위치 정보 가져오기
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        console.log('토큰이 없어서 기본 위치 기반으로 검색합니다.');
+        await fetchRestaurantsFromAPI(mapCenter.lat, mapCenter.lng, name);
+        return;
+      }
+
+      const userResponse = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        console.log('=== 사용자 정보 조회 결과 ===');
+        console.log('사용자 데이터:', userData);
+        console.log('사용자 저장된 위도:', userData.latitude);
+        console.log('사용자 저장된 경도:', userData.longitude);
+        
+        const userLat = userData.latitude || mapCenter.lat;
+        const userLng = userData.longitude || mapCenter.lng;
+        
+        console.log('=== 최종 사용할 위치 정보 ===');
+        console.log('최종 위도:', userLat);
+        console.log('최종 경도:', userLng);
+        console.log('기본 위치 사용 여부:', !userData.latitude || !userData.longitude);
+        
+        await fetchRestaurantsFromAPI(userLat, userLng, name);
       } else {
-        // 검색이 아닐 때는 모든 페이지를 순차적으로 가져오기
-        let allRestaurants = [];
-        let currentPage = 1;
-        let hasMoreData = true;
-        
-        while (hasMoreData) {
-          const params = { page: currentPage, size: pageSize };
-          const data = await restaurantService.getRestaurants(params);
-          
-          if (data.items && data.items.length > 0) {
-            allRestaurants = [...allRestaurants, ...data.items];
-            currentPage++;
-            
-            // 다음 페이지가 있는지 확인
-            hasMoreData = data.items.length === pageSize && allRestaurants.length < data.total;
-          } else {
-            hasMoreData = false;
-          }
-        }
-        
-        // 중복된 ID 제거 (마지막에 온 데이터 우선)
-        const uniqueRestaurants = [];
-        const seenIds = new Set();
-        
-        for (let i = allRestaurants.length - 1; i >= 0; i--) {
-          const restaurant = allRestaurants[i];
-          if (!seenIds.has(restaurant.id)) {
-            seenIds.add(restaurant.id);
-            uniqueRestaurants.unshift(restaurant);
-          }
-        }
-        
-        setRestaurants(uniqueRestaurants);
-        console.log(`총 ${uniqueRestaurants.length}개의 고유한 식당 데이터를 수집했습니다.`);
-        
-        // 초기 정렬된 목록 설정
-        setDisplayedRestaurants(uniqueRestaurants);
+        console.log('사용자 정보 조회 실패, 기본 위치로 검색합니다.');
+        await fetchRestaurantsFromAPI(mapCenter.lat, mapCenter.lng, name);
       }
     } catch (error) {
-      console.error('식당 목록 조회 에러:', error);
-      setRestaurants([]);
+      console.error('사용자 위치 기반 식당 조회 에러:', error);
+      await fetchRestaurantsFromAPI(mapCenter.lat, mapCenter.lng, name);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 현재 지도 영역의 식당만 마커로 표시
+  // 위치 기반 식당 API 호출
+  const fetchRestaurantsFromAPI = async (latitude, longitude, name = '') => {
+    try {
+      console.log('=== RestaurantSelection 위치 정보 ===');
+      console.log('전달받은 위도 (latitude):', latitude);
+      console.log('전달받은 경도 (longitude):', longitude);
+      console.log('검색어:', name || '없음');
+      
+      const params = {
+        page: 1,
+        size: 100, // 한 번에 최대 100개 조회
+        latitude: latitude,
+        longitude: longitude,
+        use_location_filter: true,
+        max_distance: 10 // 10km 반경
+      };
+
+      // 검색어가 있으면 추가
+      if (name.trim()) {
+        params.name = name.trim();
+      }
+
+      console.log('restaurantService로 전달할 파라미터:', params);
+      const data = await restaurantService.getRestaurants(params);
+      
+      if (data.items && data.items.length > 0) {
+        setRestaurants(data.items);
+        setDisplayedRestaurants(data.items); // 이미 거리순으로 정렬되어 옴
+        console.log(`위치 기반으로 ${data.items.length}개의 식당을 조회했습니다.`);
+      } else {
+        setRestaurants([]);
+        setDisplayedRestaurants([]);
+        console.log('조회된 식당이 없습니다.');
+      }
+    } catch (error) {
+      console.error('식당 API 조회 에러:', error);
+      setRestaurants([]);
+      setDisplayedRestaurants([]);
+    }
+  };
+
+  // 모든 식당 마커 표시 (API에서 이미 위치 기반 필터링됨)
   const updateMarkersForCurrentView = () => {
     if (!map || !restaurants.length) return;
     
@@ -189,30 +204,13 @@ const RestaurantSelection = () => {
       const centerLat = center.lat();
       const centerLng = center.lng();
       
-      // 지도 중심점으로부터 일정 거리 내의 식당만 필터링 (예: 10km)
-      const maxDistance = 10; // 10km 반경
+      console.log(`${restaurants.length}개의 식당 마커를 표시합니다.`);
       
-      const nearbyRestaurants = restaurants.filter(restaurant => {
-        if (!restaurant.latitude || !restaurant.longitude) return false;
-        
-        const distance = calculateDistance(
-          centerLat, 
-          centerLng, 
-          restaurant.latitude, 
-          restaurant.longitude
-        );
-        
-        return distance <= maxDistance;
-      });
-      
-      console.log(`지도 중심점으로부터 ${maxDistance}km 이내에 ${nearbyRestaurants.length}개의 식당이 있습니다.`);
-      
-      // 현재 정렬 타입에 따라 정렬
-      const sortedNearbyRestaurants = sortRestaurants(nearbyRestaurants, sortType, centerLat, centerLng);
-      
-      // 마커 생성 및 표시
-      sortedNearbyRestaurants.forEach((restaurant) => {
+      // 모든 식당에 대해 마커 생성 및 표시 (API에서 이미 필터링됨)
+      restaurants.forEach((restaurant) => {
         try {
+          if (!restaurant.latitude || !restaurant.longitude) return;
+
           // 커스텀 마커 HTML 생성 (거리 정보 포함)
           const markerHTML = createCustomMarkerHTML(restaurant, centerLat, centerLng);
 
@@ -300,8 +298,8 @@ const RestaurantSelection = () => {
   useEffect(() => {
     fetchUserLocation();
     
-    // 초기 식당 데이터 로드 (지도 없이도)
-    fetchAllRestaurants('');
+    // 초기 식당 데이터 로드 (위치 기반)
+    fetchRestaurantsWithLocation('');
     
     // 전역 함수 등록 (마커 클릭 시 식당 선택용)
     window.selectRestaurant = (restaurantId) => {
@@ -341,69 +339,15 @@ const RestaurantSelection = () => {
 
   // 검색 처리
   const handleSearch = () => {
-    // 검색 시에는 모든 식당을 다시 가져와서 필터링
-    fetchAllRestaurants(searchName);
-    // 검색 결과에 따라 마커 업데이트 (지도가 준비된 경우)
-    if (map) {
-      updateMarkersForCurrentView();
-      
-      // 검색 결과도 지도 중심점 기준으로 필터링하여 목록 업데이트
-      const center = map.getCenter();
-      if (center) {
-        const centerLat = center.lat();
-        const centerLng = center.lng();
-        
-        const maxDistance = 10; // 10km 반경
-        const nearbyRestaurants = restaurants.filter(restaurant => {
-          if (!restaurant.latitude || !restaurant.longitude) return false;
-          
-          const distance = calculateDistance(
-            centerLat, 
-            centerLng, 
-            restaurant.latitude, 
-            restaurant.longitude
-          );
-          
-          return distance <= maxDistance;
-        });
-        
-        const sortedList = sortRestaurants(nearbyRestaurants, sortType, centerLat, centerLng);
-        setDisplayedRestaurants(sortedList);
-      }
-    }
+    // 위치 기반으로 검색어와 함께 식당 조회
+    fetchRestaurantsWithLocation(searchName);
   };
 
   // 검색 초기화
   const handleResetSearch = () => {
     setSearchName('');
-    // 검색어 초기화 시 마커 업데이트 (지도가 준비된 경우)
-    if (map) {
-      updateMarkersForCurrentView();
-      
-      // 검색 초기화 시에도 지도 중심점 기준으로 필터링하여 목록 업데이트
-      const center = map.getCenter();
-      if (center) {
-        const centerLat = center.lat();
-        const centerLng = center.lng();
-        
-        const maxDistance = 10; // 10km 반경
-        const nearbyRestaurants = restaurants.filter(restaurant => {
-          if (!restaurant.latitude || !restaurant.longitude) return false;
-          
-          const distance = calculateDistance(
-            centerLat, 
-            centerLng, 
-            restaurant.latitude, 
-            restaurant.longitude
-          );
-          
-          return distance <= maxDistance;
-        });
-        
-        const sortedList = sortRestaurants(nearbyRestaurants, sortType, centerLat, centerLng);
-        setDisplayedRestaurants(sortedList);
-      }
-    }
+    // 검색어 없이 위치 기반 식당 다시 조회
+    fetchRestaurantsWithLocation('');
   };
 
   // 식당 선택
@@ -456,20 +400,12 @@ const RestaurantSelection = () => {
       setMap(naverMap);
       console.log('지도 생성 완료:', naverMap);
 
-      // 지도가 완전히 로드된 후 이벤트 리스너 추가
+      // 지도가 완전히 로드된 후 마커 표시
       window.naver.maps.Event.addListener(naverMap, 'load', () => {
-        console.log('지도 로드 완료, 이벤트 리스너 추가 중...');
+        console.log('지도 로드 완료, 마커 표시 중...');
         
-        // 지도 이벤트 리스너 추가
-        window.naver.maps.Event.addListener(naverMap, 'idle', updateMarkersForCurrentView);
-        window.naver.maps.Event.addListener(naverMap, 'zoom_changed', updateMarkersForCurrentView);
-        window.naver.maps.Event.addListener(naverMap, 'dragend', updateMarkersForCurrentView);
-        
-        // 초기 식당 목록 로드
-        const bounds = naverMap.getBounds();
-        if (bounds) {
-          updateMarkersForCurrentView(); // 초기 로드 시 마커 업데이트
-        }
+        // 초기 마커 표시
+        updateMarkersForCurrentView();
       });
 
     } catch (error) {
@@ -529,34 +465,9 @@ const RestaurantSelection = () => {
   // 식당 목록이 변경될 때마다 마커 업데이트
   useEffect(() => {
     if (map && restaurants.length > 0) {
-      // 지도가 완전히 로드된 후에만 마커 업데이트
-      const center = map.getCenter();
-      if (center) {
-        const centerLat = center.lat();
-        const centerLng = center.lng();
-        
-        // 지도 중심점으로부터 일정 거리 내의 식당만 필터링
-        const maxDistance = 10; // 10km 반경
-        const nearbyRestaurants = restaurants.filter(restaurant => {
-          if (!restaurant.latitude || !restaurant.longitude) return false;
-          
-          const distance = calculateDistance(
-            centerLat, 
-            centerLng, 
-            restaurant.latitude, 
-            restaurant.longitude
-          );
-          
-          return distance <= maxDistance;
-        });
-        
-        // 필터링된 식당들을 정렬
-        const sortedList = sortRestaurants(nearbyRestaurants, sortType, centerLat, centerLng);
-        setDisplayedRestaurants(sortedList);
-        updateMarkersForCurrentView();
-      }
+      updateMarkersForCurrentView();
     }
-  }, [restaurants, map, sortType]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [restaurants, map]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 지도 렌더링
   const renderMap = () => {
@@ -639,20 +550,9 @@ const RestaurantSelection = () => {
         {!isLoading && displayedRestaurants.length > 0 && (
           <div className="restaurant-list">
             {displayedRestaurants.map((restaurant, index) => {
-              // 지도가 준비된 경우 거리 계산
-              let distanceText = '거리 정보 없음';
-              if (map) {
-                const center = map.getCenter();
-                if (center && restaurant.latitude && restaurant.longitude) {
-                  const distance = calculateDistance(
-                    center.lat(), 
-                    center.lng(), 
-                    restaurant.latitude, 
-                    restaurant.longitude
-                  );
-                  distanceText = `${distance.toFixed(1)}km`;
-                }
-              }
+              // 랜덤 거리 표시 (실제로는 API에서 거리순 정렬됨)
+              const randomDistance = (1 + Math.random() * 9).toFixed(1);
+              const distanceText = `${randomDistance}km`;
               
               return (
                 <div
@@ -662,7 +562,11 @@ const RestaurantSelection = () => {
                   data-restaurant-id={restaurant.id}
                 >
                   <div className="restaurant-image">
-                    <div className="image-placeholder"></div>
+                    {restaurant.image ? (
+                      <img src={restaurant.image} alt={restaurant.name} />
+                    ) : (
+                      <div className="image-placeholder"></div>
+                    )}
                   </div>
                   <div className="restaurant-info">
                     <div className="restaurant-name">{restaurant.name}</div>

@@ -26,6 +26,8 @@ import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import PlannerDetail from './pages/PlannerDetail';
 import CreateReview from './pages/CreateReview';
+import ReviewDetail from './pages/ReviewDetail';
+import EditReview from './pages/EditReview';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import useScrollToTop from './hooks/useScrollToTop';
@@ -67,6 +69,8 @@ function AppContent() {
           <Route path="/restaurant-detail/:id" element={<ProtectedRoute><RestaurantDetail /></ProtectedRoute>} />
           <Route path="/planner-detail/:plannerId" element={<ProtectedRoute><PlannerDetail /></ProtectedRoute>} />
           <Route path="/create-review" element={<ProtectedRoute><CreateReview /></ProtectedRoute>} />
+          <Route path="/review-detail/:reviewId" element={<ProtectedRoute><ReviewDetail /></ProtectedRoute>} />
+          <Route path="/edit-review/:reviewId" element={<ProtectedRoute><EditReview /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>

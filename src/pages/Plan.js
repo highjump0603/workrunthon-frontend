@@ -16,8 +16,7 @@ const Plan = () => {
     budget_percentage: 0
   });
   
-  // 현재 사용자 ID 추가
-  const [currentUserId, setCurrentUserId] = useState(null);
+
   
   const [paydayApply, setPaydayApply] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -63,8 +62,7 @@ const Plan = () => {
         const totalBudget = userData.budget || 0;
         console.log('Plan.js - 사용자 ID:', userId, '총 예산:', totalBudget); // 디버깅용
         
-        // 사용자 ID 저장
-        setCurrentUserId(userId);
+        // 사용자 ID는 로컬 변수로만 사용
         
         // 2. 지출 데이터 가져오기 (가계부와 동일한 API 사용)
         const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/history?user_id=${userId}&limit=100`, {
@@ -125,7 +123,31 @@ const Plan = () => {
     try {
       setAiRecommendationLoading(true);
       
-      const response = await fetch('https://wrtigloo.duckdns.org:8000/planners/recommand', {
+      // 사용자 ID를 가져와서 API 호출
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        setAiRecommendationComment('비 오는 금요일 밤, 따뜻한 일식으로 마음을 따뜻하게 감싸보세요 ☔');
+        return;
+      }
+
+      // 사용자 정보 가져오기
+      const userResponse = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (!userResponse.ok) {
+        throw new Error('사용자 정보를 가져올 수 없습니다.');
+      }
+
+      const userData = await userResponse.json();
+      const userId = userData.id;
+
+      // AI 추천 멘트 API 호출 (user_id 파라미터 추가)
+      const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/recommand?user_id=${userId}`, {
         method: 'GET',
         headers: {
           'accept': 'application/json'
@@ -134,7 +156,9 @@ const Plan = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setAiRecommendationComment(data.comment || '');
+        // 응답에서 따옴표 제거
+        const cleanComment = data.comment ? data.comment.replace(/^"|"$/g, '') : '';
+        setAiRecommendationComment(cleanComment || '비 오는 금요일 밤, 따뜻한 일식으로 마음을 따뜻하게 감싸보세요 ☔');
       } else {
         // API 응답이 실패할 때 기본 멘트 설정
         setAiRecommendationComment('비 오는 금요일 밤, 따뜻한 일식으로 마음을 따뜻하게 감싸보세요 ☔');
@@ -502,7 +526,7 @@ const Plan = () => {
           <div className="day-header">월</div>
           <div className="day-header">화</div>
           <div className="day-header">수</div>
-          <div className="day-header">목</div>
+          <div className="day-header">목</div>  
           <div className="day-header">금</div>
           <div className="day-header">토</div>
         </div>

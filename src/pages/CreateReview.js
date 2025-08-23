@@ -65,9 +65,16 @@ const CreateReview = () => {
       });
       
       if (response.ok) {
-        const imageUrl = await response.json();
-        console.log('이미지 업로드 성공:', imageUrl);
-        return imageUrl;
+        const imageData = await response.json();
+        console.log('이미지 업로드 성공:', imageData);
+        console.log('imageData 타입:', typeof imageData);
+        
+        // 응답이 객체인 경우 URL 추출, 문자열인 경우 그대로 사용
+        const extractedUrl = typeof imageData === 'object' ? imageData.url : imageData;
+        console.log('추출된 URL:', extractedUrl);
+        console.log('추출된 URL 타입:', typeof extractedUrl);
+        
+        return extractedUrl;
       } else {
         console.error('이미지 업로드 실패:', response.status);
         return null;
@@ -122,6 +129,9 @@ const CreateReview = () => {
       let imageUrl = '';
       if (selectedImage) {
         imageUrl = await uploadImage();
+        console.log('uploadImage 반환값:', imageUrl);
+        console.log('uploadImage 반환값 타입:', typeof imageUrl);
+        
         if (!imageUrl) {
           alert('이미지 업로드에 실패했습니다. 이미지 없이 리뷰를 작성하시겠습니까?');
         }
@@ -129,11 +139,17 @@ const CreateReview = () => {
 
       // 리뷰 데이터 준비 (제목 자동 생성)
       const autoTitle = formData.content.trim().substring(0, 20) + (formData.content.trim().length > 20 ? '...' : '');
+      
+      // 이미지 URL이 문자열인지 확인
+      const finalImageUrl = imageUrl && typeof imageUrl === 'string' ? imageUrl : '';
+      console.log('최종 이미지 URL:', finalImageUrl);
+      console.log('최종 이미지 URL 타입:', typeof finalImageUrl);
+      
       const reviewData = {
         title: autoTitle,
         content: formData.content.trim(),
         rating: formData.rating,
-        image: imageUrl || '',
+        image: finalImageUrl,
         restaurant_id: formData.restaurant_id || 1, // 기본값 설정 (실제로는 식당 선택 기능 필요)
         user_id: userData.id
       };
@@ -159,7 +175,14 @@ const CreateReview = () => {
       } else {
         const errorData = await response.json();
         console.error('리뷰 생성 실패:', response.status, errorData);
-        alert('리뷰 등록에 실패했습니다. 다시 시도해주세요.');
+        
+        // 상세 에러 메시지 표시
+        if (errorData.detail && Array.isArray(errorData.detail)) {
+          const errorMessages = errorData.detail.map(err => `${err.loc?.join('.')}: ${err.msg}`).join('\n');
+          alert(`리뷰 등록에 실패했습니다:\n${errorMessages}`);
+        } else {
+          alert('리뷰 등록에 실패했습니다. 다시 시도해주세요.');
+        }
       }
     } catch (error) {
       console.error('리뷰 제출 에러:', error);

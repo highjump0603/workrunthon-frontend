@@ -1,0 +1,201 @@
+/* EditReview Page Styles */
+.edit-review-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.edit-review-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.edit-review-back-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  padding: 0;
+}
+
+.edit-review-content {
+  padding: 20px;
+}
+
+.edit-review-form {
+  margin-bottom: 30px;
+}
+
+.edit-review-section {
+  margin-bottom: 25px;
+}
+
+.edit-review-restaurant-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.edit-review-rating {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.edit-review-star {
+  font-size: 24px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.edit-review-star.active {
+  color: #4CAF50;
+}
+
+.edit-review-star:hover {
+  color: #4CAF50;
+}
+
+.edit-review-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.edit-review-textarea:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.edit-review-textarea::placeholder {
+  color: #999;
+}
+
+.edit-review-char-count {
+  text-align: right;
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.edit-review-photo-label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.edit-review-photo-upload {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.edit-review-photo-btn {
+  width: 80px;
+  height: 80px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.edit-review-photo-btn:hover {
+  border-color: #4CAF50;
+  color: #4CAF50;
+}
+
+.edit-review-photo-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.edit-review-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.edit-review-new-image-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.edit-review-submit-btn {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit-review-submit-btn:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.edit-review-submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.edit-review-submit-btn:active:not(:disabled) {
+  background-color: #3d8b40;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .edit-review-container {
+    max-width: 100%;
+  }
+  
+  .edit-review-content {
+    padding: 16px;
+  }
+  
+  .edit-review-star {
+    font-size: 20px;
+  }
+  
+  .edit-review-photo-btn,
+  .edit-review-photo-preview {
+    width: 70px;
+    height: 70px;
+  }
+}

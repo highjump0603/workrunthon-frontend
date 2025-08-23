@@ -14,11 +14,7 @@ export const menuService = {
              // 기본 파라미터
        queryParams.append('page', params.page || 1);
        queryParams.append('size', params.size || 100);
-       
-       // categories 파라미터가 없으면 빈 배열로 설정 (백엔드 validation 오류 방지)
-       if (!params.categories || params.categories.length === 0) {
-         queryParams.append('categories', '[]');
-       }
+      
       
       // 선택적 파라미터들
       if (params.name) queryParams.append('name', params.name);
@@ -28,9 +24,6 @@ export const menuService = {
       if (params.use_budget_filter !== undefined) queryParams.append('use_budget_filter', params.use_budget_filter);
       if (params.use_location_filter !== undefined) queryParams.append('use_location_filter', params.use_location_filter);
       if (params.max_distance) queryParams.append('max_distance', params.max_distance);
-      if (params.categories && params.categories.length > 0) {
-        params.categories.forEach(category => queryParams.append('categories', category));  
-      }
 
       const response = await fetch(`${API_BASE_URL}/menus/?${queryParams}`, {
         method: 'GET',
