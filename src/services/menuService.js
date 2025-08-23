@@ -11,9 +11,14 @@ export const menuService = {
 
       const queryParams = new URLSearchParams();
       
-      // 기본 파라미터
-      queryParams.append('page', params.page || 1);
-      queryParams.append('size', params.size || 100);
+             // 기본 파라미터
+       queryParams.append('page', params.page || 1);
+       queryParams.append('size', params.size || 100);
+       
+       // categories 파라미터가 없으면 빈 배열로 설정 (백엔드 validation 오류 방지)
+       if (!params.categories || params.categories.length === 0) {
+         queryParams.append('categories', '[]');
+       }
       
       // 선택적 파라미터들
       if (params.name) queryParams.append('name', params.name);
@@ -36,7 +41,14 @@ export const menuService = {
       });
 
       if (!response.ok) {
-        throw new Error(`메뉴 조회 실패: ${response.status}`);
+        const errorText = await response.text();
+        console.error('메뉴 조회 API 응답:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: response.url,
+          body: errorText
+        });
+        throw new Error(`메뉴 조회 실패: ${response.status} - ${errorText}`);
       }
 
       return await response.json();

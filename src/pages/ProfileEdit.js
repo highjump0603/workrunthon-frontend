@@ -40,8 +40,8 @@ const ProfileEdit = () => {
         throw new Error('사용자 ID를 찾을 수 없습니다.');
       }
 
-      // 특정 사용자 ID로 상세 정보를 가져옵니다
-      const userData = await userService.getUserById(currentUser.id);
+      // 현재 사용자 정보를 사용합니다 (이미 getCurrentUser에서 가져온 정보)
+      const userData = currentUser;
       
       // API 데이터를 UI 형식으로 변환
       const convertedData = {

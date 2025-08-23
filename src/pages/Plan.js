@@ -419,44 +419,44 @@ const Plan = () => {
         </div>
       )}
 
-             {/* 설정 토글 */}
-       <div className="settings-section">
-         <div className="setting-item">
-           <span className="setting-label">AI 배치</span>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                           <button 
-                className="inquiry-button"
-                onClick={async () => {
-                  await fetchAiRecommendation();
-                  setShowAiRecommendationPopup(true);
-                  document.body.classList.add('popup-open');
-                }}
-                disabled={aiRecommendationLoading}
-              >
-                {aiRecommendationLoading ? '조회중...' : '조회'}
-              </button>
+                           {/* 설정 토글 */}
+                <div className="settings-section">
+           <div className="setting-item">
+             <span className="setting-label">AI 배치</span>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+               <button 
+                 className="inquiry-button"
+                 onClick={async () => {
+                   await fetchAiRecommendation();
+                   setShowAiRecommendationPopup(true);
+                   document.body.classList.add('popup-open');
+                 }}
+                 disabled={aiRecommendationLoading}
+               >
+                 {aiRecommendationLoading ? '조회중...' : '조회'}
+               </button>
+               <label className="toggle-switch">
+                 <input 
+                   type="checkbox" 
+                   checked={aiReallocation}
+                   onChange={(e) => setAiReallocation(e.target.checked)}
+                 />
+                 <span className="toggle-slider"></span>
+               </label>
+             </div>
+           </div>
+           <div className="setting-item">
+             <span className="setting-label">월급날 가중치 ON</span>
              <label className="toggle-switch">
                <input 
                  type="checkbox" 
-                 checked={aiReallocation}
-                 onChange={(e) => setAiReallocation(e.target.checked)}
+                 checked={paydayApply}
+                 onChange={(e) => setPaydayApply(e.target.checked)}
                />
                <span className="toggle-slider"></span>
              </label>
            </div>
          </div>
-         <div className="setting-item">
-           <span className="setting-label">월급날 가중치 ON</span>
-           <label className="toggle-switch">
-             <input 
-               type="checkbox" 
-               checked={paydayApply}
-               onChange={(e) => setPaydayApply(e.target.checked)}
-             />
-             <span className="toggle-slider"></span>
-           </label>
-         </div>
-       </div>
 
       <div style={{height: '100px'}}></div>
 
