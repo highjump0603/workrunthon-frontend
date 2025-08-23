@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Ledger.css';
 import BottomNavigation from '../components/BottomNavigation';
@@ -13,13 +13,17 @@ const Ledger = () => {
     budget_percentage: 0
   });
 
+  // 식사 계획 이력 데이터 state 추가
+  const [mealHistory, setMealHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   // 사용자 프로필에서 예산 정보 가져오기
   const fetchBudgetInfo = async () => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
       
-      const response = await fetch('http://15.165.7.141:8000/users/me', {
+      const response = await fetch('https://15.165.7.141:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -32,8 +36,8 @@ const Ledger = () => {
         // 사용자 프로필에서 예산 정보 추출
         setBudgetInfo({
           total_budget: userData.budget || 0,
-          remaining_budget: userData.budget || 0, // 현재는 총 예산과 동일하게 설정
-          budget_percentage: 0 // 아직 지출 정보가 없어서 0으로 설정
+          remaining_budget: userData.budget || 0, // 초기값은 총 예산과 동일
+          budget_percentage: 0 // 초기값
         });
       }
     } catch (error) {
@@ -41,48 +45,103 @@ const Ledger = () => {
     }
   };
 
-  // 컴포넌트 마운트 시 예산 정보 가져오기
+  // 사용자의 최근 식사 계획 거래 이력 가져오기
+  const fetchMealHistory = useCallback(async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        setMealHistory([]);
+        setLoading(false);
+        return;
+      }
+
+      // 사용자 ID를 가져오기 위해 users/me API 호출
+      const userResponse = await fetch('http://15.165.7.141:8000/users/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        const userId = userData.id;
+
+        // /planners/history API 호출
+        const response = await fetch(`http://15.165.7.141:8000/planners/history?user_id=${userId}&limit=50`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (Array.isArray(data)) {
+            // 과거 날짜의 계획만 필터링 (지출 내역으로 표시)
+            const pastPlans = data.filter(plan => {
+              const planDate = new Date(plan.plan_date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return planDate < today;
+            });
+
+            setMealHistory(pastPlans);
+
+            // 예산 계산 업데이트
+            const totalSpent = pastPlans.reduce((sum, plan) => sum + (plan.cost || 0), 0);
+            const remainingBudget = Math.max(0, budgetInfo.total_budget - totalSpent);
+            const budgetPercentage = budgetInfo.total_budget > 0 ? (totalSpent / budgetInfo.total_budget) * 100 : 0;
+
+            setBudgetInfo(prev => ({
+              ...prev,
+              remaining_budget: remainingBudget,
+              budget_percentage: budgetPercentage
+            }));
+          } else {
+            setMealHistory([]);
+          }
+        } else {
+          setMealHistory([]);
+        }
+      } else {
+        setMealHistory([]);
+      }
+    } catch (error) {
+      console.error('식사 계획 이력 조회 에러:', error);
+      setMealHistory([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [budgetInfo.total_budget]);
+
+  // 컴포넌트 마운트 시 데이터 가져오기
   useEffect(() => {
     fetchBudgetInfo();
   }, []);
 
-  // 지출 내역 데이터
-  const expenses = [
-    {
-      id: 1,
-      date: '4월 18일',
-      restaurant: '중식당',
-      menu: '짜장면',
-      amount: 7500
-    },
-    {
-      id: 2,
-      date: '4월 17일',
-      restaurant: '삼겹살',
-      menu: '삼겹살',
-      amount: 11000
-    },
-    {
-      id: 3,
-      date: '4월 16일',
-      restaurant: '한식당',
-      menu: '비빕밥',
-      amount: 10500
-    },
-    {
-      id: 4,
-      date: '4월 15일',
-      restaurant: '한식당',
-      menu: '김치찌개 백반',
-      amount: 8500
+  // 예산 정보가 로드된 후 식사 계획 이력 데이터 가져오기
+  useEffect(() => {
+    if (budgetInfo.total_budget > 0) {
+      fetchMealHistory();
     }
-  ];
+  }, [budgetInfo.total_budget, fetchMealHistory]);
 
   const handleAddDetails = () => {
     navigate('/add-details');
   };
 
-
+  // 날짜를 한국어 형식으로 변환
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${month}월 ${day}일`;
+  };
 
   return (
     <div className="ledger-page">
@@ -121,18 +180,28 @@ const Ledger = () => {
       <div className="ledger-expenses-section">
         <div className="ledger-section-title">내역</div>
         
-        <div className="ledger-expenses-list">
-          {expenses.map((expense, index) => (
-            <div key={expense.id} className="ledger-expense-item">
-              <div className="ledger-expense-info">
-                <div className="ledger-expense-date">{expense.date}</div>
-                <div className="ledger-expense-restaurant">{expense.restaurant}</div>
-                <div className="ledger-expense-menu">{expense.menu}</div>
+        {loading ? (
+          <div className="ledger-loading">내역을 불러오는 중...</div>
+        ) : mealHistory.length > 0 ? (
+          <div className="ledger-expenses-list">
+            {mealHistory.map((plan) => (
+              <div key={plan.id} className="ledger-expense-item">
+                <div className="ledger-expense-info">
+                  <div className="ledger-expense-date">{formatDate(plan.plan_date)}</div>
+                  <div className="ledger-expense-restaurant">
+                    {plan.menu?.restaurant?.name || plan.memo || '식사'}
+                  </div>
+                  <div className="ledger-expense-menu">
+                    {plan.menu?.name || plan.type || '일반'}
+                  </div>
+                </div>
+                <div className="ledger-expense-amount">₩{(plan.cost || 0).toLocaleString()}</div>
               </div>
-                             <div className="ledger-expense-amount">₩{expense.amount.toLocaleString()}</div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="ledger-no-expenses">아직 지출 내역이 없습니다.</div>
+        )}
       </div>
 
       <div style={{height: '100px'}}></div>
