@@ -14,6 +14,8 @@ const Home = () => {
     remaining_budget: 0,
     budget_percentage: 0
   });
+  // 현재 사용자 ID 추가
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   // 오늘 날짜를 YYYY-MM-DD 형식으로 가져오기
   const getTodayDate = () => {
@@ -63,6 +65,14 @@ const Home = () => {
 
       if (response.ok) {
         const userData = await response.json();
+        console.log('사용자 데이터:', userData); // 디버깅용
+        
+        // user_id 확인 및 설정 (숫자 ID 사용)
+        const userId = userData.id; // user_id 대신 id 사용
+        console.log('설정할 사용자 ID:', userId); // 디버깅용
+        
+        // 사용자 ID 저장
+        setCurrentUserId(userId);
         setBudgetInfo({
           total_budget: userData.budget || 0,
           remaining_budget: userData.budget || 0,
@@ -74,14 +84,17 @@ const Home = () => {
     }
   }, []);
 
-  // 오늘 지출 내역 가져오기
-  const fetchTodaySpending = useCallback(async () => {
+  // 월 전체 지출 내역 가져오기 (가계부와 동일한 방식)
+  const fetchMonthlySpending = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
-      if (!token) return;
+      if (!token || !currentUserId) return;
 
-      const today = getTodayDate();
-      const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?plan_date=${today}`, {
+      // currentUserId는 이미 숫자이므로 parseInt 불필요
+      const userId = currentUserId;
+      
+      // /planners/ API 사용 (숫자 user_id)
+      const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?user_id=${userId}&limit=100`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -91,11 +104,23 @@ const Home = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const todayPlans = data.items || [];
+        const allPlans = data.items || []; // items 배열 사용
+        
+        console.log('전체 계획 데이터:', allPlans); // 디버깅용
+        
+        // 오늘 날짜에 해당하는 계획만 필터링 (오늘 지출 표시용)
+        const todayPlansFiltered = allPlans.filter(plan => {
+          const planDate = plan.plan_date;
+          const today = getTodayDate();
+          console.log('계획 날짜:', planDate, '오늘 날짜:', today, '일치:', planDate === today); // 디버깅용
+          return planDate === today;
+        });
+        
+        console.log('오늘 필터링된 계획:', todayPlansFiltered); // 디버깅용
         
         // 오늘 지출 내역을 시간대별로 그룹화
         const spendingByTime = {};
-        todayPlans.forEach(plan => {
+        todayPlansFiltered.forEach(plan => {
           const time = plan.type || '기타';
           if (!spendingByTime[time]) {
             spendingByTime[time] = 0;
@@ -111,22 +136,56 @@ const Home = () => {
         }));
 
         setTodaySpending(spendingArray);
+        
+        // 전체 지출 계산 (가계부와 동일한 방식)
+        const totalSpent = allPlans.reduce((sum, plan) => sum + (plan.cost || 0), 0);
+        console.log('전체 지출:', totalSpent, '총 예산:', budgetInfo.total_budget); // 디버깅용
+        
+        // 예산 정보 업데이트 (가계부와 동일한 계산 로직)
+        setBudgetInfo(prev => {
+          const totalBudget = prev.total_budget;
+          const remainingBudget = Math.max(0, totalBudget - totalSpent);
+          const budgetPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+          
+          console.log('예산 계산 결과:', { totalBudget, totalSpent, remainingBudget, budgetPercentage }); // 디버깅용
+          
+          return {
+            ...prev,
+            remaining_budget: remainingBudget,
+            budget_percentage: budgetPercentage
+          };
+        });
+      } else {
+        console.error('지출 이력 조회 실패:', response.status, response.statusText);
+        try {
+          const errorData = await response.json();
+          console.error('에러 상세:', errorData);
+        } catch (e) {
+          console.error('에러 응답 읽기 실패:', e);
+        }
       }
     } catch (error) {
-      console.error('오늘 지출 내역 조회 에러:', error);
+      console.error('지출 이력 조회 에러:', error);
     }
-  }, []);
+  }, [currentUserId, budgetInfo.total_budget]);
 
   // 이번주와 지난주 지출 비교
   const fetchWeekComparison = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
-      if (!token) return;
+      if (!token || !currentUserId) return;
+
+      // currentUserId는 이미 숫자이므로 parseInt 불필요
+      const userId = currentUserId;
 
       const weekRanges = getWeekRanges();
       
-      // 이번주 지출 조회
-      const thisWeekResponse = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?plan_date=${weekRanges.thisWeekStart}&max_cost=999999999`, {
+      // plan_date를 YYYY-MM 형식으로 변경하고 max_cost 제거
+      const thisWeekMonth = weekRanges.thisWeekStart.substring(0, 7);
+      const lastWeekMonth = weekRanges.lastWeekStart.substring(0, 7);
+      
+      // user_id를 숫자로 변환하여 API 호출
+      const thisWeekResponse = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?plan_date=${thisWeekMonth}&user_id=${userId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -134,8 +193,8 @@ const Home = () => {
         }
       });
 
-      // 지난주 지출 조회
-      const lastWeekResponse = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?plan_date=${weekRanges.lastWeekStart}&max_cost=999999999`, {
+      // user_id를 숫자로 변환하여 API 호출
+      const lastWeekResponse = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?plan_date=${lastWeekMonth}&user_id=${userId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -147,23 +206,68 @@ const Home = () => {
         const thisWeekData = await thisWeekResponse.json();
         const lastWeekData = await lastWeekResponse.json();
 
-        const thisWeekTotal = (thisWeekData.items || []).reduce((sum, plan) => sum + (plan.cost || 0), 0);
-        const lastWeekTotal = (lastWeekData.items || []).reduce((sum, plan) => sum + (plan.cost || 0), 0);
+        // 해당 주에 속하는 계획만 필터링
+        const thisWeekPlans = (thisWeekData.items || []).filter(plan => {
+          const planDate = new Date(plan.plan_date);
+          const weekStart = new Date(weekRanges.thisWeekStart);
+          const weekEnd = new Date(weekRanges.thisWeekEnd);
+          return planDate >= weekStart && planDate <= weekEnd;
+        });
+        
+        const lastWeekPlans = (lastWeekData.items || []).filter(plan => {
+          const planDate = new Date(plan.plan_date);
+          const weekStart = new Date(weekRanges.lastWeekStart);
+          const weekEnd = new Date(weekRanges.lastWeekEnd);
+          return planDate >= weekStart && planDate <= weekEnd;
+        });
+
+        const thisWeekTotal = thisWeekPlans.reduce((sum, plan) => sum + (plan.cost || 0), 0);
+        const lastWeekTotal = lastWeekPlans.reduce((sum, plan) => sum + (plan.cost || 0), 0);
 
         setThisWeekSpending(thisWeekTotal);
         setLastWeekSpending(lastWeekTotal);
+      } else {
+        console.error('주간 비교 조회 실패:', {
+          thisWeek: thisWeekResponse.status,
+          lastWeek: lastWeekResponse.status
+        });
+        
+        // 에러 응답 상세 확인
+        if (!thisWeekResponse.ok) {
+          try {
+            const errorData = await thisWeekResponse.json();
+            console.error('이번주 조회 에러 상세:', errorData);
+          } catch (e) {
+            console.error('이번주 에러 응답 읽기 실패:', e);
+          }
+        }
+        
+        if (!lastWeekResponse.ok) {
+          try {
+            const errorData = await lastWeekResponse.json();
+            console.error('지난주 조회 에러 상세:', errorData);
+          } catch (e) {
+            console.error('지난주 에러 응답 읽기 실패:', e);
+          }
+        }
       }
     } catch (error) {
       console.error('주간 지출 비교 조회 에러:', error);
     }
-  }, []);
+  }, [currentUserId]);
 
   // 컴포넌트 마운트 시 데이터 가져오기
   useEffect(() => {
     fetchBudgetInfo();
-    fetchTodaySpending();
-    fetchWeekComparison();
-  }, [fetchBudgetInfo, fetchTodaySpending, fetchWeekComparison]);
+  }, [fetchBudgetInfo]);
+
+  // 예산 정보가 로드된 후 지출 데이터 가져오기 (가계부와 동일한 방식)
+  useEffect(() => {
+    if (budgetInfo.total_budget > 0 && currentUserId) {
+      fetchMonthlySpending();
+      fetchWeekComparison();
+    }
+  }, [budgetInfo.total_budget, currentUserId, fetchMonthlySpending, fetchWeekComparison]);
 
   // 페이지뷰 관련 state
   const [currentPage, setCurrentPage] = useState(0);

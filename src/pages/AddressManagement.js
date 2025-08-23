@@ -26,7 +26,7 @@ const AddressManagement = () => {
     if (!address) return null;
     
     try {
-      console.log('주소를 좌표로 변환 중:', address);
+      console.log('주소를 좌표로 변환 중:', address); 
       
       // 새로운 지오코딩 서비스 사용
       const coordinates = await geocodingService.geocodeAddress(address);

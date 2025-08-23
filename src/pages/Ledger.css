@@ -118,12 +118,50 @@
   gap: 0;
 }
 
+/* 지출 항목 액션 영역 */
+.ledger-expense-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 삭제 버튼 */
+.ledger-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.ledger-delete-btn:hover {
+  background-color: #fee2e2;
+}
+
+.ledger-delete-btn:active {
+  background-color: #fecaca;
+}
+
+/* 기존 지출 항목 스타일 수정 */
 .ledger-expense-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 16px 0;
+  padding: 16px;
   border-bottom: 1px solid #e5e7eb;
+  background-color: #fff;
+  transition: background-color 0.2s;
+}
+
+.ledger-expense-item:hover {
+  background-color: #f9fafb;
 }
 
 .ledger-expense-item:last-child {
