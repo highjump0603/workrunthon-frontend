@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './SignupPage.css';
 import LeftArrowIcon from '../assets/left_arrow.svg';
 import { geocodingService } from '../services/geocodingService';
 
 const SignupPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // BudgetSetupPage에서 전달받은 예산 정보 사용
+  const budgetFromSetup = location.state?.budget || 0;
+  
   const [formData, setFormData] = useState({
     user_id: '',
     password: '',
@@ -15,7 +20,7 @@ const SignupPage = () => {
     address: '',
     zipCode: '',
     company_address: '',
-    budget: 0,
+    budget: budgetFromSetup,
     gender: 'prefer_not_to_say',
     activity_radius: 10,
     meal_pattern: '3_meals',
@@ -108,7 +113,8 @@ const SignupPage = () => {
           const result = await response.json();
           console.log('회원가입 성공:', result);
           alert('회원가입이 완료되었습니다! 추가 정보를 입력해주세요.');
-          navigate('/onboarding');
+          // 설정된 예산 정보를 온보딩 페이지에 전달
+          navigate('/onboarding', { state: { budget: formData.budget, userInfo: result } });
                 } else {
           const errorData = await response.json();
           console.error('회원가입 실패 응답:', errorData);

@@ -405,14 +405,6 @@ const Explore = () => {
         </div>
       ) : (
         <>
-          {/* 추천 배너 */}
-          <div className="recommendation-banner">
-            <div className="banner-content">
-              <p className="banner-text">
-                오늘 점심은 <strong>12,000원</strong> 이하의 한식을 먹는 것이 좋겠어요!
-              </p>
-            </div>
-          </div>
 
           {/* 로딩 상태 */}
           {isLoading && (

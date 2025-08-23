@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/authService';
+import { userService } from '../services/userService';
 import './LoginPage.css';
 
 const LoginPage = () => {
@@ -25,7 +26,24 @@ const LoginPage = () => {
       
       if (response.access_token) {
         await login(response);
-        navigate('/home');
+        
+        // 로그인 후 사용자 정보 확인하여 온보딩 완료 여부 체크
+        try {
+          const userInfo = await userService.getCurrentUser();
+          
+          // 온보딩이 완료되지 않았거나 예산이 설정되지 않은 경우 온보딩 페이지로
+          if (!userInfo.onboarding_completed || !userInfo.budget) {
+            console.log('온보딩 미완료 사용자, 온보딩 페이지로 이동');
+            navigate('/onboarding', { state: { budget: userInfo.budget || 300000 } });
+          } else {
+            console.log('온보딩 완료 사용자, 홈으로 이동');
+            navigate('/home');
+          }
+        } catch (userError) {
+          console.error('사용자 정보 조회 실패:', userError);
+          // 사용자 정보 조회 실패 시 기본적으로 홈으로 이동
+          navigate('/home');
+        }
       } else {
         setError('로그인 응답에 토큰이 없습니다.');
       }
@@ -93,15 +111,6 @@ const LoginPage = () => {
         </form>
         
         <div className="login-footer">
-          <div className="login-password-reset">
-            <button 
-              type="button" 
-              className="login-password-reset-link"
-              onClick={() => navigate('/password-reset')}
-            >
-              비밀번호 재설정
-            </button>
-          </div>
           <div className="login-signup-link">
             <p>계정이 없으신가요? <button 
               type="button" 

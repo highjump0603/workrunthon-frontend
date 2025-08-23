@@ -1,14 +1,38 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { userService } from '../services/userService';
 import './OnboardingPage.css';
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
-  const [budget, setBudget] = useState(300000);
+  const location = useLocation();
+  
+  // SignupPage에서 전달받은 예산 정보가 있으면 사용, 없으면 기본값
+  const initialBudget = location.state?.budget || 300000;
+  const [budget, setBudget] = useState(initialBudget);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleComplete = () => {
-    // 예산 설정 완료 후 홈으로 이동
-    navigate('/home');
+  const handleComplete = async () => {
+    try {
+      setIsLoading(true);
+      
+      // 예산 정보를 서버에 저장
+      await userService.updateProfile({
+        budget: budget,
+        onboarding_completed: true
+      });
+      
+      console.log('온보딩 예산 설정 완료:', budget);
+      alert('예산 설정이 완료되었습니다!');
+      
+      // 예산 설정 완료 후 홈으로 이동
+      navigate('/home');
+    } catch (error) {
+      console.error('온보딩 예산 저장 에러:', error);
+      alert('예산 저장에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const formatBudget = (amount) => {
@@ -77,8 +101,9 @@ const OnboardingPage = () => {
           <button 
             className="onboarding-complete-button"
             onClick={handleComplete}
+            disabled={isLoading}
           >
-            시작하기
+            {isLoading ? '저장 중...' : '시작하기'}
           </button>
         </div>
       </div>
