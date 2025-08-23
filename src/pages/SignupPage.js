@@ -86,7 +86,7 @@ const SignupPage = () => {
       // 실제 회원가입 API 호출
       console.log('전송할 데이터:', signupData);
       console.log('password_confirm 값:', formData.password_confirm);
-      const response = await fetch('https://15.165.7.141:8000/users/signup', {
+      const response = await fetch('https://wrtigloo.duckdns.org:8000/users/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

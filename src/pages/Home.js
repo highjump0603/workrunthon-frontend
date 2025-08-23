@@ -53,7 +53,7 @@ const Home = () => {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
 
-      const response = await fetch('https://15.165.7.141:8000/users/me', {
+      const response = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -81,7 +81,7 @@ const Home = () => {
       if (!token) return;
 
       const today = getTodayDate();
-      const response = await fetch(`https://15.165.7.141:8000/planners/?plan_date=${today}`, {
+      const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?plan_date=${today}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -126,7 +126,7 @@ const Home = () => {
       const weekRanges = getWeekRanges();
       
       // 이번주 지출 조회
-      const thisWeekResponse = await fetch(`https://15.165.7.141:8000/planners/?plan_date=${weekRanges.thisWeekStart}&max_cost=999999999`, {
+      const thisWeekResponse = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?plan_date=${weekRanges.thisWeekStart}&max_cost=999999999`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -135,7 +135,7 @@ const Home = () => {
       });
 
       // 지난주 지출 조회
-      const lastWeekResponse = await fetch(`https://15.165.7.141:8000/planners/?plan_date=${weekRanges.lastWeekStart}&max_cost=999999999`, {
+      const lastWeekResponse = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?plan_date=${weekRanges.lastWeekStart}&max_cost=999999999`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

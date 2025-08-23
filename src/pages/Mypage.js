@@ -66,7 +66,7 @@ const Mypage = () => {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
 
-      const response = await fetch('https://15.165.7.141:8000/users/me', {
+      const response = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

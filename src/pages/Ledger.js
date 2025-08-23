@@ -23,7 +23,7 @@ const Ledger = () => {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
       
-      const response = await fetch('https://15.165.7.141:8000/users/me', {
+      const response = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -57,7 +57,7 @@ const Ledger = () => {
       }
 
       // 사용자 ID를 가져오기 위해 users/me API 호출
-      const userResponse = await fetch('https://15.165.7.141:8000/users/me', {
+      const userResponse = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -70,7 +70,7 @@ const Ledger = () => {
         const userId = userData.id;
 
         // /planners/history API 호출
-        const response = await fetch(`https://15.165.7.141:8000/planners/history?user_id=${userId}&limit=50`, {
+        const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/history?user_id=${userId}&limit=50`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
