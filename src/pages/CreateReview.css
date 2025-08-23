@@ -1,0 +1,228 @@
+/* CreateReview Page Styles */
+.create-review-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.create-review-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.create-review-back-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  padding: 0;
+}
+
+.create-review-content {
+  padding: 20px;
+}
+
+.create-review-planner-info {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.create-review-date {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.create-review-cost {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.create-review-form {
+  margin-bottom: 30px;
+}
+
+.create-review-section {
+  margin-bottom: 25px;
+}
+
+.create-review-restaurant-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.create-review-rating {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.create-review-star {
+  font-size: 24px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.create-review-star.active {
+  color: #4CAF50;
+}
+
+.create-review-star:hover {
+  color: #4CAF50;
+}
+
+.create-review-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.create-review-textarea:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.create-review-textarea::placeholder {
+  color: #999;
+}
+
+.create-review-char-count {
+  text-align: right;
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.create-review-photo-label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.create-review-photo-upload {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.create-review-photo-btn {
+  width: 80px;
+  height: 80px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.create-review-photo-btn:hover {
+  border-color: #4CAF50;
+  color: #4CAF50;
+}
+
+.create-review-photo-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.create-review-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.create-review-amount-input {
+  width: calc(100% - 30px);
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+}
+
+.create-review-amount-input:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+.create-review-amount-unit {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.create-review-submit-btn {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.create-review-submit-btn:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.create-review-submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.create-review-submit-btn:active:not(:disabled) {
+  background-color: #3d8b40;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .create-review-container {
+    max-width: 100%;
+  }
+  
+  .create-review-content {
+    padding: 16px;
+  }
+  
+  .create-review-star {
+    font-size: 20px;
+  }
+  
+  .create-review-photo-btn,
+  .create-review-photo-preview {
+    width: 70px;
+    height: 70px;
+  }
+}

@@ -5,6 +5,11 @@ import BottomNavigation from '../components/BottomNavigation';
 
 const Ledger = () => {
   const navigate = useNavigate();
+
+  // 내역 상세 페이지로 이동
+  const handlePlannerDetail = (plannerId) => {
+    navigate(`/planner-detail/${plannerId}`);
+  };
   
   // 예산 정보 state 추가
   const [budgetInfo, setBudgetInfo] = useState({
@@ -271,7 +276,11 @@ const Ledger = () => {
           <div className="ledger-expenses-list">
             {mealHistory.map((plan) => (
               <div key={plan.id} className="ledger-expense-item">
-                <div className="ledger-expense-info">
+                <div 
+                  className="ledger-expense-info"
+                  onClick={() => handlePlannerDetail(plan.id)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="ledger-expense-date">{formatDate(plan.plan_date)}</div>
                   <div className="ledger-expense-type">{plan.type}</div>
                   <div className="ledger-expense-memo">

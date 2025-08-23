@@ -29,7 +29,7 @@ export const menuService = {
       if (params.use_location_filter !== undefined) queryParams.append('use_location_filter', params.use_location_filter);
       if (params.max_distance) queryParams.append('max_distance', params.max_distance);
       if (params.categories && params.categories.length > 0) {
-        params.categories.forEach(category => queryParams.append('categories', category));
+        params.categories.forEach(category => queryParams.append('categories', category));  
       }
 
       const response = await fetch(`${API_BASE_URL}/menus/?${queryParams}`, {

@@ -10,8 +10,7 @@ const Mypage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   
-  // 사용자 ID state 추가
-  const [currentUserId, setCurrentUserId] = useState(null);
+
   
   // 예산 정보 state 추가
   const [budgetInfo, setBudgetInfo] = useState({
@@ -86,8 +85,7 @@ const Mypage = () => {
         const totalBudget = userData.budget || 0;
         console.log('Mypage.js - 사용자 ID:', userId, '총 예산:', totalBudget); // 디버깅용
         
-        // 사용자 ID 저장
-        setCurrentUserId(userId);
+        // 사용자 ID는 로컬 변수로만 사용
         
         // 2. 지출 데이터 가져오기 (가계부와 동일한 API 사용)
         const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/history?user_id=${userId}&limit=100`, {

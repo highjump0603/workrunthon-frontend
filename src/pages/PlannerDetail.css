@@ -1,0 +1,150 @@
+/* PlannerDetail Page Styles */
+.planner-detail-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.planner-detail-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.planner-detail-back-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  padding: 0;
+}
+
+.planner-detail-loading,
+.planner-detail-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 16px;
+  color: #666;
+}
+
+.planner-detail-content {
+  padding: 20px;
+}
+
+.planner-detail-date {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.planner-detail-amount {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.planner-detail-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.planner-detail-cost {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.planner-detail-memo {
+  margin-bottom: 30px;
+}
+
+.planner-detail-memo-content {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  min-height: 80px;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.planner-detail-info {
+  margin-bottom: 40px;
+}
+
+.planner-detail-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.planner-detail-info-row:last-child {
+  border-bottom: none;
+}
+
+.planner-detail-info-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.planner-detail-info-value {
+  font-size: 14px;
+  color: #333;
+}
+
+.planner-detail-meal-type {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.planner-detail-review-btn {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.planner-detail-review-btn:hover {
+  background-color: #45a049;
+}
+
+.planner-detail-review-btn:active {
+  background-color: #3d8b40;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .planner-detail-container {
+    max-width: 100%;
+  }
+  
+  .planner-detail-content {
+    padding: 16px;
+  }
+  
+  .planner-detail-cost {
+    font-size: 20px;
+  }
+}
