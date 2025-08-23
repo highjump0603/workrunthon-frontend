@@ -504,7 +504,7 @@ input:checked + .toggle-slider:before {
   flex: 1;
 }
 
-.ai-recommendation-option .restaurant-name {
+.ai-recommendation-option .pl-restaurant-name {
   font-size: 16px;
   font-weight: bold;
   color: #000;
@@ -561,7 +561,7 @@ input:checked + .toggle-slider:before {
   flex: 1;
 }
 
-.restaurant-name {
+.pl-restaurant-name {
   font-size: 16px;
   font-weight: bold;
   color: #000;

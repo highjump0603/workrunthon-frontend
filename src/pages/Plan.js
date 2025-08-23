@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './Plan.css';
 import BottomNavigation from '../components/BottomNavigation';
 import ArrowRightIcon from '../assets/arrow.svg';
+import { useNavigate } from 'react-router-dom';
 
 const Plan = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
@@ -26,6 +27,10 @@ const Plan = () => {
   // 식사 계획 state 추가
   const [mealPlans, setMealPlans] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // 점심 후보 추천 데이터 state 추가
+  const [lunchRecommendations, setLunchRecommendations] = useState([]);
+  const [lunchRecommendationLoading, setLunchRecommendationLoading] = useState(false);
 
 
 
@@ -84,6 +89,54 @@ const Plan = () => {
       setAiRecommendationComment('비 오는 금요일 밤, 따뜻한 일식으로 마음을 따뜻하게 감싸보세요 ☔');
     } finally {
       setAiRecommendationLoading(false);
+    }
+  };
+
+  // 점심 후보 추천 가져오기
+  const fetchLunchRecommendations = async () => {
+    try {
+      setLunchRecommendationLoading(true);
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      const recommendations = [];
+      const seenRestaurantIds = new Set();
+
+      // 3개의 중복 없는 추천을 가져오기 위해 여러 번 시도
+      let attempts = 0;
+      const maxAttempts = 10; // 최대 10번 시도
+
+      while (recommendations.length < 3 && attempts < maxAttempts) {
+        attempts++;
+        
+        const response = await fetch('http://15.165.7.141:8000/menus/menu/recommend?use_location_filter=true&max_distance=10', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.restaurant && !seenRestaurantIds.has(data.restaurant.id)) {
+            recommendations.push(data.restaurant);
+            seenRestaurantIds.add(data.restaurant.id);
+          }
+        }
+
+        // 너무 빠르게 연속 호출하지 않도록 잠시 대기
+        if (recommendations.length < 3 && attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      setLunchRecommendations(recommendations);
+    } catch (error) {
+      console.error('점심 후보 추천 조회 에러:', error);
+      setLunchRecommendations([]);
+    } finally {
+      setLunchRecommendationLoading(false);
     }
   };
 
@@ -261,15 +314,21 @@ const Plan = () => {
     const clickedDateStart = new Date(clickedDate.getFullYear(), clickedDate.getMonth(), clickedDate.getDate());
     
     if (clickedDateStart < todayStart) {
-      // 어제 이전 날짜: 지출 상세 팝업
-      setSelectedDate(day);
-      setShowExpensePopup(true);
-      // body 스크롤 방지
-      document.body.classList.add('popup-open');
+      // 어제 이전 날짜: 지출이 있는 경우에만 팝업 표시
+      const dateMealPlans = getMealPlansForDate(day.date);
+      if (dateMealPlans.length > 0) {
+        setSelectedDate(day);
+        setShowExpensePopup(true);
+        // body 스크롤 방지
+        document.body.classList.add('popup-open');
+      }
+      // 지출이 없으면 아무것도 하지 않음
     } else {
       // 오늘 날짜 포함 미래 날짜: 점심 후보 팝업
       setSelectedDate(day);
       setShowLunchPopup(true);
+      // 점심 후보 추천 데이터 가져오기
+      fetchLunchRecommendations();
       // body 스크롤 방지
       document.body.classList.add('popup-open');
     }
@@ -302,6 +361,8 @@ const Plan = () => {
       }
     }
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="plan-container">
@@ -381,7 +442,9 @@ const Plan = () => {
                 className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${
                   day.date.getDay() === 0 ? 'sunday' : 
                   day.date.getDay() === 6 ? 'saturday' : ''
-                } ${day.isToday ? 'today' : ''}`}
+                } ${day.isToday ? 'today' : ''} ${
+                  !day.isCurrentMonth && (day.date.getDay() === 0 || day.date.getDay() === 6) ? 'other-month-weekend' : ''
+                }`}
                 onClick={() => handleDateClick(day)}
               >
                 <div className="day-number">{day.date.getDate()}</div>
@@ -461,40 +524,44 @@ const Plan = () => {
       <div style={{height: '100px'}}></div>
 
       {/* 지출 상세 팝업 (이전 날짜) */}
-      {showExpensePopup && selectedDate && (
-        <div className="popup-overlay" onClick={closePopups}>
-          <div className="expense-popup" onClick={(e) => e.stopPropagation()}>
-            <div className="popup-date">{selectedDate.date.getMonth() + 1}월 {selectedDate.date.getDate()}일 {['일', '월', '화', '수', '목', '금', '토'][selectedDate.date.getDay()]}요일</div>
-            <div className="expense-details">
-              <div className="expense-info">
-                <div className="expense-name">스시야</div>
-                <div className="expense-amount">-100,000 원</div>
-                                  <img 
-                    src={ArrowRightIcon} 
-                    alt="arrow" 
-                    className="expense-arrow"
-                    onClick={() => console.log('가게 상세 페이지로 이동')}
-                  />
+      {showExpensePopup && selectedDate && (() => {
+        const dateMealPlans = getMealPlansForDate(selectedDate.date);
+        return (
+          <div className="popup-overlay" onClick={closePopups}>
+            <div className="expense-popup" onClick={(e) => e.stopPropagation()}>
+              <div className="popup-date">{selectedDate.date.getMonth() + 1}월 {selectedDate.date.getDate()}일 {['일', '월', '화', '수', '목', '금', '토'][selectedDate.date.getDay()]}요일</div>
+              <div className="expense-details">
+                {dateMealPlans.map((plan, index) => (
+                  <div key={index} className="expense-info">
+                    <div className="expense-name">{plan.memo || '식사'}</div>
+                    <div className="expense-amount">-{plan.cost?.toLocaleString() || 0} 원</div>
+                    <div className="expense-type" style={{ color: getMealTypeColor(plan.type) }}>
+                      {plan.type || '기타'}
+                    </div>
+                    <img 
+                      src={ArrowRightIcon} 
+                      alt="arrow" 
+                      className="expense-arrow"
+                      onClick={() => console.log('가게 상세 페이지로 이동')}
+                    />
+                  </div>
+                ))}
+                <div className="expense-toggle">
+                  <span className="toggle-label">지출 합계에 포함</span>
+                  <label className="toggle-switch">
+                    <input 
+                      type="checkbox" 
+                      checked={expenseIncluded}
+                      onChange={(e) => handleExpenseToggle(e.target.checked)}
+                    />
+                    <span className="toggle-slider"></span>
+                  </label>
+                </div>
               </div>
-              <div className="expense-category">
-                <span className="category-label">항목</span>
-                <span className="category-value">오마카세</span>
-              </div>
-                             <div className="expense-toggle">
-                 <span className="toggle-label">지출 합계에 포함</span>
-                 <label className="toggle-switch">
-                   <input 
-                     type="checkbox" 
-                     checked={expenseIncluded}
-                     onChange={(e) => handleExpenseToggle(e.target.checked)}
-                   />
-                   <span className="toggle-slider"></span>
-                 </label>
-               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
              {/* 점심 후보 팝업 (미래 날짜) */}
        {showLunchPopup && selectedDate && (
@@ -502,33 +569,36 @@ const Plan = () => {
            <div className="lunch-popup" onClick={(e) => e.stopPropagation()}>
              <div className="popup-header">
                <div className="popup-title">{selectedDate.date.getMonth() + 1}월 {selectedDate.date.getDate()}일 점심 후보</div>
-               <div className="popup-budget">10,500 원</div>
+               <div className="popup-budget">추천 메뉴</div>
              </div>
              <div className="lunch-options">
-               <div className="lunch-option">
-                 <div className="option-info">
-                   <div className="restaurant-name">김밥천국</div>
-                   <div className="menu-item">떡갈비 김밥</div>
+               {lunchRecommendationLoading ? (
+                 <div className="loading-option">
+                   <div className="loading-spinner"></div>
+                   <div className="loading-text">추천 메뉴를 불러오는 중...</div>
                  </div>
-                 <div className="star-icon active">★</div>
-               </div>
-               <div className="lunch-option">
-                 <div className="option-info">
-                   <div className="restaurant-name">역전우동</div>
-                   <div className="menu-item">우동 + 돈까스</div>
+               ) : lunchRecommendations.length > 0 ? (
+                 lunchRecommendations.map((restaurant, index) => (
+                   <div 
+                     key={index} 
+                     className="lunch-option"
+                     onClick={() => navigate(`/restaurant-detail/${restaurant.id}`)}
+                   >
+                     <div className="option-info">
+                       <div className="pl-restaurant-name">{restaurant.name}</div>
+                       <div className="pl-restaurant-address">{restaurant.address}</div>
+                     </div>
+                     <div className="star-icon">★</div>
+                   </div>
+                 ))
+               ) : (
+                 <div className="no-recommendation">
+                   <div className="no-recommendation-text">추천 메뉴가 없습니다</div>
                  </div>
-                 <div className="star-icon">★</div>
-               </div>
-               <div className="lunch-option">
-                 <div className="option-info">
-                   <div className="restaurant-name">맘스터치</div>
-                   <div className="menu-item">싸이버거 세트</div>
-                 </div>
-                 <div className="star-icon active">★</div>
-               </div>
+               )}
              </div>
              <div className="popup-footer">
-               <span className="view-more">후보 더 보기</span>
+               <span className="view-more">더 많은 추천 보기</span>
              </div>
            </div>
          </div>

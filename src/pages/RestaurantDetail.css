@@ -1,0 +1,552 @@
+.restaurant-detail-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #ffffff;
+  position: relative;
+  padding-bottom: 80px; /* 하단 네비게이션 공간 */
+}
+
+/* 헤더 */
+.restaurant-detail-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 20px;
+  background: transparent;
+}
+
+.restaurant-detail-back-button {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.restaurant-detail-back-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.restaurant-detail-back-arrow {
+  width: 20px;
+  height: 20px;
+}
+
+/* 상단 이미지 영역 */
+.restaurant-detail-image-section {
+  height: 250px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 0;
+}
+
+.restaurant-detail-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.restaurant-detail-sushi-plate {
+  position: relative;
+  width: 180px;
+  height: 108px;
+  background: #2c2c2c;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px;
+}
+
+.restaurant-detail-sushi-item {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+.restaurant-detail-sushi-item.red { background: #e74c3c; }
+.restaurant-detail-sushi-item.orange { background: #e67e22; }
+.restaurant-detail-sushi-item.white { background: #ecf0f1; }
+.restaurant-detail-sushi-item.pink { background: #e91e63; }
+.restaurant-detail-sushi-item.brown { background: #8d6e63; }
+.restaurant-detail-sushi-item.green { background: #4caf50; }
+
+.restaurant-detail-ginger {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 14px;
+  height: 14px;
+  background: #ffb3d9;
+  border-radius: 50%;
+}
+
+/* 식당 정보 헤더 영역 */
+.restaurant-detail-info-header {
+  padding: 20px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.restaurant-detail-name-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.restaurant-detail-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333333;
+  margin: 0;
+  line-height: 1.3;
+  flex: 1;
+  min-width: 0;
+}
+
+.restaurant-detail-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.restaurant-detail-star-icon {
+  width: 18px;
+  height: 18px;
+  color: #ffd700;
+}
+
+.restaurant-detail-rating-score {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.restaurant-detail-category {
+  font-size: 14px;
+  color: #666666;
+  margin-bottom: 16px;
+}
+
+.restaurant-detail-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.restaurant-detail-price {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.restaurant-detail-distance {
+  font-size: 14px;
+  color: #666666;
+}
+
+.restaurant-detail-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.restaurant-detail-action-button {
+  flex: 1;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.restaurant-detail-visit-button {
+  background: #4caf50;
+  color: #ffffff;
+}
+
+.restaurant-detail-visit-button:hover,
+.restaurant-detail-visit-button:active {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+.restaurant-detail-save-button {
+  background: #2196f3;
+  color: #ffffff;
+}
+
+.restaurant-detail-save-button:hover,
+.restaurant-detail-save-button:active {
+  background: #1976d2;
+  transform: translateY(-1px);
+}
+
+/* 상세 정보 섹션 */
+.restaurant-detail-detail-section {
+  padding: 20px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.restaurant-detail-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #333333;
+  margin: 0 0 18px 0;
+}
+
+.restaurant-detail-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.restaurant-detail-detail-label {
+  font-size: 14px;
+  color: #666666;
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.restaurant-detail-detail-value {
+  font-size: 14px;
+  color: #333333;
+  text-align: right;
+  flex: 1;
+  word-break: break-all;
+}
+
+/* 플랜 추천 섹션 */
+.restaurant-detail-plan-recommendation-section {
+  padding: 20px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.restaurant-detail-recommendation-box {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.restaurant-detail-recommendation-text {
+  font-size: 14px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.restaurant-detail-add-to-plan-button {
+  width: 100%;
+  padding: 14px 20px;
+  background: #4caf50;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.restaurant-detail-add-to-plan-button:hover,
+.restaurant-detail-add-to-plan-button:active {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+/* 네이버 지도 섹션 */
+.restaurant-detail-map-section {
+  padding: 20px 16px;
+}
+
+.restaurant-detail-map-container {
+  background: #f8f9fa;
+  border-radius: 12px;
+  height: 180px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid #e0e0e0;
+}
+
+.restaurant-detail-map-placeholder {
+  text-align: center;
+  color: #666666;
+  padding: 20px;
+}
+
+.restaurant-detail-map-text {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.restaurant-detail-map-coordinates {
+  font-size: 12px;
+  color: #999999;
+}
+
+.restaurant-detail-directions-button {
+  width: 100%;
+  padding: 14px 20px;
+  background: #2196f3;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.restaurant-detail-directions-button:hover,
+.restaurant-detail-directions-button:active {
+  background: #1976d2;
+  transform: translateY(-1px);
+}
+
+/* 로딩 및 에러 상태 */
+.restaurant-detail-loading-container,
+.restaurant-detail-error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 16px;
+  padding: 20px;
+}
+
+.restaurant-detail-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4caf50;
+  border-radius: 50%;
+  animation: restaurant-detail-spin 1s linear infinite;
+}
+
+@keyframes restaurant-detail-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.restaurant-detail-loading-text,
+.restaurant-detail-error-text {
+  font-size: 16px;
+  color: #666666;
+  text-align: center;
+}
+
+.restaurant-detail-retry-button {
+  padding: 12px 24px;
+  background: #4caf50;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.restaurant-detail-retry-button:hover,
+.restaurant-detail-retry-button:active {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+  .restaurant-detail-header {
+    padding: 12px 16px;
+  }
+  
+  .restaurant-detail-back-button {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .restaurant-detail-image-section {
+    height: 200px;
+  }
+  
+  .restaurant-detail-sushi-plate {
+    width: 150px;
+    height: 90px;
+    gap: 4px;
+    padding: 12px;
+  }
+  
+  .restaurant-detail-sushi-item {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .restaurant-detail-info-header {
+    padding: 16px 12px;
+  }
+  
+  .restaurant-detail-name {
+    font-size: 20px;
+  }
+  
+  .restaurant-detail-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .restaurant-detail-detail-section,
+  .restaurant-detail-plan-recommendation-section,
+  .restaurant-detail-map-section {
+    padding: 16px 12px;
+  }
+  
+  .restaurant-detail-detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .restaurant-detail-detail-value {
+    text-align: left;
+  }
+  
+  .restaurant-detail-map-container {
+    height: 150px;
+  }
+}
+
+/* 태블릿 최적화 */
+@media (min-width: 481px) and (max-width: 768px) {
+  .restaurant-detail-image-section {
+    height: 280px;
+  }
+  
+  .restaurant-detail-sushi-plate {
+    width: 200px;
+    height: 120px;
+  }
+}
+
+/* 데스크톱 최적화 */
+@media (min-width: 769px) {
+  .restaurant-detail-image-section {
+    height: 350px;
+  }
+  
+  .restaurant-detail-sushi-plate {
+    width: 250px;
+    height: 150px;
+    gap: 10px;
+    padding: 20px;
+  }
+  
+  .restaurant-detail-sushi-item {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .restaurant-detail-info-header,
+  .restaurant-detail-detail-section,
+  .restaurant-detail-plan-recommendation-section,
+  .restaurant-detail-map-section {
+    padding: 32px 24px;
+  }
+  
+  .restaurant-detail-name {
+    font-size: 28px;
+  }
+  
+  .restaurant-detail-section-title {
+    font-size: 20px;
+  }
+  
+  .restaurant-detail-map-container {
+    height: 250px;
+  }
+}
+
+/* 터치 디바이스 최적화 */
+@media (hover: none) and (pointer: coarse) {
+  .restaurant-detail-action-button,
+  .restaurant-detail-add-to-plan-button,
+  .restaurant-detail-directions-button,
+  .restaurant-detail-retry-button {
+    min-height: 48px;
+  }
+  
+  .restaurant-detail-back-button {
+    min-height: 44px;
+  }
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .restaurant-detail-container {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+  
+  .restaurant-detail-info-header,
+  .restaurant-detail-detail-section,
+  .restaurant-detail-plan-recommendation-section,
+  .restaurant-detail-map-section {
+    background: #1a1a1a;
+    border-bottom-color: #333333;
+  }
+  
+  .restaurant-detail-name,
+  .restaurant-detail-rating-score,
+  .restaurant-detail-price,
+  .restaurant-detail-detail-value,
+  .restaurant-detail-section-title {
+    color: #ffffff;
+  }
+  
+  .restaurant-detail-category,
+  .restaurant-detail-distance,
+  .restaurant-detail-detail-label,
+  .restaurant-detail-recommendation-text {
+    color: #cccccc;
+  }
+  
+  .restaurant-detail-recommendation-box,
+  .restaurant-detail-map-container {
+    background: #2a2a2a;
+    border-color: #444444;
+  }
+}

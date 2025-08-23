@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import ArrowRightIcon from '../assets/arrow.svg';
@@ -6,19 +6,49 @@ import BottomNavigation from '../components/BottomNavigation';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [todaySpending] = useState([
-    { category: 'lunch', amount: 10000, time: '점심' },
-    { category: 'dinner', amount: 30500, time: '저녁' }
-  ]);
-
+  const [todaySpending, setTodaySpending] = useState([]);
+  const [thisWeekSpending, setThisWeekSpending] = useState(0);
+  const [lastWeekSpending, setLastWeekSpending] = useState(0);
   const [budgetInfo, setBudgetInfo] = useState({
     total_budget: 0,
     remaining_budget: 0,
     budget_percentage: 0
   });
 
+  // 오늘 날짜를 YYYY-MM-DD 형식으로 가져오기
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // 이번주와 지난주 날짜 범위 계산
+  const getWeekRanges = () => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+    
+    // 이번주 월요일부터 오늘까지
+    const thisWeekStart = new Date(today);
+    thisWeekStart.setDate(today.getDate() - currentDay + (currentDay === 0 ? -6 : 1));
+    
+    // 지난주 월요일부터 일요일까지
+    const lastWeekStart = new Date(thisWeekStart);
+    lastWeekStart.setDate(thisWeekStart.getDate() - 7);
+    const lastWeekEnd = new Date(thisWeekStart);
+    lastWeekEnd.setDate(thisWeekStart.getDate() - 1);
+    
+    return {
+      thisWeekStart: thisWeekStart.toISOString().split('T')[0],
+      thisWeekEnd: today.toISOString().split('T')[0],
+      lastWeekStart: lastWeekStart.toISOString().split('T')[0],
+      lastWeekEnd: lastWeekEnd.toISOString().split('T')[0]
+    };
+  };
+
   // 사용자 프로필에서 예산 정보 가져오기
-  const fetchBudgetInfo = async () => {
+  const fetchBudgetInfo = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
@@ -33,22 +63,107 @@ const Home = () => {
 
       if (response.ok) {
         const userData = await response.json();
-        // 사용자 프로필에서 예산 정보 추출
         setBudgetInfo({
           total_budget: userData.budget || 0,
-          remaining_budget: userData.budget || 0, // 현재는 총 예산과 동일하게 설정
-          budget_percentage: 0 // 아직 지출 정보가 없어서 0으로 설정
+          remaining_budget: userData.budget || 0,
+          budget_percentage: 0
         });
       }
     } catch (error) {
       console.error('사용자 프로필 조회 에러:', error);
     }
-  };
+  }, []);
 
-  // 컴포넌트 마운트 시 예산 정보 가져오기
+  // 오늘 지출 내역 가져오기
+  const fetchTodaySpending = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      const today = getTodayDate();
+      const response = await fetch(`http://15.165.7.141:8000/planners/?plan_date=${today}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const todayPlans = data.items || [];
+        
+        // 오늘 지출 내역을 시간대별로 그룹화
+        const spendingByTime = {};
+        todayPlans.forEach(plan => {
+          const time = plan.type || '기타';
+          if (!spendingByTime[time]) {
+            spendingByTime[time] = 0;
+          }
+          spendingByTime[time] += plan.cost || 0;
+        });
+
+        // 시간대별 지출을 배열로 변환
+        const spendingArray = Object.entries(spendingByTime).map(([time, amount]) => ({
+          category: time,
+          amount: amount,
+          time: time
+        }));
+
+        setTodaySpending(spendingArray);
+      }
+    } catch (error) {
+      console.error('오늘 지출 내역 조회 에러:', error);
+    }
+  }, []);
+
+  // 이번주와 지난주 지출 비교
+  const fetchWeekComparison = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      const weekRanges = getWeekRanges();
+      
+      // 이번주 지출 조회
+      const thisWeekResponse = await fetch(`http://15.165.7.141:8000/planners/?plan_date=${weekRanges.thisWeekStart}&max_cost=999999999`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      // 지난주 지출 조회
+      const lastWeekResponse = await fetch(`http://15.165.7.141:8000/planners/?plan_date=${weekRanges.lastWeekStart}&max_cost=999999999`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (thisWeekResponse.ok && lastWeekResponse.ok) {
+        const thisWeekData = await thisWeekResponse.json();
+        const lastWeekData = await lastWeekResponse.json();
+
+        const thisWeekTotal = (thisWeekData.items || []).reduce((sum, plan) => sum + (plan.cost || 0), 0);
+        const lastWeekTotal = (lastWeekData.items || []).reduce((sum, plan) => sum + (plan.cost || 0), 0);
+
+        setThisWeekSpending(thisWeekTotal);
+        setLastWeekSpending(lastWeekTotal);
+      }
+    } catch (error) {
+      console.error('주간 지출 비교 조회 에러:', error);
+    }
+  }, []);
+
+  // 컴포넌트 마운트 시 데이터 가져오기
   useEffect(() => {
     fetchBudgetInfo();
-  }, []);
+    fetchTodaySpending();
+    fetchWeekComparison();
+  }, [fetchBudgetInfo, fetchTodaySpending, fetchWeekComparison]);
 
   // 페이지뷰 관련 state
   const [currentPage, setCurrentPage] = useState(0);
@@ -87,8 +202,6 @@ const Home = () => {
       buttonText: "건강식 메뉴 보기"
     }
   ];
-
-
 
   // 터치/마우스 이벤트 핸들러
   const handleStart = (clientX) => {
@@ -164,12 +277,34 @@ const Home = () => {
     handleEnd();
   };
 
+  // 오늘 날짜 표시
+  const getTodayDisplay = () => {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const date = today.getDate();
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    const dayName = dayNames[today.getDay()];
+    return `${month}월 ${date}일(${dayName})`;
+  };
+
+  // 이번주 vs 지난주 비교 메시지
+  const getComparisonMessage = () => {
+    const difference = lastWeekSpending - thisWeekSpending;
+    if (difference > 0) {
+      return `이번주는 지난주보다 약 ₩${difference.toLocaleString()} 덜 썼어요.`;
+    } else if (difference < 0) {
+      return `이번주는 지난주보다 약 ₩${Math.abs(difference).toLocaleString()} 더 썼어요.`;
+    } else {
+      return '이번주와 지난주 지출이 비슷해요.';
+    }
+  };
+
   return (
     <div className="home-container">
       {/* Top Info Bar */}
       <div className="info-bar">
         <div className="location">반포동</div>
-                 <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</span> 남음</div>
+        <div className="balance-info">현재 약 <span className="font-semi-bold" style={{color: '#000'}}>₩{budgetInfo?.remaining_budget?.toLocaleString() || 0}</span> 남음</div>
       </div>
 
       {/* Promotional Banner */}
@@ -231,24 +366,31 @@ const Home = () => {
       <div className="section">
         <h2 className="home-section-title font-bold">Today</h2>
         <p className="home-section-subtitle font-regular">
-          이번주는 지난주보다 약 ₩34,728 덜 썼어요.
+          {getComparisonMessage()}
         </p>
         <div className="card">
           <div className="card-header">
             <div className="date-info font-bold">
-              <span className="today-label font-bold">오늘</span> 8월 20일(수)
+              <span className="today-label font-bold">오늘</span> {getTodayDisplay()}
             </div>
             <div className="d-day font-bold">
               D-DAY 💵
             </div>
           </div>
           <div className="spending-list">
-            {todaySpending.map((item, index) => (
-              <div key={index} className="spending-item">
-                <span className="dot green"></span>
-                <span className="spending-text font-bold">{item.time} - <span className="font-bold spending-text-green">{item.amount.toLocaleString()}원</span></span>
+            {todaySpending.length > 0 ? (
+              todaySpending.map((item, index) => (
+                <div key={index} className="spending-item">
+                  <span className="dot green"></span>
+                  <span className="spending-text font-bold">{item.time} - <span className="font-bold spending-text-green">{item.amount.toLocaleString()}원</span></span>
+                </div>
+              ))
+            ) : (
+              <div className="spending-item">
+                <span className="dot gray"></span>
+                <span className="spending-text font-regular">오늘은 아직 지출이 없어요</span>
               </div>
-            ))}
+            )}
           </div>
           <div className="card-arrow" onClick={() => navigate('/plan')}>
             <img src={ArrowRightIcon} alt="arrow" />
