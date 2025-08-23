@@ -63,6 +63,7 @@ const Plan = () => {
   const fetchAiRecommendation = async () => {
     try {
       setAiRecommendationLoading(true);
+      
       const response = await fetch('http://15.165.7.141:8000/planners/recommand', {
         method: 'GET',
         headers: {
@@ -73,6 +74,9 @@ const Plan = () => {
       if (response.ok) {
         const data = await response.json();
         setAiRecommendationComment(data.comment || '');
+      } else {
+        // API 응답이 실패할 때 기본 멘트 설정
+        setAiRecommendationComment('비 오는 금요일 밤, 따뜻한 일식으로 마음을 따뜻하게 감싸보세요 ☔');
       }
     } catch (error) {
       console.error('AI 추천 멘트 조회 에러:', error);
