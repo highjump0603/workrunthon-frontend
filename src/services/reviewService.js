@@ -1,13 +1,13 @@
 class ReviewService {
   constructor() {
-    this.baseURL = 'http://15.165.7.141:8000/reviews';
+    this.baseURL = 'https://15.165.7.141:8000/reviews';
   }
 
   // 리뷰 목록 조회 (현재 사용자의 리뷰만)
   async getReviews(params = {}) {
     try {
       // 현재 로그인한 사용자 정보 가져오기
-      const userResponse = await fetch('http://15.165.7.141:8000/users/me', {
+      const userResponse = await fetch('https://15.165.7.141:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -173,7 +173,7 @@ class ReviewService {
   async getMyReviews(params = {}) {
     try {
       // 현재 로그인한 사용자 정보 가져오기
-      const userResponse = await fetch('http://15.165.7.141:8000/users/me', {
+      const userResponse = await fetch('https://15.165.7.141:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`

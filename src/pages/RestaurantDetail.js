@@ -54,7 +54,7 @@ const RestaurantDetail = () => {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
       
-      const response = await fetch(`http://15.165.7.141:8000/restaurants/${id}`, {
+      const response = await fetch(`https://15.165.7.141:8000/restaurants/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

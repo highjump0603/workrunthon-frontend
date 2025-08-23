@@ -42,7 +42,7 @@ const Plan = () => {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
 
-      const response = await fetch('http://15.165.7.141:8000/users/me', {
+      const response = await fetch('https://15.165.7.141:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -69,7 +69,7 @@ const Plan = () => {
     try {
       setAiRecommendationLoading(true);
       
-      const response = await fetch('http://15.165.7.141:8000/planners/recommand', {
+      const response = await fetch('https://15.165.7.141:8000/planners/recommand', {
         method: 'GET',
         headers: {
           'accept': 'application/json'
@@ -109,7 +109,7 @@ const Plan = () => {
       while (recommendations.length < 3 && attempts < maxAttempts) {
         attempts++;
         
-        const response = await fetch('http://15.165.7.141:8000/menus/menu/recommend?use_location_filter=true&max_distance=10', {
+        const response = await fetch('https://15.165.7.141:8000/menus/menu/recommend?use_location_filter=true&max_distance=10', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -153,7 +153,7 @@ const Plan = () => {
       }
 
       // 먼저 사용자 ID를 가져오기
-      const userResponse = await fetch('http://15.165.7.141:8000/users/me', {
+      const userResponse = await fetch('https://15.165.7.141:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -175,7 +175,7 @@ const Plan = () => {
       const planDate = `${year}-${month.toString().padStart(2, '0')}`;
       
       // user_id 파라미터를 추가하여 현재 사용자의 계획만 조회
-      const response = await fetch(`http://15.165.7.141:8000/planners/?plan_date=${planDate}&user_id=${userId}`, {
+      const response = await fetch(`https://15.165.7.141:8000/planners/?plan_date=${planDate}&user_id=${userId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

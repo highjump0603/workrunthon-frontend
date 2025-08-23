@@ -156,7 +156,7 @@ const AddDetails = () => {
       }
 
       // 사용자 정보 조회
-      const userResponse = await fetch('http://15.165.7.141:8000/users/me', {
+      const userResponse = await fetch('https://15.165.7.141:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -204,7 +204,7 @@ const AddDetails = () => {
        });
 
       // 식사 계획 생성 API 호출
-      const response = await fetch('http://15.165.7.141:8000/planners/', {
+      const response = await fetch('https://15.165.7.141:8000/planners/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
