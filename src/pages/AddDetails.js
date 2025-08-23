@@ -204,7 +204,7 @@ const AddDetails = () => {
        });
 
       // 식사 계획 생성 API 호출
-      const response = await fetch('https://wrtigloo.duckdns.org:8000/planners/', {
+      const response = await fetch('https://wrtigloo.duckdns.org:8000/planners', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
