@@ -149,14 +149,17 @@ const Plan = () => {
     }
   };
 
-  // 지출 정보를 가져와서 예산 계산하기
+  // 지출 정보를 가져와서 예산 계산하기 (Home.js와 동일한 로직)
   const fetchExpenseInfo = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token || !currentUserId) return;
 
-      // /planners/ API 호출하여 지출 정보 가져오기
-      const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?user_id=${currentUserId}&limit=100`, {
+      // currentUserId는 이미 숫자이므로 parseInt 불필요
+      const userId = currentUserId;
+      
+      // /planners/ API 사용 (숫자 user_id)
+      const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?user_id=${userId}&limit=100`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -166,16 +169,28 @@ const Plan = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const allPlans = data.items || [];
+        const allPlans = data.items || []; // items 배열 사용
         
-        // 전체 지출 계산
+        console.log('Plan.js - 전체 계획 데이터:', allPlans); // 디버깅용
+        
+        // 전체 지출 계산 (가계부와 동일한 방식)
         const totalSpent = allPlans.reduce((sum, plan) => sum + (plan.cost || 0), 0);
+        
+        console.log('Plan.js - 총 지출 금액:', totalSpent); // 디버깅용
+        console.log('Plan.js - 총 예산:', budgetInfo.total_budget); // 디버깅용
         
         // 예산 정보 업데이트
         setBudgetInfo(prev => {
           const totalBudget = prev.total_budget;
           const remainingBudget = Math.max(0, totalBudget - totalSpent);
-          const budgetPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+          const budgetPercentage = totalBudget > 0 ? Math.min(100, (totalSpent / totalBudget) * 100) : 0;
+          
+          console.log('Plan.js - 예산 계산:', {
+            totalBudget,
+            totalSpent,
+            remainingBudget,
+            budgetPercentage
+          }); // 디버깅용
           
           return {
             ...prev,
@@ -183,11 +198,13 @@ const Plan = () => {
             budget_percentage: budgetPercentage
           };
         });
+      } else {
+        console.error('Plan.js - API 응답 오류:', response.status, response.statusText);
       }
     } catch (error) {
-      console.error('지출 정보 조회 에러:', error);
+      console.error('Plan.js - 지출 정보 조회 에러:', error);
     }
-  }, [currentUserId]);
+  }, [currentUserId, budgetInfo.total_budget]);
 
   // 월별 식사 계획 조회
   const fetchMealPlans = useCallback(async (year, month) => {
