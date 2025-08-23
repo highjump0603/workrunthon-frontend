@@ -18,6 +18,9 @@ const Plan = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showExpensePopup, setShowExpensePopup] = useState(false);
   const [showLunchPopup, setShowLunchPopup] = useState(false);
+  const [showAiRecommendationPopup, setShowAiRecommendationPopup] = useState(false);
+  const [aiRecommendationComment, setAiRecommendationComment] = useState('');
+  const [aiRecommendationLoading, setAiRecommendationLoading] = useState(false);
   const [expenseIncluded, setExpenseIncluded] = useState(true);
 
   // 식사 계획 state 추가
@@ -53,6 +56,30 @@ const Plan = () => {
       }
     } catch (error) {
       console.error('사용자 프로필 조회 에러:', error);
+    }
+  };
+
+  // AI 추천 멘트 가져오기
+  const fetchAiRecommendation = async () => {
+    try {
+      setAiRecommendationLoading(true);
+      const response = await fetch('http://15.165.7.141:8000/planners/recommand', {
+        method: 'GET',
+        headers: {
+          'accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAiRecommendationComment(data.comment || '');
+      }
+    } catch (error) {
+      console.error('AI 추천 멘트 조회 에러:', error);
+      // 에러 시 기본 멘트 설정
+      setAiRecommendationComment('비 오는 금요일 밤, 따뜻한 일식으로 마음을 따뜻하게 감싸보세요 ☔');
+    } finally {
+      setAiRecommendationLoading(false);
     }
   };
 
@@ -228,6 +255,7 @@ const Plan = () => {
   const closePopups = () => {
     setShowExpensePopup(false);
     setShowLunchPopup(false);
+    setShowAiRecommendationPopup(false);
     setSelectedDate(null);
     // body 스크롤 복원
     document.body.classList.remove('popup-open');
@@ -372,12 +400,17 @@ const Plan = () => {
          <div className="setting-item">
            <span className="setting-label">AI 배치</span>
            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-             <button 
-               className="inquiry-button"
-               onClick={() => console.log('AI 배치 조회')}
-             >
-               조회
-             </button>
+                           <button 
+                className="inquiry-button"
+                onClick={async () => {
+                  await fetchAiRecommendation();
+                  setShowAiRecommendationPopup(true);
+                  document.body.classList.add('popup-open');
+                }}
+                disabled={aiRecommendationLoading}
+              >
+                {aiRecommendationLoading ? '조회중...' : '조회'}
+              </button>
              <label className="toggle-switch">
                <input 
                  type="checkbox" 
@@ -439,43 +472,94 @@ const Plan = () => {
         </div>
       )}
 
-      {/* 점심 후보 팝업 (미래 날짜) */}
-      {showLunchPopup && selectedDate && (
-        <div className="popup-overlay" onClick={closePopups}>
-          <div className="lunch-popup" onClick={(e) => e.stopPropagation()}>
-            <div className="popup-header">
-              <div className="popup-title">{selectedDate.date.getMonth() + 1}월 {selectedDate.date.getDate()}일 점심 후보</div>
-              <div className="popup-budget">10,500 원</div>
-            </div>
-            <div className="lunch-options">
-              <div className="lunch-option">
-                <div className="option-info">
-                  <div className="restaurant-name">김밥천국</div>
-                  <div className="menu-item">떡갈비 김밥</div>
+             {/* 점심 후보 팝업 (미래 날짜) */}
+       {showLunchPopup && selectedDate && (
+         <div className="popup-overlay" onClick={closePopups}>
+           <div className="lunch-popup" onClick={(e) => e.stopPropagation()}>
+             <div className="popup-header">
+               <div className="popup-title">{selectedDate.date.getMonth() + 1}월 {selectedDate.date.getDate()}일 점심 후보</div>
+               <div className="popup-budget">10,500 원</div>
+             </div>
+             <div className="lunch-options">
+               <div className="lunch-option">
+                 <div className="option-info">
+                   <div className="restaurant-name">김밥천국</div>
+                   <div className="menu-item">떡갈비 김밥</div>
+                 </div>
+                 <div className="star-icon active">★</div>
+               </div>
+               <div className="lunch-option">
+                 <div className="option-info">
+                   <div className="restaurant-name">역전우동</div>
+                   <div className="menu-item">우동 + 돈까스</div>
+                 </div>
+                 <div className="star-icon">★</div>
+               </div>
+               <div className="lunch-option">
+                 <div className="option-info">
+                   <div className="restaurant-name">맘스터치</div>
+                   <div className="menu-item">싸이버거 세트</div>
+                 </div>
+                 <div className="star-icon active">★</div>
+               </div>
+             </div>
+             <div className="popup-footer">
+               <span className="view-more">후보 더 보기</span>
+             </div>
+           </div>
+         </div>
+       )}
+
+               {/* AI 맞춤 추천 팝업 */}
+        {showAiRecommendationPopup && (
+          <div className="popup-overlay" onClick={closePopups}>
+            <div className="ai-recommendation-popup" onClick={(e) => e.stopPropagation()}>
+                            <div className="popup-header">
+                 <div className="popup-title">AI 맞춤 추천</div>
+                 <div className="popup-description">{aiRecommendationComment || '비 오는 금요일 밤, 따뜻한 일식으로 마음을 따뜻하게 감싸보세요 ☔'}</div>
+               </div>
+              <div className="ai-recommendation-options">
+                <div className="ai-recommendation-option">
+                  <div className="option-info">
+                    <div className="restaurant-name">THE 회</div>
+                    <div className="menu-item">회덮밥</div>
+                  </div>
+                  <div className="option-price">10,500</div>
+                  <div className="star-icon active">★</div>
                 </div>
-                <div className="star-icon active">★</div>
-              </div>
-              <div className="lunch-option">
-                <div className="option-info">
-                  <div className="restaurant-name">역전우동</div>
-                  <div className="menu-item">우동 + 돈까스</div>
+                <div className="ai-recommendation-option">
+                  <div className="option-info">
+                    <div className="restaurant-name">역전우동</div>
+                    <div className="menu-item">우동 + 돈까스</div>
+                  </div>
+                  <div className="option-price">10,500</div>
+                  <div className="star-icon">★</div>
                 </div>
-                <div className="star-icon">★</div>
-              </div>
-              <div className="lunch-option">
-                <div className="option-info">
-                  <div className="restaurant-name">맘스터치</div>
-                  <div className="menu-item">싸이버거 세트</div>
+                <div className="ai-recommendation-option">
+                  <div className="option-info">
+                    <div className="restaurant-name">스시야</div>
+                    <div className="menu-item">모둠 초밥</div>
+                  </div>
+                  <div className="option-price">10,500</div>
+                  <div className="star-icon active">★</div>
                 </div>
-                <div className="star-icon active">★</div>
               </div>
-            </div>
-            <div className="popup-footer">
-              <span className="view-more">후보 더 보기</span>
+              <div className="popup-footer">
+                <span className="view-more">후보 더 보기</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* AI 추천 조회중 로딩 팝업 */}
+        {aiRecommendationLoading && (
+          <div className="popup-overlay">
+            <div className="loading-popup">
+              <div className="loading-spinner"></div>
+              <div className="loading-text">AI 추천을 조회중입니다...</div>
+            </div>
+          </div>
+        )}
 
       <BottomNavigation activeTab="plan" />
     </div>
