@@ -7,6 +7,7 @@ import LeftArrowIcon from '../assets/left_arrow.svg';
 import AddressSearchPopup from '../components/AddressSearchPopup';
 import AddressTypeModal from '../components/AddressTypeModal';
 import { userService } from '../services/userService';
+import { geocodingService } from '../services/geocodingService';
 
 const AddressManagement = () => {
   const navigate = useNavigate();
@@ -14,12 +15,8 @@ const AddressManagement = () => {
   const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
   const [selectedAddressType, setSelectedAddressType] = useState('home');
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(null);
-  const [userInfo, setUserInfo] = useState(null); // 사용자 정보 표시용
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-
 
   // 주소 목록 상태
   const [addresses, setAddresses] = useState([]);
@@ -29,26 +26,18 @@ const AddressManagement = () => {
     if (!address) return null;
     
     try {
-      // 네이버 지도 API 지오코딩 (클라이언트 사이드에서 직접 호출)
-      const response = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
-        method: 'GET',
-        headers: {
-          'X-NCP-APIGW-API-KEY-ID': process.env.REACT_APP_NAVER_CLIENT_ID || '',
-          'X-NCP-APIGW-API-KEY': process.env.REACT_APP_NAVER_CLIENT_SECRET || ''
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.addresses && data.addresses.length > 0) {
-          const coords = data.addresses[0];
-          return {
-            latitude: parseFloat(coords.y),
-            longitude: parseFloat(coords.x)
-          };
-        }
+      console.log('주소를 좌표로 변환 중:', address);
+      
+      // 새로운 지오코딩 서비스 사용
+      const coordinates = await geocodingService.geocodeAddress(address);
+      
+      if (coordinates) {
+        console.log('좌표 변환 성공:', coordinates);
+        return coordinates;
+      } else {
+        console.warn('주소를 좌표로 변환할 수 없습니다:', address);
+        return null;
       }
-      return null;
     } catch (error) {
       console.error('주소 기반 좌표 변환 에러:', error);
       return null;
@@ -71,7 +60,6 @@ const AddressManagement = () => {
       setIsLoading(true);
       setError(null);
       const userData = await userService.getCurrentUser();
-      setUserInfo(userData);
       
       // 주소 목록 구성
       const addressList = [];
@@ -110,7 +98,6 @@ const AddressManagement = () => {
     try {
       // 편집 모드 설정
       setIsEditMode(true);
-      setEditingAddress(address);
       setSelectedAddressType(address.type);
       // 주소 검색 팝업 열기
       setIsSearchPopupOpen(true);
@@ -242,7 +229,6 @@ const AddressManagement = () => {
         
         // 편집 모드 해제
         setIsEditMode(false);
-        setEditingAddress(null);
       } else {
         console.log('새 주소 추가:', addressData);
         // 추가 모드: 새 주소 추가
@@ -289,32 +275,8 @@ const AddressManagement = () => {
         <h1 className="address-management-title">주소 관리</h1>
       </div>
 
-
-
-
-
-                           {/* 사용자 정보 표시 */}
-        {userInfo && (
-          <div className="address-management-user-info">
-            <h3 className="address-management-user-name">{userInfo.name}님의 주소</h3>
-            {userInfo.latitude && userInfo.longitude && (
-              <p className="address-management-location-info">
-                현재 위치: 위도 {userInfo.latitude.toFixed(6)}, 경도 {userInfo.longitude.toFixed(6)}
-              </p>
-            )}
-            {/* 편집 모드 표시 */}
-            {isEditMode && editingAddress && (
-              <div className="address-management-edit-mode-info">
-                <p className="address-management-edit-mode-text">
-                  📝 {editingAddress.title} 주소 편집 중...
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-       {/* 저장된 주소 목록 */}
-       <div className="address-management-saved-addresses-section">
+        {/* 저장된 주소 목록 */}
+        <div className="address-management-saved-addresses-section">
          <h2 className="address-management-section-title">저장된 주소</h2>
         
         {isLoading ? (
@@ -396,7 +358,6 @@ const AddressManagement = () => {
            setIsSearchPopupOpen(false);
            // 편집 모드 초기화
            setIsEditMode(false);
-           setEditingAddress(null);
          }}
          onAddressSelect={handleAddressSelect}
          addressType={selectedAddressType}

@@ -4,6 +4,7 @@ import './RestaurantDetail.css';
 import BottomNavigation from '../components/BottomNavigation';
 import LeftArrowIcon from '../assets/left_arrow.svg';
 import StarIcon from '../assets/star.svg';
+import { geocodingService } from '../services/geocodingService';
 
 const RestaurantDetail = () => {
   const { id } = useParams();
@@ -17,28 +18,29 @@ const RestaurantDetail = () => {
     if (!address) return;
     
     try {
-      // 네이버 지도 API 지오코딩 (클라이언트 사이드에서 직접 호출)
-      const response = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
-        method: 'GET',
-        headers: {
-          'X-NCP-APIGW-API-KEY-ID': process.env.REACT_APP_NAVER_CLIENT_ID || '',
-          'X-NCP-APIGW-API-KEY': process.env.REACT_APP_NAVER_CLIENT_SECRET || ''
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.addresses && data.addresses.length > 0) {
-          const coords = data.addresses[0];
-          setRestaurant(prev => ({
-            ...prev,
-            latitude: parseFloat(coords.y),
-            longitude: parseFloat(coords.x)
-          }));
-        }
+      console.log('식당 주소를 좌표로 변환 중:', address);
+      
+      // 새로운 지오코딩 서비스 사용
+      const coordinates = await geocodingService.geocodeAddress(address);
+      
+      if (coordinates) {
+        console.log('식당 좌표 변환 성공:', coordinates);
+        setRestaurant(prev => ({
+          ...prev,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude
+        }));
+      } else {
+        console.warn('식당 주소를 좌표로 변환할 수 없습니다:', address);
+        // API 키가 없거나 에러 발생 시 기본값 사용
+        setRestaurant(prev => ({
+          ...prev,
+          latitude: 37.5665, // 서울 시청 기본값
+          longitude: 126.9780
+        }));
       }
     } catch (error) {
-      console.error('주소 기반 좌표 변환 에러:', error);
+      console.error('식당 주소 기반 좌표 변환 에러:', error);
       // API 키가 없거나 에러 발생 시 기본값 사용
       setRestaurant(prev => ({
         ...prev,
