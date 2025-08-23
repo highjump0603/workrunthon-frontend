@@ -114,15 +114,16 @@
 }
 
 .calendar-day {
-  aspect-ratio: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   font-size: 14px;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
   position: relative;
+  padding: 4px;
+  overflow: hidden;
 }
 
 .calendar-day:hover {
@@ -145,6 +146,58 @@
   background-color: #667eea;
   color: white;
   font-weight: bold;
+}
+
+/* 달력 날짜 내부 레이아웃 */
+.calendar-day {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 4px;
+}
+
+.day-number {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  align-self: center;
+}
+
+/* 식사 계획 금액 표시 */
+.meal-costs {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.meal-cost-item {
+  font-size: 8px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* 오늘 날짜의 금액 배경색 강화 */
+.calendar-day.today .meal-cost-item {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* 로딩 표시 */
+.loading-indicator {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 14px;
 }
 
 /* 설정 섹션 */
@@ -170,6 +223,24 @@
 .setting-label {
   font-size: 16px;
   color: #374151;
+}
+
+/* 조회 버튼 */
+.inquiry-button {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.inquiry-button:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
 }
 
 /* 토글 스위치 */

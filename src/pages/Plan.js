@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './Plan.css';
 import BottomNavigation from '../components/BottomNavigation';
 import ArrowRightIcon from '../assets/arrow.svg';
 
 const Plan = () => {
-  const [currentMonth, setCurrentMonth] = useState(8);
-  const [currentYear, setCurrentYear] = useState(2025);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [aiReallocation, setAiReallocation] = useState(true);
   
   // 예산 정보 state 추가
@@ -15,11 +15,18 @@ const Plan = () => {
     budget_percentage: 0
   });
   const [paydayApply, setPaydayApply] = useState(true);
-  const [weatherMenuRecommendation, setWeatherMenuRecommendation] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showExpensePopup, setShowExpensePopup] = useState(false);
   const [showLunchPopup, setShowLunchPopup] = useState(false);
   const [expenseIncluded, setExpenseIncluded] = useState(true);
+
+  // 식사 계획 state 추가
+  const [mealPlans, setMealPlans] = useState({});
+  const [loading, setLoading] = useState(false);
+
+
+
+
 
   // 사용자 프로필에서 예산 정보 가져오기
   const fetchBudgetInfo = async () => {
@@ -49,10 +56,67 @@ const Plan = () => {
     }
   };
 
+  // 월별 식사 계획 조회
+  const fetchMealPlans = useCallback(async (year, month) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        // 토큰이 없을 때 빈 데이터 설정
+        setMealPlans({});
+        setLoading(false);
+        return;
+      }
+
+      // YYYY-MM 형식으로 날짜 생성
+      const planDate = `${year}-${month.toString().padStart(2, '0')}`;
+      
+      const response = await fetch(`http://15.165.7.141:8000/planners/?plan_date=${planDate}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // 날짜별로 식사 계획 정리
+        const plansByDate = {};
+        if (data.items && Array.isArray(data.items)) {
+          data.items.forEach(plan => {
+            const dateKey = plan.plan_date;
+            if (!plansByDate[dateKey]) {
+              plansByDate[dateKey] = [];
+            }
+            plansByDate[dateKey].push(plan);
+          });
+        }
+        
+        setMealPlans(plansByDate);
+      } else {
+        // API 응답이 실패할 때 빈 데이터 설정
+        setMealPlans({});
+      }
+    } catch (error) {
+      console.error('식사 계획 조회 에러:', error);
+      // 에러 발생 시에도 빈 데이터 설정
+      setMealPlans({});
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // 컴포넌트 마운트 시 예산 정보 가져오기
   useEffect(() => {
     fetchBudgetInfo();
   }, []);
+
+  // 월이나 연도가 변경될 때 식사 계획 다시 조회
+  useEffect(() => {
+    fetchMealPlans(currentYear, currentMonth);
+  }, [currentYear, currentMonth, fetchMealPlans]);
 
   // 컴포넌트 언마운트 시 body 클래스 정리
   useEffect(() => {
@@ -116,19 +180,43 @@ const Plan = () => {
 
   const calendarDays = getCalendarDays(currentYear, currentMonth);
 
+  // 특정 날짜의 식사 계획 가져오기
+  const getMealPlansForDate = (date) => {
+    const dateString = date.toISOString().split('T')[0];
+    return mealPlans[dateString] || [];
+  };
+
+  // 식사 타입에 따른 색상 반환
+  const getMealTypeColor = (type) => {
+    switch (type) {
+      case '아침':
+        return '#FF6B6B'; // 빨간색
+      case '점심':
+        return '#4ECDC4'; // 연한 초록색
+      case '저녁':
+        return '#95A5A6'; // 연한 회색
+      default:
+        return '#95A5A6';
+    }
+  };
+
   // 날짜 클릭 핸들러
   const handleDateClick = (day) => {
     const today = new Date();
     const clickedDate = day.date;
     
-    if (clickedDate < today) {
-      // 이전 날짜: 지출 상세 팝업
+    // 오늘 날짜는 시간을 고려해서 정확하게 비교
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const clickedDateStart = new Date(clickedDate.getFullYear(), clickedDate.getMonth(), clickedDate.getDate());
+    
+    if (clickedDateStart < todayStart) {
+      // 어제 이전 날짜: 지출 상세 팝업
       setSelectedDate(day);
       setShowExpensePopup(true);
       // body 스크롤 방지
       document.body.classList.add('popup-open');
     } else {
-      // 미래 날짜: 점심 후보 팝업
+      // 오늘 날짜 포함 미래 날짜: 점심 후보 팝업
       setSelectedDate(day);
       setShowLunchPopup(true);
       // body 스크롤 방지
@@ -232,58 +320,86 @@ const Plan = () => {
           <div className="day-header">토</div>
         </div>
         <div className="calendar-grid">
-          {calendarDays.map((day, index) => (
-            <div 
-              key={index} 
-              className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${
-                day.date.getDay() === 0 ? 'sunday' : 
-                day.date.getDay() === 6 ? 'saturday' : ''
-              } ${day.isToday ? 'today' : ''}`}
-              onClick={() => handleDateClick(day)}
-            >
-              {day.date.getDate()}
-            </div>
-          ))}
+          {calendarDays.map((day, index) => {
+            const dateMealPlans = getMealPlansForDate(day.date);
+            
+            return (
+              <div 
+                key={index} 
+                className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${
+                  day.date.getDay() === 0 ? 'sunday' : 
+                  day.date.getDay() === 6 ? 'saturday' : ''
+                } ${day.isToday ? 'today' : ''}`}
+                onClick={() => handleDateClick(day)}
+              >
+                <div className="day-number">{day.date.getDate()}</div>
+                
+                                 {/* 식사 계획 금액 표시 */}
+                 {dateMealPlans.length > 0 && (
+                   <div className="meal-costs">
+                     {dateMealPlans.slice(0, 3).map((plan, planIndex) => (
+                       <div 
+                         key={planIndex}
+                         className="meal-cost-item"
+                         style={{ 
+                           color: getMealTypeColor(plan.type),
+                           fontSize: '8px',
+                           fontWeight: 'bold',
+                           textAlign: 'center',
+                           lineHeight: '1.2'
+                         }}
+                       >
+                         -{plan.cost?.toLocaleString() || 0}
+                       </div>
+                     ))}
+                   </div>
+                 )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* 설정 토글 */}
-      <div className="settings-section">
-        <div className="setting-item">
-          <span className="setting-label">AI 다시 배치</span>
-          <label className="toggle-switch">
-            <input 
-              type="checkbox" 
-              checked={aiReallocation}
-              onChange={(e) => setAiReallocation(e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </label>
+      {/* 로딩 표시 */}
+      {loading && (
+        <div className="loading-indicator">
+          식사 계획을 불러오는 중...
         </div>
-        <div className="setting-item">
-          <span className="setting-label">월급날 적용</span>
-          <label className="toggle-switch">
-            <input 
-              type="checkbox" 
-              checked={paydayApply}
-              onChange={(e) => setPaydayApply(e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div className="setting-item">
-          <span className="setting-label">비 오는 날 따뜻한 메뉴 추천</span>
-          <label className="toggle-switch">
-            <input 
-              type="checkbox" 
-              checked={weatherMenuRecommendation}
-              onChange={(e) => setWeatherMenuRecommendation(e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
+      )}
+
+             {/* 설정 토글 */}
+       <div className="settings-section">
+         <div className="setting-item">
+           <span className="setting-label">AI 배치</span>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+             <button 
+               className="inquiry-button"
+               onClick={() => console.log('AI 배치 조회')}
+             >
+               조회
+             </button>
+             <label className="toggle-switch">
+               <input 
+                 type="checkbox" 
+                 checked={aiReallocation}
+                 onChange={(e) => setAiReallocation(e.target.checked)}
+               />
+               <span className="toggle-slider"></span>
+             </label>
+           </div>
+         </div>
+         <div className="setting-item">
+           <span className="setting-label">월급날 가중치 ON</span>
+           <label className="toggle-switch">
+             <input 
+               type="checkbox" 
+               checked={paydayApply}
+               onChange={(e) => setPaydayApply(e.target.checked)}
+             />
+             <span className="toggle-slider"></span>
+           </label>
+         </div>
+       </div>
 
       <div style={{height: '100px'}}></div>
 
