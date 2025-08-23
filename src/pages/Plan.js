@@ -40,13 +40,14 @@ const Plan = () => {
 
 
 
-  // 사용자 프로필에서 예산 정보 가져오기
-  const fetchBudgetInfo = useCallback(async () => {
+  // 가계부와 동일한 방식으로 예산 정보와 지출 계산을 한 번에 처리
+  const fetchBudgetAndExpenseInfo = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
 
-      const response = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
+      // 1. 사용자 프로필에서 예산 정보와 사용자 ID 가져오기
+      const userResponse = await fetch('https://wrtigloo.duckdns.org:8000/users/me', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -54,22 +55,68 @@ const Plan = () => {
         }
       });
 
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('사용자 데이터:', userData); // 디버깅용
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        console.log('Plan.js - 사용자 데이터:', userData); // 디버깅용
+        
+        const userId = userData.id;
+        const totalBudget = userData.budget || 0;
+        console.log('Plan.js - 사용자 ID:', userId, '총 예산:', totalBudget); // 디버깅용
         
         // 사용자 ID 저장
-        setCurrentUserId(userData.id);
+        setCurrentUserId(userId);
         
-        // 사용자 프로필에서 예산 정보 추출
-        setBudgetInfo({
-          total_budget: userData.budget || 0,
-          remaining_budget: userData.budget || 0, // 초기값은 총 예산과 동일
-          budget_percentage: 0 // 초기값
+        // 2. 지출 데이터 가져오기 (가계부와 동일한 API 사용)
+        const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/history?user_id=${userId}&limit=100`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'accept': 'application/json'
+          }
         });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Plan.js - 지출 데이터:', data); // 디버깅용
+          
+          if (Array.isArray(data)) {
+            // 3. 총 지출 계산 (가계부와 동일한 방식)
+            const totalSpent = data.reduce((sum, plan) => sum + (plan.cost || 0), 0);
+            const remainingBudget = Math.max(0, totalBudget - totalSpent);
+            const budgetPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+            
+            console.log('Plan.js - 예산 계산:', {
+              totalBudget,
+              totalSpent,
+              remainingBudget,
+              budgetPercentage
+            }); // 디버깅용
+            
+            // 4. 예산 정보 업데이트 (한 번만)
+            setBudgetInfo({
+              total_budget: totalBudget,
+              remaining_budget: remainingBudget,
+              budget_percentage: budgetPercentage
+            });
+          } else {
+            console.log('Plan.js - API 응답이 배열이 아닙니다:', typeof data);
+            setBudgetInfo({
+              total_budget: totalBudget,
+              remaining_budget: totalBudget,
+              budget_percentage: 0
+            });
+          }
+        } else {
+          console.error('Plan.js - 지출 API 응답 오류:', response.status, response.statusText);
+          setBudgetInfo({
+            total_budget: totalBudget,
+            remaining_budget: totalBudget,
+            budget_percentage: 0
+          });
+        }
       }
     } catch (error) {
-      console.error('사용자 프로필 조회 에러:', error);
+      console.error('Plan.js - 예산 및 지출 정보 조회 에러:', error);
     }
   }, []);
 
@@ -101,65 +148,15 @@ const Plan = () => {
     }
   };
 
-  // 점심 후보 추천 가져오기
+  // 점심 후보 추천 가져오기 (1개만)
   const fetchLunchRecommendations = async () => {
     try {
       setLunchRecommendationLoading(true);
       const token = localStorage.getItem('accessToken');
       if (!token) return;
 
-      const recommendations = [];
-      const seenRestaurantIds = new Set();
-
-      // 3개의 중복 없는 추천을 가져오기 위해 여러 번 시도
-      let attempts = 0;
-      const maxAttempts = 10; // 최대 10번 시도
-
-      while (recommendations.length < 3 && attempts < maxAttempts) {
-        attempts++;
-        
-        const response = await fetch('https://wrtigloo.duckdns.org:8000/menus/menu/recommend?use_location_filter=true&max_distance=10', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'accept': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.restaurant && !seenRestaurantIds.has(data.restaurant.id)) {
-            recommendations.push(data.restaurant);
-            seenRestaurantIds.add(data.restaurant.id);
-          }
-        }
-
-        // 너무 빠르게 연속 호출하지 않도록 잠시 대기
-        if (recommendations.length < 3 && attempts < maxAttempts) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-      }
-
-      setLunchRecommendations(recommendations);
-    } catch (error) {
-      console.error('점심 후보 추천 조회 에러:', error);
-      setLunchRecommendations([]);
-    } finally {
-      setLunchRecommendationLoading(false);
-    }
-  };
-
-  // 지출 정보를 가져와서 예산 계산하기 (Home.js와 동일한 로직)
-  const fetchExpenseInfo = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      if (!token || !currentUserId) return;
-
-      // currentUserId는 이미 숫자이므로 parseInt 불필요
-      const userId = currentUserId;
-      
-      // /planners/ API 사용 (숫자 user_id)
-      const response = await fetch(`https://wrtigloo.duckdns.org:8000/planners/?user_id=${userId}&limit=100`, {
+      // 1개의 추천만 가져오기
+      const response = await fetch('https://wrtigloo.duckdns.org:8000/menus/menu/recommend?use_location_filter=true&max_distance=10', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -169,42 +166,23 @@ const Plan = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const allPlans = data.items || []; // items 배열 사용
-        
-        console.log('Plan.js - 전체 계획 데이터:', allPlans); // 디버깅용
-        
-        // 전체 지출 계산 (가계부와 동일한 방식)
-        const totalSpent = allPlans.reduce((sum, plan) => sum + (plan.cost || 0), 0);
-        
-        console.log('Plan.js - 총 지출 금액:', totalSpent); // 디버깅용
-        console.log('Plan.js - 총 예산:', budgetInfo.total_budget); // 디버깅용
-        
-        // 예산 정보 업데이트
-        setBudgetInfo(prev => {
-          const totalBudget = prev.total_budget;
-          const remainingBudget = Math.max(0, totalBudget - totalSpent);
-          const budgetPercentage = totalBudget > 0 ? Math.min(100, (totalSpent / totalBudget) * 100) : 0;
-          
-          console.log('Plan.js - 예산 계산:', {
-            totalBudget,
-            totalSpent,
-            remainingBudget,
-            budgetPercentage
-          }); // 디버깅용
-          
-          return {
-            ...prev,
-            remaining_budget: remainingBudget,
-            budget_percentage: budgetPercentage
-          };
-        });
+        if (data.restaurant) {
+          setLunchRecommendations([data.restaurant]); // 1개만 배열에 담아서 설정
+        } else {
+          setLunchRecommendations([]);
+        }
       } else {
-        console.error('Plan.js - API 응답 오류:', response.status, response.statusText);
+        setLunchRecommendations([]);
       }
     } catch (error) {
-      console.error('Plan.js - 지출 정보 조회 에러:', error);
+      console.error('점심 후보 추천 조회 에러:', error);
+      setLunchRecommendations([]);
+    } finally {
+      setLunchRecommendationLoading(false);
     }
-  }, [currentUserId, budgetInfo.total_budget]);
+  };
+
+
 
   // 월별 식사 계획 조회
   const fetchMealPlans = useCallback(async (year, month) => {
@@ -278,17 +256,10 @@ const Plan = () => {
     }
   }, []);
 
-  // 컴포넌트 마운트 시 예산 정보 가져오기
+  // 컴포넌트 마운트 시 예산 정보 가져오기 (가계부와 동일한 로직)
   useEffect(() => {
-    fetchBudgetInfo();
-  }, [fetchBudgetInfo]);
-
-  // 예산 정보가 로드된 후 지출 정보 가져오기
-  useEffect(() => {
-    if (budgetInfo.total_budget > 0 && currentUserId) {
-      fetchExpenseInfo();
-    }
-  }, [budgetInfo.total_budget, currentUserId, fetchExpenseInfo]);
+    fetchBudgetAndExpenseInfo();
+  }, [fetchBudgetAndExpenseInfo]);
 
   // 월이나 연도가 변경될 때 식사 계획 다시 조회
   useEffect(() => {
@@ -700,9 +671,18 @@ const Plan = () => {
                  </div>
                )}
              </div>
-             <div className="popup-footer">
-               <span className="view-more">더 많은 추천 보기</span>
-             </div>
+                         <div className="popup-footer">
+              <span 
+                className="view-more" 
+                onClick={() => {
+                  closePopups();
+                  navigate('/explore');
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                더 많은 추천 보기
+              </span>
+            </div>
            </div>
          </div>
        )}
